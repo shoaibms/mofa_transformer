@@ -1,9 +1,10 @@
 # MOFA+ Transformer
 
 ![MOFA+ Transformer](https://img.shields.io/badge/MOFA%2B-Transformer-blue)
-![License](https://img.shields.io/badge/license-MIT-green)
-![Python](https://img.shields.io/badge/python-3.10+-yellow)
-![PyTorch](https://img.shields.io/badge/PyTorch-2.6.0-orange)
+[![License: MIT](https://img.shields.io/badge/license-MIT-green)](https://opensource.org/licenses/MIT)
+[![Python](https://img.shields.io/badge/python-3.10+-yellow)](https://www.python.org/)
+[![PyTorch](https://img.shields.io/badge/PyTorch-2.6.0-orange)](https://pytorch.org/)
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.xxxxxx.svg)](#citation)
 
 ## An Interpretable Deep Learning Framework for Elucidating Dynamic Spectral-Metabolomic Relationships in Plant Osmotic Stress Adaptation
 
@@ -15,55 +16,99 @@
 
 This repository contains the implementation of MOFA+ Transformer, a novel interpretable deep learning framework for multi-omics integration, designed to uncover dynamic relationships between spectral reflectance and metabolomic data in plant stress responses. By combining unsupervised variance decomposition (MOFA+) with attention-based deep learning (Transformer), this framework provides mechanistic insights into how plants coordinate physiological and biochemical processes during adaptation to osmotic stress.
 
-### Key Features
+## 🔍 Abstract
 
-- **Interpretable Cross-Modal Integration**: Quantifies directed associations between physiological (spectral) and biochemical (metabolomic) features
-- **Dynamic Temporal Analysis**: Reveals how genotype-specific cross-modal networks evolve over time under stress
-- **Tissue-Specific Insights**: Differentiates coordination strategies in leaf and root tissues
-- **Feature Selection Pipeline**: Identifies biologically meaningful features across multiple modalities
-- **Prediction + Interpretation**: Achieves high accuracy while maintaining interpretability for hypothesis generation
+Understanding plant adaptation to osmotic stress (drought, salinity) is critical for global food security. While multi-omics approaches offer systemic insights, integrating heterogeneous datasets like hyperspectral reflectance and metabolomics remains challenging, particularly for uncovering dynamic, mechanistic links. Standard machine learning models often lack interpretability.
 
-## Publication
+We introduce **MOFA+ Transformer**, a novel deep learning framework combining Multi-Omics Factor Analysis+ (MOFA+) for unsupervised variance decomposition and biologically-informed feature selection, with a Transformer architecture leveraging cross-modal attention for interpretable modeling. Applied to time-resolved spectral and metabolomic data from contrasting drought-tolerant and susceptible plant genotypes under osmotic stress, the framework reveals distinct, genotype-specific strategies for coordinating physiological and biochemical responses. We demonstrate that the **timing and strength of cross-modal communication networks**, particularly between specific spectral features and key metabolic hubs, are crucial determinants of stress tolerance.
 
-> **MOFA+ Transformer: An Interpretable Deep Learning Framework for Elucidating Dynamic Spectral-Metabolomic Relationships in Plant Osmotic Stress Adaptation**
->
-> *Under review*
+## ✨ Key Contributions & Highlights
 
-## Repository Structure
+* **Novel Interpretable Framework:** Combines unsupervised factor analysis with interpretable deep learning for multi-omics integration
+* **Mechanistic Insights:** Quantifies directed associations between spectral features (physiology) and metabolites (biochemistry)
+* **Genotype-Specific Adaptation:** Uncovers distinct network architectures and key hub metabolites in tolerant vs susceptible plants
+* **Temporal Dynamics:** Reveals that tolerant genotypes establish cross-modal links *earlier* in the stress response
+* **Potential Biomarkers:** Identifies spectral-metabolomic attention patterns that could serve as non-invasive indicators of stress tolerance
+
+> **Key numbers**
+> * 336 raw plant samples × 4 omics views
+> * 2,151 spectral bands | 2,471 metabolite features after curation
+> * 12 latent factors capturing genotype, time and treatment axes
+> * 519 MOFA-selected features driving 95-100% classifier F1 scores
+
+## 🛠️ Framework Workflow
+
+```mermaid
+flowchart TD
+    subgraph Data["Data Preprocessing"]
+        A1[Raw Hyperspectral Data] -->|QC & Filtering| B1[Curated Spectral Features]
+        A2[Raw LC-MS Data] -->|QC & Filtering| B2[Curated Metabolite Features]
+        B1 -->|Augmentation| C1[Augmented Spectral Data]
+        B2 -->|Augmentation| C2[Augmented Metabolite Data]
+        C1 --> D[Combined Multi-Omic Dataset]
+        C2 --> D
+    end
+    
+    subgraph MOFA["MOFA+ Analysis"]
+        D --> E[Multi-Omics Factor Analysis+]
+        E --> F1[Latent Factor Identification]
+        E --> F2[Feature Weight Assignment]
+        F1 --> G[Biological Factor Annotation]
+        F2 --> H[Feature Selection]
+    end
+    
+    subgraph Model["Transformer Modeling"]
+        H --> I[Selected Feature Subset]
+        I --> J[Multi-Task Transformer]
+        J --> K1[Prediction Tasks]
+        J --> K2[Cross-Modal Attention]
+        K1 --> L1[SHAP Feature Importance]
+        K2 --> L2[Attention Score Extraction]
+    end
+    
+    subgraph Interpretation["Biological Interpretation"]
+        L1 --> M1[Key Predictive Features]
+        L2 --> M2[Feature-Feature Interactions]
+        M1 --> N[Genotype-Specific Mechanisms]
+        M2 --> N
+        N --> O[Stress Adaptation Insights]
+    end
+    
+    classDef preprocessing fill:#c5e8b7,stroke:#5d9c59,color:#333
+    classDef mofa fill:#a7d489,stroke:#5d9c59,color:#333
+    classDef model fill:#8cc084,stroke:#5d9c59,color:#333
+    classDef interpretation fill:#73a942,stroke:#5d9c59,color:#333
+    
+    class Data preprocessing
+    class MOFA mofa
+    class Model model
+    class Interpretation interpretation
+```
+
+## 🗂️ Repository Structure
 
 ```
 mofa_transformer/
-├── code/
-│   ├── mofa/                 # Multi-Omics Factor Analysis+ implementation
-│   ├── transformer/          # Cross-attention transformer architecture
-│   ├── preprocessing/        # Data preprocessing and quality control
-│   ├── augmentation/         # Data augmentation techniques
-│   └── visualization/        # Visualization utilities
 ├── data/
-│   ├── raw/                  # Raw spectral and metabolomic data
-│   ├── processed/            # Preprocessed datasets
-│   └── augmented/            # Augmented datasets
-├── notebooks/
-│   ├── 01_data_preprocessing.ipynb
-│   ├── 02_data_augmentation.ipynb
-│   ├── 03_mofa_analysis.ipynb
-│   ├── 04_transformer_training.ipynb
-│   └── 05_attention_analysis.ipynb
-├── results/
-│   ├── mofa/                 # MOFA+ outputs and factor analysis
-│   ├── transformer/          # Trained models and predictions
-│   ├── attention/            # Attention weights and analysis
-│   └── figures/              # Generated figures
-├── docs/
-│   ├── tutorial.md           # Usage tutorial
-│   └── api_reference.md      # API documentation
-├── html/                     # HTML validation reports
-├── README.md
-├── requirements.txt
-└── setup.py
+│   ├── raw/                  # Original spectral & LC-MS files
+│   ├── processed/            # QC-filtered & augmented CSVs
+│   └── metadata/             # Experimental design & sample info
+├── src/
+│   ├── augmentation/         # spectral_augmentation.py, metabolite_augmentation.py
+│   ├── mofa/                 # run_mofa.py, mofa_utils.py
+│   ├── transformer/          # model.py, train.py, infer_attention.py
+│   └── viz/                  # Plotting helpers
+├── notebooks/                # Exploratory & figure notebooks
+├── html/                     # SR1–SR6 validation reports
+│
+├── environment.yml           # Conda specification
+├── LICENSE
+└── README.md
 ```
 
-## Installation
+*Raw data is archived in Zenodo (see `data/README` for download script)*
+
+## 🚀 Installation
 
 ```bash
 # Clone the repository
@@ -81,81 +126,57 @@ pip install -r requirements.txt
 pip install -e .
 ```
 
-## Quick Start
+## 🔧 Quick Start
 
-### 1. Data Preprocessing
+### 1. Full Pipeline
+
+```bash
+# Pull datasets (≈ 2 GB)
+bash scripts/get_data.sh        # requires Zenodo token
+
+# Reproduce the paper
+bash pipelines/full_run.sh      # executes QC → augmentation → MOFA+ → Transformer
+```
+
+### 2. Minimal Example (Transformer only)
+
+```bash
+python src/transformer/train.py \
+      --spectra data/processed/mofa_leaf_features.csv \
+      --metab data/processed/mofa_root_features.csv \
+      --outdir results/transformer
+```
+
+### 3. Python API Examples
 
 ```python
-from mofa_transformer.preprocessing import preprocess_spectral, preprocess_metabolomic
-
 # Preprocess spectral data
+from mofa_transformer.preprocessing import preprocess_spectral
 spectral_processed = preprocess_spectral("data/raw/hyper_full_w.csv", 
                                          outlier_methods=["iqr", "zscore", "lof"])
 
-# Preprocess metabolomic data
-metabolomic_processed = preprocess_metabolomic("data/raw/n_p_l2.csv", 
-                                              transform="asinh", 
-                                              imputation="random_forest")
-```
-
-### 2. Run MOFA+ Analysis
-
-```python
+# Run MOFA+ Analysis
 from mofa_transformer.mofa import MOFA_Integration
-
-# Initialize MOFA+ model
 mofa_model = MOFA_Integration(views=["leaf_spec", "root_spec", "leaf_met", "root_met"],
                               num_factors=20, 
                               ard_weights=True)
+mofa_model.train(data_dict, convergence_mode="medium", save_path="results/mofa/")
 
-# Train MOFA+ model
-mofa_model.train(data_dict, 
-                 convergence_mode="medium", 
-                 save_path="results/mofa/")
-
-# Extract factors and weights
-factors = mofa_model.get_factors()
-weights = mofa_model.get_weights()
-```
-
-### 3. Train Transformer Model
-
-```python
+# Train Transformer Model
 from mofa_transformer.transformer import MOFATransformer
-
-# Initialize Transformer with MOFA+ selected features
 transformer = MOFATransformer(mofa_features=selected_features,
                              embedding_dim=64,
                              num_heads=4,
                              dropout=0.1)
+transformer.train(train_loader, val_loader, epochs=150, lr=5e-5, early_stopping=15)
 
-# Train model
-transformer.train(train_loader, 
-                 val_loader, 
-                 epochs=150, 
-                 lr=5e-5,
-                 early_stopping=15)
-```
-
-### 4. Analyze Cross-Modal Attention
-
-```python
+# Analyze Cross-Modal Attention
 from mofa_transformer.attention import AttentionAnalyzer
-
-# Extract and analyze attention weights
 attention_analyzer = AttentionAnalyzer(transformer)
 s2m_attention = attention_analyzer.get_spectral_to_metabolite_attention()
-
-# Visualize genotype-specific networks
-attention_analyzer.plot_attention_network(
-    condition="T1_D3", 
-    genotype="G1", 
-    tissue="Leaf",
-    top_n=50
-)
 ```
 
-## Dataset
+## 📊 Dataset and Preprocessing
 
 Our study used a comprehensive dataset designed to capture diverse osmotic stress responses, including:
 
@@ -167,11 +188,9 @@ Our study used a comprehensive dataset designed to capture diverse osmotic stres
   - Hyperspectral reflectance (350-2500 nm, 2151 wavelengths)
   - Untargeted metabolomics (1721 features in root, 1418 in leaf)
 
-The data is available in the `data/` directory. See the [data documentation](docs/data.md) for details on the experimental design and data structure.
-
-## Data Augmentation and Preprocessing Pipeline
-
 ### Data Augmentation Workflow
+
+To enhance statistical power for deep learning analysis, we developed a specialized data augmentation pipeline that expanded our dataset while preserving biological signals and relationships:
 
 ```mermaid
 flowchart TB
@@ -248,19 +267,21 @@ flowchart TB
     L --> M
     
     %% Styling
-    classDef inputStyle fill:#f2e58a,stroke:#333,stroke-width:3px
-    classDef spectralStyle fill:#5aaea3,stroke:#333,stroke-width:1px
-    classDef metaStyle fill:#7dbd77,stroke:#333,stroke-width:1px
-    classDef lightSpectralStyle fill:#99ccc6,stroke:#333,stroke-width:1px
-    classDef lightMetaStyle fill:#a6d6a1,stroke:#333,stroke-width:1px
-    classDef validationStyle fill:#f6e6a0,stroke:#333,stroke-width:3px
-    classDef taskStyle fill:#b8f5e6, stroke:#333,stroke-width:1px
-    classDef vizStyle fill:#ebd172,stroke:#333,stroke-width:3px
-    classDef reportStyle fill:#dde4c9,stroke:#333,stroke-width:3px
-    classDef outputStyle fill:#f0f4e8,stroke:#333,stroke-width:1px
+    classDef inputStyle fill:#5d9c59,stroke:#333,stroke-width:3px
+    classDef spectralStyle fill:#8cc084,stroke:#333,stroke-width:1px
+    classDef metaStyle fill:#a7d489,stroke:#333,stroke-width:1px
+    classDef lightSpectralStyle fill:#c5e8b7,stroke:#333,stroke-width:1px
+    classDef lightMetaStyle fill:#d8f0c6,stroke:#333,stroke-width:1px
+    classDef validationStyle fill:#5d9c59,stroke:#333,stroke-width:3px
+    classDef taskStyle fill:#8cc084, stroke:#333,stroke-width:1px
+    classDef vizStyle fill:#5d9c59,stroke:#333,stroke-width:3px
+    classDef reportStyle fill:#c5e8b7,stroke:#333,stroke-width:3px
+    classDef outputStyle fill:#e7f5d9,stroke:#333,stroke-width:1px
 ```
 
 ### Spectral Data Quality Assessment and Preprocessing
+
+Before analysis, we performed rigorous quality assessment of the hyperspectral data to ensure data integrity while preserving biologically relevant signals:
 
 ```mermaid
 flowchart TB
@@ -291,11 +312,11 @@ flowchart TB
     
     O --> P[Ready for Augmentation\nand MOFA+ Analysis]
     
-    classDef inputStyle fill:#f2e58a,stroke:#333,stroke-width:3px
-    classDef processStyle fill:#5aaea3,stroke:#333,stroke-width:1px
-    classDef decisionStyle fill:#f6e6a0,stroke:#333,stroke-width:3px
-    classDef resultStyle fill:#b8f5e6,stroke:#333,stroke-width:1px
-    classDef outputStyle fill:#dde4c9,stroke:#333,stroke-width:2px
+    classDef inputStyle fill:#5d9c59,stroke:#333,stroke-width:3px
+    classDef processStyle fill:#8cc084,stroke:#333,stroke-width:1px
+    classDef decisionStyle fill:#5d9c59,stroke:#333,stroke-width:3px
+    classDef resultStyle fill:#a7d489,stroke:#333,stroke-width:1px
+    classDef outputStyle fill:#c5e8b7,stroke:#333,stroke-width:2px
     
     class A inputStyle
     class B,E decisionStyle
@@ -305,7 +326,13 @@ flowchart TB
     class P inputStyle
 ```
 
-## Key Results
+### Data Preprocessing Summary
+
+- **Spectral Data**: Quality assessment using robust statistical methods (IQR, Modified Z-score, Local Outlier Factor), signal quality analysis (Median STD=0.080), and normality assessment (90.7% non-normal)
+- **Metabolomic Data**: Missing value analysis, Random Forest imputation, outlier detection via Isolation Forest, and asinh transformation
+- **Augmentation**: 8-fold increase using spectral methods (GP, MIX, WARP, SCALE, NOISE, ADD, MULT) and metabolomic methods (SCALE: 5x, MIX: 2x)
+
+## 🔬 Key Results
 
 <p align="center">
   <img src="docs/images/genotype_network_comparison.png" alt="Genotype-specific attention networks" width="800"/>
@@ -318,21 +345,30 @@ Our analysis revealed:
 3. **Temporal dynamics**: Coordination patterns evolve during stress, with G1 establishing key links by Day 2
 4. **Specialized hub metabolites**: Central coordinators differ between genotypes (e.g., N_1909 in G1 leaves vs. N_3029 in G2 leaves)
 
-## Citation
+## 🔧 Software Stack
 
-If you use this code or methodology in your research, please cite our paper:
+| Package | Version |
+|---------|---------|
+| PyTorch | 2.6.0 |
+| MOFApy 2 | 0.7.2 |
+| scikit-learn | 1.6.1 |
+| pandas | 2.2.3 |
+| shap | 0.47.1 |
+| networkx | 3.4.2 |
+| matplotlib / seaborn | 3.10.1 / 0.13.2 |
 
-```
-@article{mofa_transformer2025,
-  title={MOFA+ Transformer: An Interpretable Deep Learning Framework for Elucidating Dynamic Spectral-Metabolomic Relationships in Plant Osmotic Stress Adaptation},
-  author={Author, A. and Author, B. and Author, C.},
-  journal={Journal Name},
-  year={2025},
-  publisher={Publisher Name}
-}
-```
+A full, frozen dependency list is generated in `results/conda_lock.yml`.
 
-## Validation Reports
+## 📊 Main Outputs
+
+| Folder | Description |
+|--------|-------------|
+| `results/mofa/` | Factor scores (Z.tsv), loadings (W.tsv), variance heat-maps |
+| `results/transformer/` | Trained checkpoints, SHAP values, attention tensors |
+| `html/` | Interactive QC & validation dashboards (SR1-SR6) |
+| `figures/` | Publication-ready PNG/SVG for all main & supplementary figures |
+
+## 📦 Validation Reports
 
 Detailed HTML validation reports are available in the `html/` directory:
 
@@ -343,11 +379,9 @@ Detailed HTML validation reports are available in the `html/` directory:
 - [Cross-Modality Validation](html/cross_modality_report_main_pipeline.html)
 - [Divergence Analysis](html/divergence_summary.html)
 
-## Reproducibility
+These reports can also be accessed via GitHub at [https://github.com/shoaibms/mofa_transformer/tree/main/html](https://github.com/shoaibms/mofa_transformer/tree/main/html)
 
-The repository includes all code and documentation needed to reproduce our results. See the notebooks in the `notebooks/` directory for step-by-step workflows.
-
-## Contributing
+## 🤝 Contributing
 
 Contributions are welcome! Please feel free to submit a Pull Request.
 
@@ -357,16 +391,38 @@ Contributions are welcome! Please feel free to submit a Pull Request.
 4. Push to the branch (`git push origin feature/amazing-feature`)
 5. Open a Pull Request
 
-## License
+Please follow the commit-style guidelines in `.github/CONTRIBUTING.md`.
 
-This project is licensed under the MIT License - see the LICENSE file for details.
+## 📜 License
 
-## Acknowledgments
+This project is released under the MIT License - see the [LICENSE](LICENSE) file for details.
+
+## 📇 Citation
+
+If you use this code or methodology in your research, please cite our paper:
+
+```bibtex
+@article{Mirza_etal_2025_MOFATransformer,
+  title={MOFA+ Transformer: An Interpretable Deep Learning Framework for Elucidating Dynamic Spectral-Metabolomic Relationships in Plant Osmotic Stress Adaptation},
+  author={Mirza, Shoaib M. and co-authors},
+  journal={Journal Name},
+  year={2025},
+  volume={},
+  pages={},
+  doi={10.5281/zenodo.xxxxxx}
+}
+```
+
+BibTeX available in `CITATION.cff`.
+
+## ✉️ Contact
+
+**Lead developer:** Shoaib M. Mirza – shoaib.mirza@example.edu.au
+
+Please open an issue for technical questions; email for collaboration inquiries.
+
+## 🙏 Acknowledgments
 
 - This work was supported by [funding agencies/grant numbers]
 - The MOFA+ implementation builds upon the original work by Argelaguet et al.
 - We thank [acknowledgments] for their valuable feedback and support.
-
-## Contact
-
-For questions or support, please open an issue or contact [email].
