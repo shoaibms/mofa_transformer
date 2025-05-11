@@ -443,14 +443,6 @@ Our analysis revealed:
 
 A full, frozen dependency list is generated in `results/conda_lock.yml`.
 
-## 📊 Main Outputs
-
-| Folder | Description |
-|--------|-------------|
-| `results/mofa/` | Factor scores (Z.tsv), loadings (W.tsv), variance heat-maps |
-| `results/transformer/` | Trained checkpoints, SHAP values, attention tensors |
-| `html/` | Interactive QC & validation dashboards (SR1-SR6) |
-| `figures/` | Publication-ready PNG/SVG for all main & supplementary figures |
 
 ## 📦 Validation Reports
 
