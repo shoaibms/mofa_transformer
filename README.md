@@ -225,10 +225,10 @@ Our study used a comprehensive dataset designed to capture diverse osmotic stres
   - Untargeted metabolomics (1721 features in root, 1418 in leaf)
 
 
-# 📈 Analysis Pipeline
-Our metabolomics data analysis pipeline consists of four major phases, with comprehensive preprocessing steps to ensure data quality and reliability.
+### Metabolomic Data Quality Assessment and Preprocessing
 
-## Detailed Data Preprocessing Workflow
+Before analysis, we performed rigorous quality assessment of the untargated LCMS data to ensure data integrity while preserving biologically relevant signals:
+
 ```mermaid
    graph TD
     %% Major Steps with darker shades
