@@ -88,22 +88,106 @@ flowchart TD
 ## 🗂️ Repository Structure
 
 ```
-mofa_transformer/
-├── data/
-│   ├── raw/                  # Original spectral & LC-MS files
-│   ├── processed/            # QC-filtered & augmented CSVs
-│   └── metadata/             # Experimental design & sample info
-├── src/
-│   ├── augmentation/         # spectral_augmentation.py, metabolite_augmentation.py
-│   ├── mofa/                 # run_mofa.py, mofa_utils.py
-│   ├── transformer/          # model.py, train.py, infer_attention.py
-│   └── viz/                  # Plotting helpers
-├── notebooks/                # Exploratory & figure notebooks
-├── html/                     # SR1–SR6 validation reports
-│
-├── environment.yml           # Conda specification
-├── LICENSE
-└── README.md
+📦 mofa_transformer_osmotic_stress/
+ ├── 📂 01_data_preprocessing/
+ │   ├── 📂 01_augmentation/
+ │   │   ├── 📜 aug_mol_features.py            # Augments molecular feature datasets.
+ │   │   ├── 📜 aug_spectral_data.py           # Augments spectral datasets.
+ │   │   ├── 📜 verify_augmentation.py         # Verifies data augmentation process.
+ │   │   ├── 📜 sr5.py                         # Validates cross-modality augmentation consistency.
+ │   │   ├── 📜 sr6_7.py                       # Analyses statistical divergence for augmented data.
+ │   │   ├── 📜 run_augmentation.py            # Main pipeline for data augmentation.
+ │   │   ├── 📜 sr3_4.py                       # QC for augmented molecular feature data.
+ │   │   ├── 📜 qc_aug_spectral.py             # QC for augmented spectral data.
+ │   │   ├── 📜 plot_spectral_aug_qc.py        # Plots for spectral augmentation QC results.
+ │   │   ├── 📜 sr1.py                         # HTML reports for spectral augmentation QC.
+ │   │   ├── 📜 validate_mol_aug_batch.py      # Validates batch effects in molecular feature augmentation.
+ │   │   └── 📜 sr2.py                         # Advanced validation of spectral data augmentation.
+ │   │
+ │   ├── 📂 02_misc_processing/
+ │   │   ├── 📜 metadata_tools.py              # Tools for metadata analysis and manipulation.
+ │   │   └── 📜 spectral_qc.py                 # Hyperspectral data quality assessment pipeline.
+ │   │
+ │   ├── 📂 03_lcms_preprocessing/
+ │   │   ├── 📜 dim_reduce_outliers.py         # Outlier analysis for metabolomics data via dimensionality reduction.
+ │   │   ├── 📜 diversity_metrics.py           # Imputation quality assessment using diversity metrics.
+ │   │   ├── 📜 feature_filter.py              # Column filtering for metabolomics data QC.
+ │   │   ├── 📜 impute_dist_check.py           # Imputation validation: distribution checks.
+ │   │   ├── 📜 impute_validate.py             # Imputation validation: visualisation script.
+ │   │   ├── 📜 isolation_forest.py            # Outlier detection and removal using Isolation Forest.
+ │   │   ├── 📜 logistic_test.py               # Logistic regression results: analysis and visualisation for MAR.
+ │   │   ├── 📜 mar_test.py                    # Missing At Random (MAR) analysis for metabolomics data.
+ │   │   ├── 📜 mcar_test.py                   # Little's MCAR (Missing Completely At Random) test.
+ │   │   ├── 📜 median_impute.py               # Median-based missing value imputation.
+ │   │   ├── 📜 missing_vis.py                 # Missing data visualisation for metabolomics data.
+ │   │   ├── 📜 ml_impute.py                   # Advanced missing value imputation using ML methods.
+ │   │   ├── 📜 normality_test.py              # Normality testing for metabolomics data.
+ │   │   ├── 📜 normality_vis.py               # Normality test visualisation for data transformations.
+ │   │   ├── 📜 outlier_vis.py                 # Outlier imputation impact analysis and visualisation.
+ │   │   ├── 📜 transform_data.py              # Data transformation script for metabolomics analysis.
+ │   │   ├── 📜 transform_eva.py               # Transformation evaluation script for metabolomics data.
+ │   │   ├── 📜 transform_metrics.py           # Metabolomics data transformation: evaluation metrics.
+ │   │   └── 📜 variance_calc.py               # rMAD-based variable selection for metabolomics.
+ │   │
+ │   └── 📂 04_utilities/                      # General utilities
+ │       └── 📜 colour_utils.py                # Utility functions for colour handling in plots.
+ │
+ ├── 📂 02_analysis/
+ │   ├── 📂 01_mofa_plus/
+ │   │   ├── 📜 viz_mofa_results.py            # Enhanced MOFA+ results visualisation.
+ │   │   ├── 📜 viz_mofa_network.py            # MOFA+ cross-view integration network visualisation.
+ │   │   ├── 📜 mofa_bootstrap.py              # MOFA+ bootstrap stability analysis.
+ │   │   ├── 📜 mofa_permutation_test.py       # MOFA+ permutation test for factor-metadata association.
+ │   │   ├── 📜 run_mofa_analysis.py           # Main script for MOFA+ analysis and validation.
+ │   │   └── 📜 select_mofa_features.py        # MOFA+ feature selection script.
+ │   │
+ │   ├── 📂 02_transformer_model/
+ │   │   ├── 📜 analyse_transformer_shap.py     # SHAP analysis for multi-omic transformer (feature attention).
+ │   │   ├── 📜 plot_transformer_attention.py   # Multi-wavelength attention analysis for plant stress.
+ │   │   ├── 📜 process_attention_data.py       # Process raw attention data from transformer.
+ │   │   ├── 📜 transformer_model.py            # Multi-omic Transformer model implementation.
+ │   │   ├── 📜 train_transformer_knn.py        # Trains Transformer (v2b) and compares with KNN.
+ │   │   └── 📜 train_transformer_attn.py       # Trains Transformer (v3) with feature attention.
+ │   │
+ │   └── 📂 03_transformer_summary_and_evaluation/
+ │       ├── 📜 summarise_mofa.py              # Summarises MOFA+ analysis results.
+ │       ├── 📜 count_mofa_features.py         # Counts MOFA+ selected features.
+ │       ├── 📜 aggregate_model_perf.py        # Aggregates predictive model performance metrics.
+ │       ├── 📜 process_shap_results.py        # Processes SHAP analysis results.
+ │       ├── 📜 analyse_mofa_shap_overlap.py   # Calculates and plots MOFA+ vs SHAP feature overlap.
+ │       ├── 📜 analyse_view_attn_stats.py     # Analyses view-level attention statistics from Transformer.
+ │       └── 📜 analyse_feature_attn.py        # Analyses conditional feature-level attention from Transformer.
+ │
+ ├── 📂 03_visualisation/
+ │   ├── 📂 01_main_figures/                   # Scripts to generate main paper figures
+ │   │   ├── 📜 figure_1.py                    # Figure 1
+ │   │   ├── 📜 figure_2.py                    # Figure 2
+ │   │   ├── 📜 figure_3.py                    # Figure 3 (Assuming .py extension)
+ │   │   ├── 📜 figure_4.1.py                  # Figure 4 heatmap
+ │   │   ├── 📜 figure_4.2.py                  # Figure 4 stacked_bar
+ │   │   ├── 📜 figure_4.3.py                  # Figure 4 attention
+ │   │   ├── 📜 figure_5.py                    # Figure 5
+ │   │   ├── 📜 figure_6.1.py                  # Figure 6 temporal_evalution
+ │   │   ├── 📜 figure_6.2.py                  # Figure 6 temporal_networks
+ │   │   └── 📜 figure_6.3.py                  # Figure 6 temporal_trajectories
+ │   │
+ │   └── 📂 02_supplementary_figures/          # Scripts and sources for supplementary figures
+ │       ├── 📜 figure_S1.mmd                  # LCMS data processing flow-chart
+ │       ├── 📜 figure_S3.py                   # Hyperspectral data quality assessment
+ │       ├── 📜 figure_S4.mmd                  # Augmentation pipeline
+ │       ├── 📜 figure_S5-8.py                 # Augmentation assesment
+ │       ├── 📜 figure_S9.py                   # MOFA+ cross-view network
+ │       ├── 📜 figure_S10.py                  # Confusion matrices - transformer
+ │       └── 📜 figure_S11-13.py               # Cross-modal relationship, Temporal pattern , Biomarker
+ │
+ ├── 📂 data/                                 # Placeholder for data files (e.g., example data, metadata)
+ │    └── README.md                            # Description of data files, format, and origin.
+ │
+ ├── 📂 reports/
+ │    └── README.md                              # HTML reports
+ │
+ ├── 📜 README.md                             # Project overview, setup, how to run, citation, and SR mapping.
+ └── 📜 requirements.txt                      # Pip requirements file (can be generated from conda env).
 ```
 
 *Raw data is archived in Zenodo (see `data/README` for download script)*
