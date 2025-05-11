@@ -337,7 +337,7 @@ flowchart TB
 
 ### Data Augmentation Workflow
 
-To enhance statistical power for deep learning analysis, we developed a specialized data augmentation pipeline that expanded our dataset while preserving biological signals and relationships:
+To enhance statistical power for deep learning analysis, we developed a specialised data augmentation pipeline that expanded our dataset while preserving biological signals and relationships:
 
 ```mermaid
 flowchart TB
