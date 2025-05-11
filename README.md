@@ -4,7 +4,7 @@
 [![License: MIT](https://img.shields.io/badge/license-MIT-green)](https://opensource.org/licenses/MIT)
 [![Python](https://img.shields.io/badge/python-3.10+-yellow)](https://www.python.org/)
 [![PyTorch](https://img.shields.io/badge/PyTorch-2.6.0-orange)](https://pytorch.org/)
-[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.xxxxxx.svg)](#citation)
+[![DOI](https://yet to be update.org/badge/DOI/10.5281/yet to be updated.xxxxxx.svg)](#citation)
 
 ## MOFA+ Transformer: An Interpretable Deep Learning Framework for Elucidating Dynamic Spectral-Metabolomic Relationships in Plant Osmotic Stress Adaptation
 
@@ -18,23 +18,23 @@ This repository contains the implementation of MOFA+ Transformer, a novel interp
 
 ## 🔍 Abstract
 
-Osmotic stress, driven by drought and salinity, significantly limits global crop productivity, yet the molecular mechanisms underlying plant adaptation remain poorly understood. To address this, we developed MOFA+ Transformer, a novel, interpretable deep learning framework that integrates physiological and biochemical responses by analysing dynamic relationships between spectral signatures and metabolomic profiles. This approach combines Multi-Omics Factor Analysis+ (MOFA+) for variance decomposition with a Transformer architecture employing cross-modal attention, enabling the discovery of mechanistic links between hyperspectral data and metabolic features.
-We applied this framework to time-resolved datasets from drought-tolerant and susceptible plant genotypes, revealing distinct tissue-specific coordination networks critical to stress adaptation. The tolerant genotype exhibited significantly stronger leaf network connectivity (+355% compared to the susceptible genotype) and established spectral-metabolic links earlier in the stress response. These links involved visible spectral features in leaves and Near-Infrared (NIR) features in roots, supporting an early response hypothesis for drought tolerance. Cross-modal attention analysis further identified genotype-specific hub metabolites orchestrating these networks, with the tolerant genotype demonstrating more focused and proactive coordination strategies. These findings highlight that successful adaptation relies not just on specific metabolites, but on their rapid, coordinated interplay with physiological processes.
+Osmotic stress, driven by drought and salinity, significantly limits global crop productivity, yet the metabolomic mechanisms underlying plant adaptation remain poorly understood. To address this, we developed MOFA+ Transformer, a novel, interpretable deep learning framework that integrates physiological and biochemical responses by analysing dynamic relationships between spectral signatures and metabolomic profiles. This approach combines Multi-Omics Factor Analysis+ (MOFA+) for variance decomposition with a Transformer architecture employing cross-modal attention, enabling the discovery of mechanistic links between hyperspectral data and metabolic features.
+We applied this framework to time-resolved datasets from drought-tolerant and susceptible plant genotypes, revealing distinct tissue-specific coordination networks critical to stress adaptation. The tolerant genotype exhibited significantly stronger leaf network connectivity (+355% compared to the susceptible genotype) and established spectral-metabolic links earlier in the stress response. These links involved visible spectral features in leaves and Near-Infrared (NIR) features in roots, supporting an early response hypothesis for drought tolerance. Cross-modal attention analysis further identified genotype-specific hub molecular features orchestrating these networks, with the tolerant genotype demonstrating more focused and proactive coordination strategies. These findings highlight that successful adaptation relies not just on specific molecular features, but on their rapid, coordinated interplay with physiological processes.
 The MOFA+ Transformer framework advances systems biology by providing a powerful, interpretable tool for mechanistic discovery and hypothesis generation from complex multi-omic data. Beyond plant science, it offers a broadly applicable paradigm for integrating multi-omics datasets, moving beyond correlations to uncover dynamic, functional relationships in biological systems. This approach opens new possibilities for identifying resilience biomarkers, guiding crop improvement, and deepening our understanding of stress adaptation across disciplines.
 
 
 ## ✨ Key Contributions & Highlights
 
 * **Novel Interpretable Framework:** Combines unsupervised factor analysis with interpretable deep learning for multi-omics integration
-* **Mechanistic Insights:** Quantifies directed associations between spectral features (physiology) and metabolites (biochemistry)
-* **Genotype-Specific Adaptation:** Uncovers distinct network architectures and key hub metabolites in tolerant vs susceptible plants
+* **Mechanistic Insights:** Quantifies directed associations between spectral features (physiology) and molecular features(biochemistry)
+* **Genotype-Specific Adaptation:** Uncovers distinct network architectures and key hub molecular features in tolerant vs susceptible plants
 * **Tissue-Specific Coordination Networks:** Identifies distinct spectral-metabolic communication patterns in leaf (visible spectrum) and root (NIR) tissues
 * **Temporal Dynamics:** Reveals that tolerant genotypes establish cross-modal links *earlier* in the stress response
 * **Potential Biomarkers:** Identifies spectral-metabolomic attention patterns that could serve as non-invasive indicators of stress tolerance
 
 > **Key numbers**
 > * 336 raw plant samples × 4 omics views
-> * 2,151 spectral bands | 2,471 metabolite features after curation
+> * 2,151 spectral bands | 2,471 molecular features after curation
 > * 12 latent factors capturing genotype, time and treatment axes
 > * 519 MOFA-selected features driving 95-100% classifier F1 scores
 
@@ -42,7 +42,7 @@ The MOFA+ Transformer framework advances systems biology by providing a powerful
 
 ```mermaid
 flowchart TD
-    subgraph Data["Data Preprocessing"]
+    subgraph Data["1. Data Preprocessing"]
         A1[Raw Hyperspectral Data] -->|QC & Filtering| B1[Curated Spectral Features]
         A2[Raw LC-MS Data] -->|QC & Filtering| B2[Curated Metabolite Features]
         B1 -->|Augmentation| C1[Augmented Spectral Data]
@@ -51,16 +51,22 @@ flowchart TD
         C2 --> D
     end
     
-    subgraph MOFA["MOFA+ Analysis"]
-        D --> E[Multi-Omics Factor Analysis+]
+    %% Add explicit connection between Data and MOFA blocks
+    D --> E
+    
+    subgraph MOFA["2. MOFA+ Analysis"]
+        E[Multi-Omics Factor Analysis+]
         E --> F1[Latent Factor Identification]
         E --> F2[Feature Weight Assignment]
         F1 --> G[Biological Factor Annotation]
         F2 --> H[Feature Selection]
     end
     
-    subgraph Model["Transformer Modeling"]
-        H --> I[Selected Feature Subset]
+    %% Add explicit connection between MOFA and Model blocks
+    H --> I
+    
+    subgraph Model["3. Transformer Modeling"]
+        I[Selected Feature Subset]
         I --> J[Multi-Task Transformer]
         J --> K1[Prediction Tasks]
         J --> K2[Cross-Modal Attention]
@@ -68,9 +74,13 @@ flowchart TD
         K2 --> L2[Attention Score Extraction]
     end
     
-    subgraph Interpretation["Biological Interpretation"]
-        L1 --> M1[Key Predictive Features]
-        L2 --> M2[Feature-Feature Interactions]
+    %% Add explicit connection between Model and Interpretation blocks
+    L1 --> M1
+    L2 --> M2
+    
+    subgraph Interpretation["4. Biological Interpretation"]
+        M1[Key Predictive Features]
+        M2[Feature-Feature Interactions]
         M1 --> N[Genotype-Specific Mechanisms]
         M2 --> N
         N --> O[Stress Adaptation Insights]
@@ -164,7 +174,7 @@ flowchart TD
  │   ├── 📂 01_main_figures/                   # Scripts to generate main paper figures
  │   │   ├── 📜 figure_1.py                    # Figure 1
  │   │   ├── 📜 figure_2.py                    # Figure 2
- │   │   ├── 📜 figure_3.py                    # Figure 3 (Assuming .py extension)
+ │   │   ├── 📜 figure_3.py                    # Figure 3 
  │   │   ├── 📜 figure_4.1.py                  # Figure 4 heatmap
  │   │   ├── 📜 figure_4.2.py                  # Figure 4 stacked_bar
  │   │   ├── 📜 figure_4.3.py                  # Figure 4 attention
@@ -192,7 +202,7 @@ flowchart TD
  └── 📜 requirements.txt                      # Pip requirements file (can be generated from conda env).
 ```
 
-*Raw data is archived in Zenodo (see `data/README` for download script)*
+*Raw data is archived in (yet to be updated) ) (see `data/README` for download script)*
 
 ## 🚀 Installation
 
@@ -325,7 +335,6 @@ flowchart TB
     class P inputStyle
 ```
 
-
 ### Data Augmentation Workflow
 
 To enhance statistical power for deep learning analysis, we developed a specialized data augmentation pipeline that expanded our dataset while preserving biological signals and relationships:
@@ -333,17 +342,17 @@ To enhance statistical power for deep learning analysis, we developed a speciali
 ```mermaid
 flowchart TB
     %% Main Input
-    A["Input: Spectral and Metabolite Data"]:::inputStyle
+    A["Input: Spectral and Molecular Features Data"]:::inputStyle
     
     %% Data Augmentation Blocks
     subgraph DataAug["Data Augmentation"]
         direction LR
         B["Spectral Augmentation\n(GP, MIX, WARP, SCALE,\nNOISE, ADD, MULT)"]:::spectralStyle
-        C["Metabolite Augmentation\nRoot\n(SCALE: 5x, MIX: 2x)"]:::metaStyle
-        D["Metabolite Augmentation\nLeaf\n(SCALE: 5x, MIX: 2x)"]:::metaStyle
-        BA["Generate Augmented Spectral Data\n(8x increase, augmented_spectral_data.csv)"]:::lightSpectralStyle
-        CA["Generate Augmented Metabolite Data - Root\n(8x increase)"]:::lightMetaStyle
-        DA["Generate Augmented Metabolite Data - Leaf\n(8x increase)"]:::lightMetaStyle
+        C["Molecular Features Augmentation\nRoot\n(SCALE: 5x, MIX: 2x)"]:::metaStyle
+        D["Molecular Features Augmentation\nLeaf\n(SCALE: 5x, MIX: 2x)"]:::metaStyle
+        BA["Generate Augmented Spectral Data\n(8x increase)"]:::lightSpectralStyle
+        CA["Generate Augmented Root Data\n(8x increase)"]:::lightMetaStyle
+        DA["Generate Augmented Leaf Data\n(8x increase)"]:::lightMetaStyle
         
         B --> BA
         C --> CA
@@ -353,30 +362,17 @@ flowchart TB
     %% Validation Block
     E{"Validation & QC"}:::validationStyle
     
-    %% Specific Validation Tasks - ONLY THIS SECTION HAS ADDITIONAL LINE BREAKS
-    subgraph SpecificTasks["Specific Validation/QC Tasks"]
-        direction TB
-        subgraph Spectral["Spectral Analysis"]
-            direction TB
-            F["Spectral Validation & QC\n- Basic QC [Outliers, Z,\n  IQR, IF, LOF, SNR]\n- Detailed Validation\n  [Spearman, PCA]\n- Advanced Validation\n  [Wasserstein, JS, RF]"]:::taskStyle
-        end
-        
-        subgraph Metabolite["Metabolite Analysis"]
-            direction TB
-            G["Metabolite Validation & QC - Root\n- Metabolite Validation\n  [Spearman, Cohen's d]\n- Metabolite QC\n  [IF, Silhouette, RF]\n- Batch Effect Validation"]:::taskStyle
-            H["Metabolite Validation & QC - Leaf\n- Metabolite Validation\n  [Spearman, Cohen's d]\n- Metabolite QC\n  [IF, Silhouette, RF]\n- Batch Effect Validation"]:::taskStyle
-        end
-        
-        subgraph CrossAnalysis["Cross Analysis"]
-            direction TB
-            I["Cross-Modality Validation\n- Cross-Modality Checks\n  [Dist Corr, JS Div]"]:::taskStyle
-            J["Divergence Analysis\n- Divergence Metrics\n  [KL/JS, Cohen's d]"]:::taskStyle
-        end
+    %% Specific Validation Tasks with simplified structure
+    subgraph SpecificTasks["Validation Tasks"]
+        F["Spectral Validation & QC\n- Basic QC, Detailed & Advanced Validation"]:::taskStyle
+        G["Root Features Validation\n- Validation, QC & Batch Effects"]:::taskStyle
+        H["Leaf Features Validation\n- Validation, QC & Batch Effects"]:::taskStyle
+        I["Cross-Modality Validation\n- Cross-Checks & Divergence Analysis"]:::taskStyle
     end
     
     %% Visualisation & Reporting
     K{"Visualisation & Synthesis"}:::vizStyle
-    L["Integrated Plots & Dashboards\n- Spectral Signatures [Median/IQR]\n- Metabolite Profiles [Boxplots/Heatmaps]\n- Method Comparison [Radar Charts]\n- Validation Plots [PCA, Correlations]"]:::taskStyle
+    L["Integrated Plots & Dashboards"]:::taskStyle
     M["Final Outputs\n(HTML Reports, Figures, Supplement)"]:::reportStyle
     
     %% Main Connections
@@ -389,16 +385,16 @@ flowchart TB
     DA --> E
     
     %% Validation to Specific Tasks
-    E --> Spectral
-    E --> Metabolite
-    E --> CrossAnalysis
+    E --> F
+    E --> G
+    E --> H
+    E --> I
     
     %% Specific Tasks to Visualisation
     F --> K
     G --> K
     H --> K
     I --> K
-    J --> K
     
     %% Visualisation to Reporting
     K --> L
@@ -411,7 +407,7 @@ flowchart TB
     classDef lightSpectralStyle fill:#c5e8b7,stroke:#333,stroke-width:1px
     classDef lightMetaStyle fill:#d8f0c6,stroke:#333,stroke-width:1px
     classDef validationStyle fill:#5d9c59,stroke:#333,stroke-width:3px
-    classDef taskStyle fill:#8cc084, stroke:#333,stroke-width:1px
+    classDef taskStyle fill:#8cc084,stroke:#333,stroke-width:1px
     classDef vizStyle fill:#5d9c59,stroke:#333,stroke-width:3px
     classDef reportStyle fill:#c5e8b7,stroke:#333,stroke-width:3px
     classDef outputStyle fill:#e7f5d9,stroke:#333,stroke-width:1px
@@ -471,7 +467,7 @@ If you use this code or methodology in your research, please cite our paper:
   year={2025},
   volume={},
   pages={},
-  doi={10.5281/zenodo.xxxxxx}
+  doi={10.5281/yet to be update.xxxxxx}
 }
 ```
 
@@ -486,3 +482,4 @@ BibTeX available in `CITATION.cff`.
 
 - This work was supported by Agriculture Victoria Research
 - We thank [acknowledgments] for their valuable feedback and support.
+
