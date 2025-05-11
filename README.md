@@ -403,12 +403,13 @@ A full, frozen dependency list is generated in `results/conda_lock.yml`.
 
 Detailed HTML validation reports are available in the `html/` directory:
 
-- [Spectral Quality Control](html/integrated_qc_report_enhanced.html)
-- [Advanced Spectral Validation](html/advanced_validation_summary_spectra.html)
-- [Metabolite Leaf Quality Control](html/integrated_qc_report_leaf.html)
-- [Metabolite Root Quality Control](html/integrated_qc_report_root.html)
-- [Cross-Modality Validation](html/cross_modality_report_main_pipeline.html)
-- [Divergence Analysis](html/divergence_summary.html)
+- [SR1: Spectral Quality Control Report](html/integrated_qc_report_enhanced.html)
+- [SR2: Advanced Spectral Validation Report](html/advanced_validation_summary_spectra.html)
+- [SR3: Molecular Feature Leaf Quality Control Report](html/integrated_qc_report_leaf.html)
+- [SR4: Molecular Feature Root Quality Control Report](html/integrated_qc_report_root.html)
+- [SR5: Cross-Modality Validation Report](html/cross_modality_report_main_pipeline.html)
+- [SR6: Divergence Analysis Reports](html/divergence_summary.html)
+- [SR7: Molecular Feature Batch (acute and prolonged stress) Effect Validation](html/divergence_summary.html)
 
 These reports can also be accessed via GitHub at [https://github.com/shoaibms/mofa_transformer/tree/main/html](https://github.com/shoaibms/mofa_transformer/tree/main/html)
 
