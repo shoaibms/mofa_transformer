@@ -224,6 +224,108 @@ Our study used a comprehensive dataset designed to capture diverse osmotic stres
   - Hyperspectral reflectance (350-2500 nm, 2151 wavelengths)
   - Untargeted metabolomics (1721 features in root, 1418 in leaf)
 
+
+# 📈 Analysis Pipeline
+Our metabolomics data analysis pipeline consists of four major phases, with comprehensive preprocessing steps to ensure data quality and reliability.
+
+## Detailed Data Preprocessing Workflow
+```mermaid
+   graph TD
+    %% Major Steps with darker shades
+    A([Raw Data]) --> B[Keep columns with ≥3 reps]
+    B --> C[Visualise missing values]
+    C --> D[Test for MCAR<br>Little's MCAR test]
+    D --> E[Test for MAR<br>Logistic Regression]
+    E --> F{Impute missing data}
+    F --> |R|G1[Random Forest, PMM]
+    F --> |Python|G2[kNN, Median, SVD, GPR, EM]
+    G1 & G2 --> H[Evaluate imputation methods]
+    H --> H1[EMD]
+    H --> H2[Hellinger Distance]
+    H --> H3[Calculate richness, Shannon entropy,<br>Simpson's diversity index, & sparsity]
+    H --> H4[Visualisations: Q-Q, ECDF, KDE plots]
+    H1 & H2 & H3 & H4 --> I[Select best method:<br>Random Forest]
+    I --> J{Outlier detection}
+    J --> K[Methods: Z-Score, IQR, Isolation Forest,<br>Elliptic Envelope, Mahalanobis, Robust PCA]
+    K --> L[Evaluate outlier detection methods]
+    L --> L1[PCA and t-SNE visualisations]
+    L --> L2[Plots of 30 most impacted variables]
+    L --> L3[Number of outliers per method]
+    L1 & L2 & L3 --> M[Select method: Isolation Forest]
+    M --> N[Remove outliers and<br>impute with Random Forest]
+    N --> O{Data Transformation}
+    O --> P[Methods: Log, Square Root, Box-Cox,<br>Yeo-Johnson, asinh, glog, Anscombe]
+    P --> Q[Evaluate transformations]
+    Q --> Q1[Metrics: CV, MA-transform,<br>RSD, rMAD]
+    Q --> Q2[Normality tests:<br>Shapiro-Wilk, Anderson-Darling]
+    Q --> Q3[Visualise: Density plots]
+    Q1 & Q2 & Q3 --> R{Variable Selection}
+    R --> S[Exclude variables with rMAD > 30%]
+    S --> T([End: Clean Data])
+
+    %% Styling major steps (dark green)
+    style A fill:#2e7d32,stroke:#1b5e20,stroke-width:3px,color:#fff
+    style F fill:#2e7d32,stroke:#1b5e20,stroke-width:3px,color:#fff
+    style J fill:#2e7d32,stroke:#1b5e20,stroke-width:3px,color:#fff
+    style O fill:#2e7d32,stroke:#1b5e20,stroke-width:3px,color:#fff
+    style R fill:#2e7d32,stroke:#1b5e20,stroke-width:3px,color:#fff
+
+    %% Styling endpoint (lightest green)
+    style T fill:#f1f8f1,stroke:#2e7d32,stroke-width:2px
+
+    %% Styling edges
+    linkStyle default stroke:#2e7d32,stroke-width:1px
+```
+
+
+### Spectral Data Quality Assessment and Preprocessing
+
+Before analysis, we performed rigorous quality assessment of the hyperspectral data to ensure data integrity while preserving biologically relevant signals:
+
+```mermaid
+flowchart TB
+    A[Hyperspectral Data Input\n336 samples × 2151 bands\n350-2500 nm] --> B{Data Integrity Check}
+    
+    B -->|Outlier Detection| C[Statistical Screening\nIQR, Modified Z-score, LOF]
+    C --> D[28 potential outliers identified\n8.3% of dataset]
+    D --> E{Review & Decision}
+    E -->|Retain all samples| F[Complete Dataset\n336 samples]
+    
+    B -->|Signal Quality| G[Signal Assessment\nMedian STD = 0.080\nSNR = 2.39]
+    G --> H[High Signal Quality\nNo smoothing required]
+    
+    B -->|Distribution Check| I[Normality Assessment\nShapiro-Wilk Test]
+    I --> J[90.7% non-normal distribution\nKernel density verification]
+    
+    B -->|Baseline Assessment| K[Theil-Sen Regression\nMedian slope = -2.17e-4]
+    K --> L[Subtle negative baseline\nModel can handle]
+    
+    B -->|Derivative Analysis| M[Savitzky-Golay Filter\nWindow=5, polyorder=2]
+    M --> N[Stable spectral shapes\nConsistent features]
+    
+    F --> O[Final Dataset\n336 samples × 2151 features]
+    H --> O
+    J --> O
+    L --> O
+    N --> O
+    
+    O --> P[Ready for Augmentation\nand MOFA+ Analysis]
+    
+    classDef inputStyle fill:#5d9c59,stroke:#333,stroke-width:3px
+    classDef processStyle fill:#8cc084,stroke:#333,stroke-width:1px
+    classDef decisionStyle fill:#5d9c59,stroke:#333,stroke-width:3px
+    classDef resultStyle fill:#a7d489,stroke:#333,stroke-width:1px
+    classDef outputStyle fill:#c5e8b7,stroke:#333,stroke-width:2px
+    
+    class A inputStyle
+    class B,E decisionStyle
+    class C,G,I,K,M processStyle
+    class D,H,J,L,N resultStyle
+    class F,O outputStyle
+    class P inputStyle
+```
+
+
 ### Data Augmentation Workflow
 
 To enhance statistical power for deep learning analysis, we developed a specialized data augmentation pipeline that expanded our dataset while preserving biological signals and relationships:
@@ -315,52 +417,6 @@ flowchart TB
     classDef outputStyle fill:#e7f5d9,stroke:#333,stroke-width:1px
 ```
 
-### Spectral Data Quality Assessment and Preprocessing
-
-Before analysis, we performed rigorous quality assessment of the hyperspectral data to ensure data integrity while preserving biologically relevant signals:
-
-```mermaid
-flowchart TB
-    A[Hyperspectral Data Input\n336 samples × 2151 bands\n350-2500 nm] --> B{Data Integrity Check}
-    
-    B -->|Outlier Detection| C[Statistical Screening\nIQR, Modified Z-score, LOF]
-    C --> D[28 potential outliers identified\n8.3% of dataset]
-    D --> E{Review & Decision}
-    E -->|Retain all samples| F[Complete Dataset\n336 samples]
-    
-    B -->|Signal Quality| G[Signal Assessment\nMedian STD = 0.080\nSNR = 2.39]
-    G --> H[High Signal Quality\nNo smoothing required]
-    
-    B -->|Distribution Check| I[Normality Assessment\nShapiro-Wilk Test]
-    I --> J[90.7% non-normal distribution\nKernel density verification]
-    
-    B -->|Baseline Assessment| K[Theil-Sen Regression\nMedian slope = -2.17e-4]
-    K --> L[Subtle negative baseline\nModel can handle]
-    
-    B -->|Derivative Analysis| M[Savitzky-Golay Filter\nWindow=5, polyorder=2]
-    M --> N[Stable spectral shapes\nConsistent features]
-    
-    F --> O[Final Dataset\n336 samples × 2151 features]
-    H --> O
-    J --> O
-    L --> O
-    N --> O
-    
-    O --> P[Ready for Augmentation\nand MOFA+ Analysis]
-    
-    classDef inputStyle fill:#5d9c59,stroke:#333,stroke-width:3px
-    classDef processStyle fill:#8cc084,stroke:#333,stroke-width:1px
-    classDef decisionStyle fill:#5d9c59,stroke:#333,stroke-width:3px
-    classDef resultStyle fill:#a7d489,stroke:#333,stroke-width:1px
-    classDef outputStyle fill:#c5e8b7,stroke:#333,stroke-width:2px
-    
-    class A inputStyle
-    class B,E decisionStyle
-    class C,G,I,K,M processStyle
-    class D,H,J,L,N resultStyle
-    class F,O outputStyle
-    class P inputStyle
-```
 
 ### Data Preprocessing Summary
 
@@ -368,18 +424,6 @@ flowchart TB
 - **Metabolomic Data**: Missing value analysis, Random Forest imputation, outlier detection via Isolation Forest, and asinh transformation
 - **Augmentation**: 8-fold increase using spectral methods (GP, MIX, WARP, SCALE, NOISE, ADD, MULT) and metabolomic methods (SCALE: 5x, MIX: 2x)
 
-## 🔬 Key Results
-
-<p align="center">
-  <img src="docs/images/genotype_network_comparison.png" alt="Genotype-specific attention networks" width="800"/>
-</p>
-
-Our analysis revealed:
-
-1. **Different integration strategies between genotypes**: The tolerant genotype (G1) establishes stronger, earlier cross-modal coordination
-2. **Tissue-specific mechanisms**: Leaves and roots employ distinct spectral-metabolite relationships
-3. **Temporal dynamics**: Coordination patterns evolve during stress, with G1 establishing key links by Day 2
-4. **Specialized hub metabolites**: Central coordinators differ between genotypes (e.g., N_1909 in G1 leaves vs. N_3029 in G2 leaves)
 
 ## 🔧 Software Stack
 
@@ -393,7 +437,7 @@ Our analysis revealed:
 | networkx | 3.4.2 |
 | matplotlib / seaborn | 3.10.1 / 0.13.2 |
 
-A full, frozen dependency list is generated in `results/conda_lock.yml`.
+A full, frozen dependency list is in `requirements.txt`.
 
 
 ## 📦 Validation Reports
