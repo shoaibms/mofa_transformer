@@ -212,54 +212,7 @@ pip install -r requirements.txt
 pip install -e .
 ```
 
-## 🔧 Quick Start
 
-### 1. Full Pipeline
-
-```bash
-# Pull datasets (≈ 2 GB)
-bash scripts/get_data.sh        # requires Zenodo token
-
-# Reproduce the paper
-bash pipelines/full_run.sh      # executes QC → augmentation → MOFA+ → Transformer
-```
-
-### 2. Minimal Example (Transformer only)
-
-```bash
-python src/transformer/train.py \
-      --spectra data/processed/mofa_leaf_features.csv \
-      --metab data/processed/mofa_root_features.csv \
-      --outdir results/transformer
-```
-
-### 3. Python API Examples
-
-```python
-# Preprocess spectral data
-from mofa_transformer.preprocessing import preprocess_spectral
-spectral_processed = preprocess_spectral("data/raw/hyper_full_w.csv", 
-                                         outlier_methods=["iqr", "zscore", "lof"])
-
-# Run MOFA+ Analysis
-from mofa_transformer.mofa import MOFA_Integration
-mofa_model = MOFA_Integration(views=["leaf_spec", "root_spec", "leaf_met", "root_met"],
-                              num_factors=20, 
-                              ard_weights=True)
-mofa_model.train(data_dict, convergence_mode="medium", save_path="results/mofa/")
-
-# Train Transformer Model
-from mofa_transformer.transformer import MOFATransformer
-transformer = MOFATransformer(mofa_features=selected_features,
-                             embedding_dim=64,
-                             num_heads=4,
-                             dropout=0.1)
-transformer.train(train_loader, val_loader, epochs=150, lr=5e-5, early_stopping=15)
-
-# Analyze Cross-Modal Attention
-from mofa_transformer.attention import AttentionAnalyzer
-attention_analyzer = AttentionAnalyzer(transformer)
-s2m_attention = attention_analyzer.get_spectral_to_metabolite_attention()
 ```
 
 ## 📊 Dataset and Preprocessing
@@ -459,17 +412,6 @@ Detailed HTML validation reports are available in the `html/` directory:
 
 These reports can also be accessed via GitHub at [https://github.com/shoaibms/mofa_transformer/tree/main/html](https://github.com/shoaibms/mofa_transformer/tree/main/html)
 
-## 🤝 Contributing
-
-Contributions are welcome! Please feel free to submit a Pull Request.
-
-1. Fork the repository
-2. Create your feature branch (`git checkout -b feature/amazing-feature`)
-3. Commit your changes (`git commit -m 'Add some amazing feature'`)
-4. Push to the branch (`git push origin feature/amazing-feature`)
-5. Open a Pull Request
-
-Please follow the commit-style guidelines in `.github/CONTRIBUTING.md`.
 
 ## 📜 License
 
@@ -495,12 +437,10 @@ BibTeX available in `CITATION.cff`.
 
 ## ✉️ Contact
 
-**Lead developer:** Shoaib M. Mirza – shoaib.mirza@example.edu.au
+**Lead developer:** Shoaib M. Mirza – shoaibmirza2200@gmail.com
 
-Please open an issue for technical questions; email for collaboration inquiries.
 
 ## 🙏 Acknowledgments
 
-- This work was supported by [funding agencies/grant numbers]
-- The MOFA+ implementation builds upon the original work by Argelaguet et al.
+- This work was supported by Agriculture Victoria Research
 - We thank [acknowledgments] for their valuable feedback and support.
