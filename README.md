@@ -212,9 +212,6 @@ pip install -r requirements.txt
 pip install -e .
 ```
 
-
-```
-
 ## 📊 Dataset and Preprocessing
 
 Our study used a comprehensive dataset designed to capture diverse osmotic stress responses, including:
