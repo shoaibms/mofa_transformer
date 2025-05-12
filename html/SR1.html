@@ -1,0 +1,701 @@
+<!DOCTYPE html>
+
+<html>
+<head>
+<title>Spectral Data Quality Control Report</title>
+<style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        h1 { color: #2c3e50; }
+        h2 { color: #3498db; margin-top: 30px; }
+        h3 { color: #2980b9; }
+        table { border-collapse: collapse; width: 100%; margin-top: 20px; }
+        th, td { border: 1px solid #ddd; padding: 8px; text-align: left; }
+        th { background-color: #f2f2f2; }
+        tr:nth-child(even) { background-color: #f9f9f9; }
+        .summary { margin: 20px 0; padding: 15px; background-color: #f8f9fa; border-radius: 5px; }
+        .good { color: green; }
+        .moderate { color: orange; }
+        .poor { color: red; }
+    
+        .plot-container {
+            margin: 20px 0;
+            text-align: center;
+            padding: 10px;
+            background-color: #f9f9f9;
+            border-radius: 5px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .plot-image {
+            max-width: 100%;
+            height: auto;
+            margin: 10px auto;
+        }
+        .plot-caption {
+            font-style: italic;
+            color: #555;
+            margin-top: 10px;
+            text-align: center;
+        }
+        .section-divider {
+            border-top: 1px solid #ddd;
+            margin: 30px 0;
+        }
+        .methods-section {
+            background-color: #f0f7ff;
+            padding: 15px;
+            border-radius: 5px;
+            margin: 20px 0;
+        }
+        .two-column {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+        }
+        .column {
+            flex: 1;
+            min-width: 300px;
+        }
+        @media print {
+            .plot-container {
+                break-inside: avoid;
+                page-break-inside: avoid;
+            }
+        }
+    </style>
+</head>
+<body>
+<h1>Spectral Data Quality Control Report</h1>
+<p>Generated on: 2025-05-11 08:25:05</p>
+<div class="summary">
+<h2>Overview</h2>
+<p>This report presents comprehensive quality control results for augmented spectral data.</p>
+</div>
+<h2>1. Outlier Detection</h2>
+<p>Detection of statistical outliers in the spectral data.</p>
+<table>
+<tr>
+<th>Category</th>
+<th>Total Samples</th>
+<th>Outliers</th>
+<th>Percentage</th>
+<th>Assessment</th>
+</tr>
+<tr>
+<td>original</td>
+<td>336</td>
+<td>15</td>
+<td class="moderate">4.46%</td>
+<td>Good: Acceptable number of outliers</td>
+</tr>
+<tr>
+<td>augmented</td>
+<td>2352</td>
+<td>73</td>
+<td class="moderate">3.10%</td>
+<td>Good: Acceptable number of outliers</td>
+</tr>
+<tr>
+<td>MULT</td>
+<td>336</td>
+<td>3</td>
+<td class="good">0.89%</td>
+<td>Excellent: Very few outliers</td>
+</tr>
+<tr>
+<td>NOISE</td>
+<td>336</td>
+<td>15</td>
+<td class="moderate">4.46%</td>
+<td>Good: Acceptable number of outliers</td>
+</tr>
+<tr>
+<td>GP</td>
+<td>336</td>
+<td>12</td>
+<td class="moderate">3.57%</td>
+<td>Good: Acceptable number of outliers</td>
+</tr>
+<tr>
+<td>WARP</td>
+<td>336</td>
+<td>17</td>
+<td class="poor">5.06%</td>
+<td>Moderate: Higher than expected outliers</td>
+</tr>
+<tr>
+<td>SCALE</td>
+<td>336</td>
+<td>11</td>
+<td class="moderate">3.27%</td>
+<td>Good: Acceptable number of outliers</td>
+</tr>
+<tr>
+<td>MIX</td>
+<td>336</td>
+<td>10</td>
+<td class="moderate">2.98%</td>
+<td>Good: Acceptable number of outliers</td>
+</tr>
+<tr>
+<td>ADD</td>
+<td>336</td>
+<td>5</td>
+<td class="good">1.49%</td>
+<td>Excellent: Very few outliers</td>
+</tr>
+</table><div class="plot-container"><img alt="Outlier rates across different augmentation methods. Lower percentages indicate better statistical consistency." class="plot-image" src="plots/outlier_summary.png"/><div class="plot-caption">Figure: Outlier rates across different augmentation methods. Lower percentages indicate better statistical consistency.</div></div>
+<h2>2. Signal-to-Noise Assessment</h2>
+<p>Evaluation of signal-to-noise ratio (SNR) in the spectral data.</p>
+<table>
+<tr>
+<th>Category</th>
+<th>Mean SNR (dB)</th>
+<th>Min SNR (dB)</th>
+<th>Max SNR (dB)</th>
+<th>Assessment</th>
+</tr>
+<tr>
+<td>original</td>
+<td class="good">64.56</td>
+<td>59.63</td>
+<td>69.03</td>
+<td>Excellent: High SNR</td>
+</tr>
+<tr>
+<td>augmented</td>
+<td class="good">56.85</td>
+<td>27.52</td>
+<td>70.73</td>
+<td>Excellent: High SNR</td>
+</tr>
+<tr>
+<td>MULT</td>
+<td class="good">65.60</td>
+<td>61.31</td>
+<td>70.62</td>
+<td>Excellent: High SNR</td>
+</tr>
+<tr>
+<td>NOISE</td>
+<td class="good">31.25</td>
+<td>27.52</td>
+<td>34.70</td>
+<td>Excellent: High SNR</td>
+</tr>
+<tr>
+<td>GP</td>
+<td class="good">41.24</td>
+<td>37.31</td>
+<td>44.62</td>
+<td>Excellent: High SNR</td>
+</tr>
+<tr>
+<td>WARP</td>
+<td class="good">64.77</td>
+<td>59.96</td>
+<td>69.42</td>
+<td>Excellent: High SNR</td>
+</tr>
+<tr>
+<td>SCALE</td>
+<td class="good">64.56</td>
+<td>59.63</td>
+<td>69.02</td>
+<td>Excellent: High SNR</td>
+</tr>
+<tr>
+<td>MIX</td>
+<td class="good">64.88</td>
+<td>59.68</td>
+<td>69.52</td>
+<td>Excellent: High SNR</td>
+</tr>
+<tr>
+<td>ADD</td>
+<td class="good">65.69</td>
+<td>60.83</td>
+<td>70.73</td>
+<td>Excellent: High SNR</td>
+</tr>
+</table><div class="plot-container"><img alt="Signal-to-Noise Ratio comparison across augmentation methods. Higher values indicate better signal quality." class="plot-image" src="plots/snr_comparison.png"/><div class="plot-caption">Figure: Signal-to-Noise Ratio comparison across augmentation methods. Higher values indicate better signal quality.</div></div>
+<h2>3. Band-Specific Validation</h2>
+<h3>3.1 Vegetation Indices</h3>
+<p>Comparison of key vegetation indices between original and augmented data.</p>
+<table>
+<tr>
+<th>Method</th>
+<th>Index</th>
+<th>Mean</th>
+<th>% Diff from Original</th>
+<th>Assessment</th>
+</tr>
+<tr>
+<td>augmented</td>
+<td>NDVI</td>
+<td>0.4488</td>
+<td class="good">-0.21%</td>
+<td>Excellent preservation</td>
+</tr>
+<tr>
+<td>augmented</td>
+<td>PRI</td>
+<td>0.0404</td>
+<td class="moderate">9.17%</td>
+<td>Good preservation</td>
+</tr>
+<tr>
+<td>augmented</td>
+<td>REIP</td>
+<td>710.9226</td>
+<td class="good">0.67%</td>
+<td>Excellent preservation</td>
+</tr>
+<tr>
+<td>MULT</td>
+<td>NDVI</td>
+<td>0.4507</td>
+<td class="good">0.21%</td>
+<td>Excellent preservation</td>
+</tr>
+<tr>
+<td>MULT</td>
+<td>PRI</td>
+<td>0.0364</td>
+<td class="good">-1.64%</td>
+<td>Excellent preservation</td>
+</tr>
+<tr>
+<td>MULT</td>
+<td>REIP</td>
+<td>706.3095</td>
+<td class="good">0.02%</td>
+<td>Excellent preservation</td>
+</tr>
+<tr>
+<td>NOISE</td>
+<td>NDVI</td>
+<td>0.4498</td>
+<td class="good">0.02%</td>
+<td>Excellent preservation</td>
+</tr>
+<tr>
+<td>NOISE</td>
+<td>PRI</td>
+<td>0.0423</td>
+<td class="poor">14.48%</td>
+<td>Moderate preservation</td>
+</tr>
+<tr>
+<td>NOISE</td>
+<td>REIP</td>
+<td>722.6131</td>
+<td class="good">2.32%</td>
+<td>Excellent preservation</td>
+</tr>
+<tr>
+<td>GP</td>
+<td>NDVI</td>
+<td>0.4513</td>
+<td class="good">0.34%</td>
+<td>Excellent preservation</td>
+</tr>
+<tr>
+<td>GP</td>
+<td>PRI</td>
+<td>0.0406</td>
+<td class="moderate">9.75%</td>
+<td>Good preservation</td>
+</tr>
+<tr>
+<td>GP</td>
+<td>REIP</td>
+<td>722.7262</td>
+<td class="good">2.34%</td>
+<td>Excellent preservation</td>
+</tr>
+<tr>
+<td>WARP</td>
+<td>NDVI</td>
+<td>0.4423</td>
+<td class="good">-1.67%</td>
+<td>Excellent preservation</td>
+</tr>
+<tr>
+<td>WARP</td>
+<td>PRI</td>
+<td>0.0522</td>
+<td class="poor">41.24%</td>
+<td>Moderate preservation</td>
+</tr>
+<tr>
+<td>WARP</td>
+<td>REIP</td>
+<td>706.0952</td>
+<td class="good">-0.02%</td>
+<td>Excellent preservation</td>
+</tr>
+<tr>
+<td>SCALE</td>
+<td>NDVI</td>
+<td>0.4498</td>
+<td class="good">-0.00%</td>
+<td>Excellent preservation</td>
+</tr>
+<tr>
+<td>SCALE</td>
+<td>PRI</td>
+<td>0.0370</td>
+<td class="good">0.00%</td>
+<td>Excellent preservation</td>
+</tr>
+<tr>
+<td>SCALE</td>
+<td>REIP</td>
+<td>706.2024</td>
+<td class="good">0.00%</td>
+<td>Excellent preservation</td>
+</tr>
+<tr>
+<td>MIX</td>
+<td>NDVI</td>
+<td>0.4486</td>
+<td class="good">-0.25%</td>
+<td>Excellent preservation</td>
+</tr>
+<tr>
+<td>MIX</td>
+<td>PRI</td>
+<td>0.0368</td>
+<td class="good">-0.37%</td>
+<td>Excellent preservation</td>
+</tr>
+<tr>
+<td>MIX</td>
+<td>REIP</td>
+<td>705.9107</td>
+<td class="good">-0.04%</td>
+<td>Excellent preservation</td>
+</tr>
+<tr>
+<td>ADD</td>
+<td>NDVI</td>
+<td>0.4493</td>
+<td class="good">-0.09%</td>
+<td>Excellent preservation</td>
+</tr>
+<tr>
+<td>ADD</td>
+<td>PRI</td>
+<td>0.0372</td>
+<td class="good">0.76%</td>
+<td>Excellent preservation</td>
+</tr>
+<tr>
+<td>ADD</td>
+<td>REIP</td>
+<td>706.6012</td>
+<td class="good">0.06%</td>
+<td>Excellent preservation</td>
+</tr>
+</table><div class="plot-container"><img alt="Preservation of key vegetation indices across augmentation methods. Values closer to zero indicate better preservation." class="plot-image" src="plots/vegetation_indices.png"/><div class="plot-caption">Figure: Preservation of key vegetation indices across augmentation methods. Values closer to zero indicate better preservation.</div></div>
+<h2>4. Range Checks</h2>
+<p>Verification that spectral data adheres to physical constraints.</p>
+<table>
+<tr>
+<th>Category</th>
+<th>Constraint</th>
+<th>Valid %</th>
+<th>Assessment</th>
+</tr>
+<tr>
+<td>original</td>
+<td>valid_reflectance</td>
+<td class="good">100.00%</td>
+<td>Excellent: High compliance</td>
+</tr>
+<tr>
+<td>original</td>
+<td>green_peak</td>
+<td class="poor">48.81%</td>
+<td>Moderate: Lower compliance</td>
+</tr>
+<tr>
+<td>original</td>
+<td>nir_plateau</td>
+<td class="good">99.40%</td>
+<td>Excellent: High compliance</td>
+</tr>
+<tr>
+<td>original</td>
+<td>water_absorption</td>
+<td class="good">100.00%</td>
+<td>Excellent: High compliance</td>
+</tr>
+<tr>
+<td>original</td>
+<td>swir_check</td>
+<td class="poor">50.00%</td>
+<td>Moderate: Lower compliance</td>
+</tr>
+<tr>
+<td>augmented</td>
+<td>valid_reflectance</td>
+<td class="good">99.96%</td>
+<td>Excellent: High compliance</td>
+</tr>
+<tr>
+<td>augmented</td>
+<td>green_peak</td>
+<td class="poor">48.81%</td>
+<td>Moderate: Lower compliance</td>
+</tr>
+<tr>
+<td>augmented</td>
+<td>nir_plateau</td>
+<td class="good">99.15%</td>
+<td>Excellent: High compliance</td>
+</tr>
+<tr>
+<td>augmented</td>
+<td>water_absorption</td>
+<td class="good">100.00%</td>
+<td>Excellent: High compliance</td>
+</tr>
+<tr>
+<td>augmented</td>
+<td>swir_check</td>
+<td class="poor">50.00%</td>
+<td>Moderate: Lower compliance</td>
+</tr>
+<tr>
+<td>MULT</td>
+<td>valid_reflectance</td>
+<td class="good">100.00%</td>
+<td>Excellent: High compliance</td>
+</tr>
+<tr>
+<td>MULT</td>
+<td>green_peak</td>
+<td class="poor">49.11%</td>
+<td>Moderate: Lower compliance</td>
+</tr>
+<tr>
+<td>MULT</td>
+<td>nir_plateau</td>
+<td class="good">100.00%</td>
+<td>Excellent: High compliance</td>
+</tr>
+<tr>
+<td>MULT</td>
+<td>water_absorption</td>
+<td class="good">100.00%</td>
+<td>Excellent: High compliance</td>
+</tr>
+<tr>
+<td>MULT</td>
+<td>swir_check</td>
+<td class="poor">50.00%</td>
+<td>Moderate: Lower compliance</td>
+</tr>
+<tr>
+<td>NOISE</td>
+<td>valid_reflectance</td>
+<td class="good">100.00%</td>
+<td>Excellent: High compliance</td>
+</tr>
+<tr>
+<td>NOISE</td>
+<td>green_peak</td>
+<td class="poor">48.81%</td>
+<td>Moderate: Lower compliance</td>
+</tr>
+<tr>
+<td>NOISE</td>
+<td>nir_plateau</td>
+<td class="good">99.11%</td>
+<td>Excellent: High compliance</td>
+</tr>
+<tr>
+<td>NOISE</td>
+<td>water_absorption</td>
+<td class="good">100.00%</td>
+<td>Excellent: High compliance</td>
+</tr>
+<tr>
+<td>NOISE</td>
+<td>swir_check</td>
+<td class="poor">50.00%</td>
+<td>Moderate: Lower compliance</td>
+</tr>
+<tr>
+<td>GP</td>
+<td>valid_reflectance</td>
+<td class="good">99.70%</td>
+<td>Excellent: High compliance</td>
+</tr>
+<tr>
+<td>GP</td>
+<td>green_peak</td>
+<td class="poor">48.81%</td>
+<td>Moderate: Lower compliance</td>
+</tr>
+<tr>
+<td>GP</td>
+<td>nir_plateau</td>
+<td class="good">99.40%</td>
+<td>Excellent: High compliance</td>
+</tr>
+<tr>
+<td>GP</td>
+<td>water_absorption</td>
+<td class="good">100.00%</td>
+<td>Excellent: High compliance</td>
+</tr>
+<tr>
+<td>GP</td>
+<td>swir_check</td>
+<td class="poor">50.00%</td>
+<td>Moderate: Lower compliance</td>
+</tr>
+<tr>
+<td>WARP</td>
+<td>valid_reflectance</td>
+<td class="good">100.00%</td>
+<td>Excellent: High compliance</td>
+</tr>
+<tr>
+<td>WARP</td>
+<td>green_peak</td>
+<td class="poor">47.62%</td>
+<td>Moderate: Lower compliance</td>
+</tr>
+<tr>
+<td>WARP</td>
+<td>nir_plateau</td>
+<td class="good">97.32%</td>
+<td>Excellent: High compliance</td>
+</tr>
+<tr>
+<td>WARP</td>
+<td>water_absorption</td>
+<td class="good">100.00%</td>
+<td>Excellent: High compliance</td>
+</tr>
+<tr>
+<td>WARP</td>
+<td>swir_check</td>
+<td class="poor">50.00%</td>
+<td>Moderate: Lower compliance</td>
+</tr>
+<tr>
+<td>SCALE</td>
+<td>valid_reflectance</td>
+<td class="good">100.00%</td>
+<td>Excellent: High compliance</td>
+</tr>
+<tr>
+<td>SCALE</td>
+<td>green_peak</td>
+<td class="poor">48.81%</td>
+<td>Moderate: Lower compliance</td>
+</tr>
+<tr>
+<td>SCALE</td>
+<td>nir_plateau</td>
+<td class="good">99.40%</td>
+<td>Excellent: High compliance</td>
+</tr>
+<tr>
+<td>SCALE</td>
+<td>water_absorption</td>
+<td class="good">100.00%</td>
+<td>Excellent: High compliance</td>
+</tr>
+<tr>
+<td>SCALE</td>
+<td>swir_check</td>
+<td class="poor">50.00%</td>
+<td>Moderate: Lower compliance</td>
+</tr>
+<tr>
+<td>MIX</td>
+<td>valid_reflectance</td>
+<td class="good">100.00%</td>
+<td>Excellent: High compliance</td>
+</tr>
+<tr>
+<td>MIX</td>
+<td>green_peak</td>
+<td class="poor">49.11%</td>
+<td>Moderate: Lower compliance</td>
+</tr>
+<tr>
+<td>MIX</td>
+<td>nir_plateau</td>
+<td class="good">99.11%</td>
+<td>Excellent: High compliance</td>
+</tr>
+<tr>
+<td>MIX</td>
+<td>water_absorption</td>
+<td class="good">100.00%</td>
+<td>Excellent: High compliance</td>
+</tr>
+<tr>
+<td>MIX</td>
+<td>swir_check</td>
+<td class="poor">50.00%</td>
+<td>Moderate: Lower compliance</td>
+</tr>
+<tr>
+<td>ADD</td>
+<td>valid_reflectance</td>
+<td class="good">100.00%</td>
+<td>Excellent: High compliance</td>
+</tr>
+<tr>
+<td>ADD</td>
+<td>green_peak</td>
+<td class="poor">49.40%</td>
+<td>Moderate: Lower compliance</td>
+</tr>
+<tr>
+<td>ADD</td>
+<td>nir_plateau</td>
+<td class="good">99.70%</td>
+<td>Excellent: High compliance</td>
+</tr>
+<tr>
+<td>ADD</td>
+<td>water_absorption</td>
+<td class="good">100.00%</td>
+<td>Excellent: High compliance</td>
+</tr>
+<tr>
+<td>ADD</td>
+<td>swir_check</td>
+<td class="poor">50.00%</td>
+<td>Moderate: Lower compliance</td>
+</tr>
+</table><div class="plot-container"><img alt="Heatmap of physical constraint compliance. Darker green indicates higher compliance rates." class="plot-image" src="plots/range_check_heatmap.png"/><div class="plot-caption">Figure: Heatmap of physical constraint compliance. Darker green indicates higher compliance rates.</div></div>
+<h2>Overall Quality Assessment</h2>
+<div class="plot-container"><img alt="Radar chart showing quality metrics across different dimensions. Larger area indicates better overall quality." class="plot-image" src="plots/quality_radar.png"/><div class="plot-caption">Figure: Radar chart showing quality metrics across different dimensions. Larger area indicates better overall quality.</div></div><div class="summary">
+<h3>Overall Quality Score: <span class="moderate">82.7/100</span></h3>
+<p class="moderate">The augmented spectral data is of <strong>good quality</strong> and suitable for 
+                most research applications. The statistical properties and physical characteristics 
+                of the original spectra are well-preserved, though minor deviations exist in some aspects.</p>
+<p>The data shows acceptable outlier rates, good signal-to-noise ratio, good preservation 
+                of spectral features, and adequate adherence to physical constraints. Any deviations are 
+                within acceptable ranges for most analytical purposes.</p>
+<p>Quality Scores by Component:</p>
+<ul>
+<li>Outlier Quality: 69.0/100</li>
+<li>Signal-to-Noise Quality: 100.0/100</li>
+<li>Spectral Features Quality: 82.2/100</li>
+<li>Physical Constraints Quality: 79.6/100</li>
+</ul>
+</div><div class="section-divider"></div><h2>Spectral Data Visualization</h2><p>Visual comparison of original and augmented spectral curves, demonstrating how different augmentation methods affect the spectral signatures.</p><div class="two-column"><div class="column"><div class="plot-container"><img alt="Comparison of original spectrum with examples from each augmentation method." class="plot-image" src="plots/spectral_examples.png"/><div class="plot-caption">Figure: Comparison of original spectrum with examples from each augmentation method.</div></div></div><div class="column"><div class="plot-container"><img alt="Differences between augmented and original spectra, highlighting wavelength-specific effects." class="plot-image" src="plots/spectral_differences.png"/><div class="plot-caption">Figure: Differences between augmented and original spectra, highlighting wavelength-specific effects.</div></div></div></div>
+<div class="methods-section"><h2>Methodology</h2><p>This report presents a comprehensive quality control analysis of spectral data augmentation. The analysis includes outlier detection using multiple statistical approaches, signal-to-noise ratio assessment, vegetation index preservation validation, and physical constraint verification.</p><p>The quality control pipeline implements a combined approach for outlier detection, using Z-score, IQR, Isolation Forest, and Local Outlier Factor methods. Signal quality is assessed through Savitzky-Golay filtering to separate signal from noise. Vegetation indices (NDVI, PRI, REIP) are calculated to verify preservation of biologically meaningful spectral features. Physical constraints verification ensures that augmented data adheres to fundamental properties of plant spectral signatures.</p><p>Reference: Spectral Data Augmentation for Plant Stress Response Analysis, 2025.</p></div><hr/>
+<p><em>Report generated by Spectral QC Module</em></p>
+</body>
+</html>

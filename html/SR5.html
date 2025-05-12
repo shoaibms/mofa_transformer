@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Cross-Modality Validation Report</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        h1 { color: #2c3e50; }
+        h2 { color: #3498db; margin-top: 30px; }
+        h3 { color: #2980b9; }
+        table { border-collapse: collapse; width: 100%; margin-top: 20px; }
+        th, td { border: 1px solid #ddd; padding: 8px; text-align: left; }
+        th { background-color: #f2f2f2; }
+        tr:nth-child(even) { background-color: #f9f9f9; }
+        .summary { margin: 20px 0; padding: 15px; background-color: #f8f9fa; border-radius: 5px; }
+        .good { color: green; }
+        .moderate { color: orange; }
+        .poor { color: red; }
+        img { max-width: 100%; height: auto; margin: 10px 0; border: 1px solid #ddd; }
+    </style>
+</head>
+<body>
+    <h1>Cross-Modality Validation Report</h1>
+    <p>Generated on: 2025-02-27 15:26:38</p>
+    
+    <div class="summary">
+        <h2>Overview</h2>
+        <p>This report presents comprehensive cross-modality validation of augmented spectral and metabolite data.</p>
+        <p><strong>Spectral data:</strong> Original: C:\Users\ms\Desktop\hyper\data\hyper_full_w.csv</p>
+        <p><strong>Spectral data:</strong> Augmented: C:\Users\ms\Desktop\hyper\output\augment\main_pipeline\spectral\augmented_spectral_data.csv</p>
+        <p><strong>Metabolite data:</strong> Original: C:\Users\ms\Desktop\hyper\data\n_p_r2.csv</p>
+        <p><strong>Metabolite data:</strong> Augmented: C:\Users\ms\Desktop\hyper\output\augment\main_pipeline\metabolite\augmented_metabolite_data.csv</p>
+    </div>
+
+    <h2>Experimental Factor Consistency</h2>
+    <p>This analysis verifies that experimental factors maintain consistent distributions across both spectral and metabolite data after augmentation.</p>
+    <table>
+        <tr>
+            <th>Factor</th>
+            <th>Preservation Score</th>
+            <th>Assessment</th>
+        </tr>
+
+        <tr>
+            <td>Tissue.type</td>
+            <td class="good">1.0000</td>
+            <td>Excellent preservation</td>
+        </tr>
+
+        <tr>
+            <td>Genotype</td>
+            <td class="good">1.0000</td>
+            <td>Excellent preservation</td>
+        </tr>
+
+        <tr>
+            <td>Batch</td>
+            <td class="good">1.0000</td>
+            <td>Excellent preservation</td>
+        </tr>
+
+        <tr>
+            <td>Treatment</td>
+            <td class="good">1.0000</td>
+            <td>Excellent preservation</td>
+        </tr>
+
+        <tr>
+            <td>Day</td>
+            <td class="good">1.0000</td>
+            <td>Excellent preservation</td>
+        </tr>
+
+        <tr>
+            <td>Replication</td>
+            <td class="good">1.0000</td>
+            <td>Excellent preservation</td>
+        </tr>
+</table>
+    <div>
+        <img src="plots\factor_consistency.png" alt="Experimental Factor Consistency Plot">
+    </div>
+
+    <h2>Metadata Balance Assessment</h2>
+    <p>This analysis checks that metadata remains balanced between spectral and metabolite data after augmentation.</p>
+    <table>
+        <tr>
+            <th>Factor</th>
+            <th>Preservation Score</th>
+            <th>Assessment</th>
+        </tr>
+
+        <tr>
+            <td>Tissue.type</td>
+            <td class="good">1.0000</td>
+            <td>Excellent preservation</td>
+        </tr>
+
+        <tr>
+            <td>Genotype</td>
+            <td class="good">1.0000</td>
+            <td>Excellent preservation</td>
+        </tr>
+
+        <tr>
+            <td>Batch</td>
+            <td class="good">1.0000</td>
+            <td>Excellent preservation</td>
+        </tr>
+
+        <tr>
+            <td>Treatment</td>
+            <td class="good">1.0000</td>
+            <td>Excellent preservation</td>
+        </tr>
+
+        <tr>
+            <td>Day</td>
+            <td class="good">1.0000</td>
+            <td>Excellent preservation</td>
+        </tr>
+
+        <tr>
+            <td>Replication</td>
+            <td class="good">1.0000</td>
+            <td>Excellent preservation</td>
+        </tr>
+</table>
+    <div>
+        <img src="plots\metadata_balance.png" alt="Metadata Balance Assessment Plot">
+    </div>
+
+    <h2>Treatment Response Pattern Preservation</h2>
+    <p>This analysis confirms that treatment response patterns are consistently preserved across both modalities.</p>
+    <table>
+        <tr>
+            <th>Category</th>
+            <th>Preservation Score</th>
+            <th>Assessment</th>
+        </tr>
+
+        <tr>
+            <td>Spectral</td>
+            <td class="good">0.9983</td>
+            <td>Excellent preservation</td>
+        </tr>
+
+        <tr>
+            <td>Metabolite</td>
+            <td class="good">0.9995</td>
+            <td>Excellent preservation</td>
+        </tr>
+
+        <tr>
+            <td>Cross-Modal</td>
+            <td class="good">0.9992</td>
+            <td>Excellent preservation</td>
+        </tr>
+</table>
+    <div>
+        <img src="plots\treatment_response.png" alt="Treatment Response Pattern Preservation Plot">
+    </div>
+
+    <h2>Genotype-Specific Feature Preservation</h2>
+    <p>This analysis validates the preservation of genotype-specific molecular signatures across both modalities.</p>
+    <table>
+        <tr>
+            <th>Category</th>
+            <th>Preservation Score</th>
+            <th>Assessment</th>
+        </tr>
+
+        <tr>
+            <td>Spectral</td>
+            <td class="good">0.9893</td>
+            <td>Excellent preservation</td>
+        </tr>
+
+        <tr>
+            <td>Metabolite</td>
+            <td class="good">0.9997</td>
+            <td>Excellent preservation</td>
+        </tr>
+
+        <tr>
+            <td>Cross-Modal</td>
+            <td class="good">0.9326</td>
+            <td>Excellent preservation</td>
+        </tr>
+</table>
+    <div>
+        <img src="plots\genotype_preservation.png" alt="Genotype-Specific Feature Preservation Plot">
+    </div>
+
+    <h2>Batch Effect Constancy Validation</h2>
+    <p>This analysis verifies that batch effects are consistently maintained across both modalities.</p>
+    <table>
+        <tr>
+            <th>Category</th>
+            <th>Preservation Score</th>
+            <th>Assessment</th>
+        </tr>
+
+        <tr>
+            <td>Spectral</td>
+            <td class="good">0.9923</td>
+            <td>Excellent preservation</td>
+        </tr>
+
+        <tr>
+            <td>Metabolite</td>
+            <td class="good">0.9999</td>
+            <td>Excellent preservation</td>
+        </tr>
+
+        <tr>
+            <td>Cross-Modal</td>
+            <td class="good">0.9374</td>
+            <td>Excellent preservation</td>
+        </tr>
+</table>
+    <h2>Overall Assessment</h2>
+
+    <div class="summary">
+        <h3 class="good">Excellent Cross-Modality Consistency: 0.9913/1.00</h3>
+        <p>The augmented data demonstrates exceptional consistency across both spectral and metabolite modalities. 
+        Experimental factors, treatment responses, genotype-specific features, and batch effects are all preserved with 
+        high fidelity. This dataset is suitable for integrated multi-modal analyses with high confidence.</p>
+    </div>
+
+    <hr>
+    <p><em>Report generated by Cross-Modality Validation Framework</em></p>
+</body>
+</html>

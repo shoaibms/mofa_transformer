@@ -1,0 +1,415 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Molecular Feature Data Quality Control Report</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        h1 { color: #2c3e50; }
+        h2 { color: #3498db; margin-top: 30px; }
+        h3 { color: #2980b9; }
+        table { border-collapse: collapse; width: 100%; margin-top: 20px; }
+        th, td { border: 1px solid #ddd; padding: 8px; text-align: left; }
+        th { background-color: #f2f2f2; }
+        tr:nth-child(even) { background-color: #f9f9f9; }
+        .summary { margin: 20px 0; padding: 15px; background-color: #f8f9fa; border-radius: 5px; }
+        .good { color: #238b45; }
+        .moderate { color: #fe9929; }
+        .poor { color: #d62728; }
+        img { max-width: 100%; height: auto; margin: 10px 0; border: 1px solid #ddd; }
+    </style>
+</head>
+<body>
+    <h1>Molecular Feature Data Quality Control Report</h1>
+    <p>Generated on: 2025-05-11 15:12:15</p>
+    
+    <div class="summary">
+        <h2>Overview</h2>
+        <p>This report presents comprehensive quality control results for augmented molecular feature data.</p>
+        <p><strong>Original data:</strong> C:\Users\ms\Desktop\hyper\data\n_p_l2.csv</p>
+        <p><strong>Augmented data:</strong> C:\Users\ms\Desktop\hyper\output\augment\molecular_feature\leaf\augmented_molecular_feature_data.csv</p>
+    </div>
+
+    <h2>1. Critical Outlier Detection</h2>
+    <p>Detection of statistical outliers and samples that violate expected biochemical relationships.</p>
+    <table>
+        <tr>
+            <th>Method</th>
+            <th>Total Samples</th>
+            <th>Outlier Percentage</th>
+            <th>Assessment</th>
+        </tr>
+
+        <tr>
+            <td>original</td>
+            <td>168</td>
+            <td class="moderate">8.3%</td>
+            <td>Good: Acceptable number of outliers</td>
+        </tr>
+
+        <tr>
+            <td>SCALE</td>
+            <td>840</td>
+            <td class="moderate">7.7%</td>
+            <td>Good: Acceptable number of outliers</td>
+        </tr>
+
+        <tr>
+            <td>MIX</td>
+            <td>336</td>
+            <td class="moderate">8.6%</td>
+            <td>Good: Acceptable number of outliers</td>
+        </tr>
+</table>
+    <div>
+        <img src="plots/outlier_detection_l.png" alt="Outlier Detection Results">
+    </div>
+
+    <h2>2. Class Separability Assessment</h2>
+    <p>Evaluation of how well different classes are separated in the molecular feature data.</p>
+
+    <h3>Separability for Treatment</h3>
+    <table>
+        <tr>
+            <th>Method</th>
+            <th>Overall Score</th>
+            <th>Silhouette Score</th>
+            <th>Davies-Bouldin Score</th>
+            <th>Assessment</th>
+        </tr>
+
+        <tr>
+            <td>SCALE</td>
+            <td class="good">0.88</td>
+            <td>1.00</td>
+            <td>1.00</td>
+            <td>Excellent class separation</td>
+        </tr>
+
+        <tr>
+            <td>MIX</td>
+            <td class="poor">0.47</td>
+            <td>0.60</td>
+            <td>0.00</td>
+            <td>Moderate class separation</td>
+        </tr>
+
+        <tr>
+            <td>original</td>
+            <td class="poor">0.36</td>
+            <td>0.00</td>
+            <td>0.96</td>
+            <td>Moderate class separation</td>
+        </tr>
+</table>
+    <div>
+        <img src="plots/class_separability_Treatment_l.png" alt="Class Separability for Treatment">
+    </div>
+
+    <h3>Separability for Genotype</h3>
+    <table>
+        <tr>
+            <th>Method</th>
+            <th>Overall Score</th>
+            <th>Silhouette Score</th>
+            <th>Davies-Bouldin Score</th>
+            <th>Assessment</th>
+        </tr>
+
+        <tr>
+            <td>original</td>
+            <td class="moderate">0.62</td>
+            <td>0.00</td>
+            <td>1.00</td>
+            <td>Good class separation</td>
+        </tr>
+
+        <tr>
+            <td>MIX</td>
+            <td class="poor">0.46</td>
+            <td>0.62</td>
+            <td>0.00</td>
+            <td>Moderate class separation</td>
+        </tr>
+
+        <tr>
+            <td>SCALE</td>
+            <td class="poor">0.39</td>
+            <td>1.00</td>
+            <td>0.08</td>
+            <td>Moderate class separation</td>
+        </tr>
+</table>
+    <div>
+        <img src="plots/class_separability_Genotype_l.png" alt="Class Separability for Genotype">
+    </div>
+
+    <h3>Separability for Batch</h3>
+    <table>
+        <tr>
+            <th>Method</th>
+            <th>Overall Score</th>
+            <th>Silhouette Score</th>
+            <th>Davies-Bouldin Score</th>
+            <th>Assessment</th>
+        </tr>
+
+        <tr>
+            <td>MIX</td>
+            <td class="moderate">0.66</td>
+            <td>0.62</td>
+            <td>0.53</td>
+            <td>Good class separation</td>
+        </tr>
+
+        <tr>
+            <td>original</td>
+            <td class="moderate">0.62</td>
+            <td>0.00</td>
+            <td>1.00</td>
+            <td>Good class separation</td>
+        </tr>
+
+        <tr>
+            <td>SCALE</td>
+            <td class="poor">0.38</td>
+            <td>1.00</td>
+            <td>0.00</td>
+            <td>Moderate class separation</td>
+        </tr>
+</table>
+    <div>
+        <img src="plots/class_separability_Batch_l.png" alt="Class Separability for Batch">
+    </div>
+
+    <h2>3. Signal-to-Noise Ratio Assessment</h2>
+    <p>Evaluation of signal quality in molecular features.</p>
+    <table>
+        <tr>
+            <th>Method</th>
+            <th>SNR Preservation</th>
+            <th>Mean SNR Ratio</th>
+            <th>Assessment</th>
+        </tr>
+
+        <tr>
+            <td>original</td>
+            <td class="good">1.00</td>
+            <td>1.00x (reference)</td>
+            <td>Excellent SNR preservation</td>
+        </tr>
+
+        <tr>
+            <td>MIX</td>
+            <td class="good">0.97</td>
+            <td>0.97x</td>
+            <td>Excellent SNR preservation</td>
+        </tr>
+
+        <tr>
+            <td>SCALE</td>
+            <td class="good">0.97</td>
+            <td>0.97x</td>
+            <td>Excellent SNR preservation</td>
+        </tr>
+</table>
+    <div>
+        <img src="plots/snr_preservation_l.png" alt="SNR Preservation Results">
+    </div>
+
+    <h2>4. Cross-Validation Assessment</h2>
+    <p>Evaluation of classification performance with machine learning models.</p>
+
+    <h3>Cross-Validation for Treatment</h3>
+    <table>
+        <tr>
+            <th>Method</th>
+            <th>Preservation Score</th>
+            <th>Accuracy Preservation</th>
+            <th>F1 Preservation</th>
+            <th>Assessment</th>
+        </tr>
+
+        <tr>
+            <td>original</td>
+            <td class="good">1.00</td>
+            <td>1.00</td>
+            <td>1.00</td>
+            <td>Excellent performance preservation</td>
+        </tr>
+
+        <tr>
+            <td>SCALE</td>
+            <td class="good">0.96</td>
+            <td>0.96</td>
+            <td>0.96</td>
+            <td>Excellent performance preservation</td>
+        </tr>
+
+        <tr>
+            <td>MIX</td>
+            <td class="good">0.96</td>
+            <td>0.96</td>
+            <td>0.96</td>
+            <td>Excellent performance preservation</td>
+        </tr>
+</table>
+    <div>
+        <img src="plots/cv_preservation_Treatment_l.png" alt="Cross-Validation Preservation for Treatment">
+    </div>
+
+    <h3>Cross-Validation for Genotype</h3>
+    <table>
+        <tr>
+            <th>Method</th>
+            <th>Preservation Score</th>
+            <th>Accuracy Preservation</th>
+            <th>F1 Preservation</th>
+            <th>Assessment</th>
+        </tr>
+
+        <tr>
+            <td>original</td>
+            <td class="good">1.00</td>
+            <td>1.00</td>
+            <td>1.00</td>
+            <td>Excellent performance preservation</td>
+        </tr>
+
+        <tr>
+            <td>MIX</td>
+            <td class="moderate">0.88</td>
+            <td>0.88</td>
+            <td>0.88</td>
+            <td>Good performance preservation</td>
+        </tr>
+
+        <tr>
+            <td>SCALE</td>
+            <td class="moderate">0.87</td>
+            <td>0.87</td>
+            <td>0.87</td>
+            <td>Good performance preservation</td>
+        </tr>
+</table>
+    <div>
+        <img src="plots/cv_preservation_Genotype_l.png" alt="Cross-Validation Preservation for Genotype">
+    </div>
+
+    <h3>Cross-Validation for Batch</h3>
+    <table>
+        <tr>
+            <th>Method</th>
+            <th>Preservation Score</th>
+            <th>Accuracy Preservation</th>
+            <th>F1 Preservation</th>
+            <th>Assessment</th>
+        </tr>
+
+        <tr>
+            <td>original</td>
+            <td class="good">1.00</td>
+            <td>1.00</td>
+            <td>1.00</td>
+            <td>Excellent performance preservation</td>
+        </tr>
+
+        <tr>
+            <td>MIX</td>
+            <td class="moderate">0.82</td>
+            <td>0.82</td>
+            <td>0.82</td>
+            <td>Good performance preservation</td>
+        </tr>
+
+        <tr>
+            <td>SCALE</td>
+            <td class="poor">0.78</td>
+            <td>0.79</td>
+            <td>0.78</td>
+            <td>Moderate performance preservation</td>
+        </tr>
+</table>
+    <div>
+        <img src="plots/cv_preservation_Batch_l.png" alt="Cross-Validation Preservation for Batch">
+    </div>
+
+    <h2>5. Statistical Power Analysis</h2>
+    <p>Assessment of statistical power to detect treatment effects.</p>
+    <table>
+        <tr>
+            <th>Method</th>
+            <th>Mean Power</th>
+            <th>Power ≥ 80%</th>
+            <th>Sample Size</th>
+            <th>Assessment</th>
+        </tr>
+
+        <tr>
+            <td>SCALE</td>
+            <td class="good">1.00</td>
+            <td>81.3%</td>
+            <td>840</td>
+            <td>Excellent statistical power</td>
+        </tr>
+
+        <tr>
+            <td>MIX</td>
+            <td class="good">0.95</td>
+            <td>85.1%</td>
+            <td>336</td>
+            <td>Excellent statistical power</td>
+        </tr>
+
+        <tr>
+            <td>original</td>
+            <td class="good">0.85</td>
+            <td>67.4%</td>
+            <td>168</td>
+            <td>Excellent statistical power</td>
+        </tr>
+</table>
+    <div>
+        <img src="plots/statistical_power_l.png" alt="Statistical Power Results">
+    </div>
+
+    <div>
+        <img src="plots/power_efficiency_l2.png" alt="Power Efficiency Results">
+    </div>
+
+    <h2>Overall Quality Assessment</h2>
+
+    <table>
+        <tr>
+            <th>Method</th>
+            <th>Overall Score</th>
+            <th>Assessment</th>
+        </tr>
+
+        <tr>
+            <td>SCALE</td>
+            <td class="good">0.87/1.00</td>
+            <td>Excellent quality - suitable for high-confidence analyses</td>
+        </tr>
+
+        <tr>
+            <td>original</td>
+            <td class="good">0.86/1.00</td>
+            <td>Excellent quality - suitable for high-confidence analyses</td>
+        </tr>
+
+        <tr>
+            <td>MIX</td>
+            <td class="good">0.85/1.00</td>
+            <td>Excellent quality - suitable for high-confidence analyses</td>
+        </tr>
+</table>
+    <h3>Conclusion</h3>
+
+        <p>The <strong>SCALE</strong> augmentation method produces excellent quality data that preserves the biological characteristics of the original dataset while significantly increasing statistical power. This method is recommended for publication-quality molecular feature data augmentation.</p>
+
+        <p>Notably, the <strong>SCALE</strong> method shows improvements in some quality metrics compared to the original data, particularly in statistical power and class separability, while maintaining acceptable biochemical relationship preservation.</p>
+
+    <hr>
+    <p><em>Report generated by Molecular Feature Quality Control Module</em></p>
+</body>
+</html>

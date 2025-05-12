@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Advanced Spectral Validation Summary</title>
+    <meta charset="UTF-8">
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        h1 { color: #2c3e50; }
+        h2 { color: #3498db; margin-top: 30px; }
+        h3 { color: #2980b9; }
+        table { border-collapse: collapse; width: 100%; margin-top: 20px; }
+        th, td { border: 1px solid #ddd; padding: 8px; text-align: left; }
+        th { background-color: #f2f2f2; }
+        tr:nth-child(even) { background-color: #f9f9f9; }
+        .summary { margin: 20px 0; padding: 15px; background-color: #f8f9fa; border-radius: 5px; }
+        .good { color: green; }
+        .moderate { color: orange; }
+        .poor { color: red; }
+        img { max-width: 100%; height: auto; margin: 10px 0; border: 1px solid #ddd; }
+    </style>
+</head>
+<body>
+    <h1>Advanced Spectral Validation Summary</h1>
+    <p>Generated on: 2025-05-11 17:51:53</p>
+    
+    <div class="summary">
+        <h2>Overview</h2>
+        <p>This report presents advanced statistical validation of the augmented spectral data.</p>
+    </div>
+
+    <h2>Distributional Divergence Measures</h2>
+    <p>These metrics quantify the statistical difference between original and augmented data distributions.</p>
+    <table>
+        <tr>
+            <th>Region</th>
+            <th>Wasserstein Distance</th>
+            <th>Jensen-Shannon Divergence</th>
+            <th>Interpretation</th>
+        </tr>
+
+        <tr>
+            <td>Full Spectrum</td>
+            <td class="moderate">0.002119 <br><small>CI: (0.003364, 0.009682)</small></td>
+            <td class="moderate">0.114342 <br><small>CI: (0.167941, 0.192112)</small></td>
+            <td>Good similarity between distributions</td>
+        </tr>
+
+        <tr>
+            <td>Visible</td>
+            <td class="moderate">0.001917 <br><small>CI: (0.003576, 0.016075)</small></td>
+            <td class="moderate">0.107303 <br><small>CI: (0.158545, 0.187852)</small></td>
+            <td>Good similarity between distributions</td>
+        </tr>
+
+        <tr>
+            <td>NIR</td>
+            <td class="moderate">0.003412 <br><small>CI: (0.004430, 0.013308)</small></td>
+            <td class="moderate">0.104719 <br><small>CI: (0.162547, 0.192331)</small></td>
+            <td>Good similarity between distributions</td>
+        </tr>
+
+        <tr>
+            <td>SWIR</td>
+            <td class="moderate">0.001586 <br><small>CI: (0.002281, 0.007345)</small></td>
+            <td class="moderate">0.120732 <br><small>CI: (0.169908, 0.196923)</small></td>
+            <td>Good similarity between distributions</td>
+        </tr>
+</table>
+    <h3>Divergence by Wavelength</h3>
+    <p>These plots show how divergence measures vary across the spectral range:</p>
+    <div>
+        <img src="plots/divergence_by_wavelength.png" alt="Divergence by Wavelength">
+    </div>
+
+    <h2>Classification Consistency</h2>
+    <p>This analysis tests the functional equivalence of original and augmented data for machine learning purposes.</p>
+    <table>
+        <tr>
+            <th>Test</th>
+            <th>Accuracy</th>
+            <th>Interpretation</th>
+        </tr>
+
+        <tr>
+            <td>Original to Original</td>
+            <td class="moderate">0.7129</td>
+            <td>Baseline accuracy on original data</td>
+        </tr>
+
+        <tr>
+            <td>Original to Augmented</td>
+            <td class="good">0.8078 <br><small>(1.13x retention)</small></td>
+            <td>How well models trained on original data perform on augmented data</td>
+        </tr>
+
+        <tr>
+            <td>Augmented to Augmented</td>
+            <td class="good">0.8598</td>
+            <td>Baseline accuracy on augmented data</td>
+        </tr>
+
+        <tr>
+            <td>Augmented to Original</td>
+            <td class="good">0.9315 <br><small>(1.08x retention)</small></td>
+            <td>How well models trained on augmented data perform on original data</td>
+        </tr>
+
+        <tr>
+            <td>Combined Training</td>
+            <td class="good">0.8910</td>
+            <td>Accuracy when training on combined original and augmented data</td>
+        </tr>
+</table>
+    <h3>Confusion Matrices</h3>
+    <div style="display: flex; flex-wrap: wrap;">
+        <div style="flex: 50%; padding: 10px;">
+            <img src="plots/confusion_orig_to_aug.png" alt="Original to Augmented Confusion Matrix">
+        </div>
+        <div style="flex: 50%; padding: 10px;">
+            <img src="plots/confusion_aug_to_orig.png" alt="Augmented to Original Confusion Matrix">
+        </div>
+    </div>
+
+    <h2>Wavelength-specific Impact Analysis</h2>
+    <p>This analysis shows how the augmentation process affects different parts of the spectrum.</p>
+    <table>
+        <tr>
+            <th>Metric</th>
+            <th>Value</th>
+            <th>Interpretation</th>
+        </tr>
+
+        <tr>
+            <td>Mean Absolute Difference</td>
+            <td class="good">0.000462</td>
+            <td>Average absolute difference across all wavelengths</td>
+        </tr>
+
+        <tr>
+            <td>Mean Relative Difference</td>
+            <td class="good">0.002450</td>
+            <td>Average relative difference across all wavelengths</td>
+        </tr>
+
+        <tr>
+            <td>Mean Variance Ratio</td>
+            <td class="good">0.965195</td>
+            <td>Ratio of variances between augmented and original data (ideal: ~1.0)</td>
+        </tr>
+
+        <tr>
+            <td>Most Affected Wavelengths</td>
+            <td>751, 749, 741, 747, 743, 742, 745, 744, 748, 746</td>
+            <td>Wavelengths with the largest absolute differences</td>
+        </tr>
+</table>
+    <h3>Wavelength Impact Visualization</h3>
+    <div>
+        <img src="plots/wavelength_impact.png" alt="Wavelength Impact Analysis">
+    </div>
+    
+    <h3>Residual Analysis</h3>
+    <div>
+        <img src="plots/residual_analysis.png" alt="Residual Analysis">
+    </div>
+
+    <h2>Principal Component Analysis</h2>
+    <p>This visualization shows how augmented data compares to original data in reduced dimensionality space.</p>
+    <div>
+        <img src="plots/pca_visualization.png" alt="PCA Visualization">
+    </div>
+
+    <h3>3D PCA Visualization</h3>
+    <div>
+        <img src="plots/pca_3d_visualization.png" alt="3D PCA Visualization">
+    </div>
+
+    <h3>PCA Distance Metrics</h3>
+    <p>These metrics quantify how far augmented data points are from the original data centroid in PCA space.</p>
+    <table>
+        <tr>
+            <th>Category</th>
+            <th>Mean Distance</th>
+            <th>Standard Deviation</th>
+        </tr>
+
+        <tr>
+            <td>augmented</td>
+            <td class="good">3.7703</td>
+            <td>0.9373</td>
+        </tr>
+</table>
+    <h2>Overall Assessment</h2>
+    <p>Based on the advanced validation metrics, the augmented spectral data demonstrates:</p>
+    <ul>
+<li><strong>Good statistical similarity</strong> to the original data distribution</li><li><strong>Excellent functional equivalence</strong> for machine learning applications</li><li><strong>Excellent preservation</strong> of spectral characteristics across all wavelengths</li>
+    </ul>
+    <h3>Publication Recommendation</h3>
+
+        <p class="good">The augmented data is of <strong>high quality</strong> and suitable for publication in high-impact journals. The statistical and physical properties of the original data are well-preserved, providing a reliable foundation for robust analysis and modeling of plant stress responses.</p>
+<p><strong>Overall validation score: 0.8725</strong></p>
+    <hr>
+    <p><em>Report generated by Advanced Spectral Validator</em></p>
+</body>
+</html>
