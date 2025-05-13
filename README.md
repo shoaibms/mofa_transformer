@@ -136,6 +136,7 @@ flowchart TD
  │   │   ├── 📜 normality_test.py              # Normality testing for metabolomics data.
  │   │   ├── 📜 normality_vis.py               # Normality test visualisation for data transformations.
  │   │   ├── 📜 outlier_vis.py                 # Outlier imputation impact analysis and visualisation.
+ │   │   ├── 📜 rf_impute.r                    # Random Forest imputation.
  │   │   ├── 📜 transform_data.py              # Data transformation script for metabolomics analysis.
  │   │   ├── 📜 transform_eva.py               # Transformation evaluation script for metabolomics data.
  │   │   ├── 📜 transform_metrics.py           # Metabolomics data transformation: evaluation metrics.
@@ -147,7 +148,7 @@ flowchart TD
  ├── 📂 02_analysis/
  │   ├── 📂 01_mofa_plus/
  │   │   ├── 📜 viz_mofa_results.py            # Enhanced MOFA+ results visualisation.
- │   │   ├── 📜 viz_mofa_network.py            # MOFA+ cross-view integration network visualisation.
+ │   │   ├── 📜 viz_mofa_results.txt           # launcher script for viz_mofa_results.py.
  │   │   ├── 📜 mofa_bootstrap.py              # MOFA+ bootstrap stability analysis.
  │   │   ├── 📜 mofa_permutation_test.py       # MOFA+ permutation test for factor-metadata association.
  │   │   ├── 📜 run_mofa_analysis.py           # Main script for MOFA+ analysis and validation.
@@ -173,6 +174,7 @@ flowchart TD
  ├── 📂 03_visualisation/
  │   ├── 📂 01_main_figures/                   # Scripts to generate main paper figures
  │   │   ├── 📜 figure_1.py                    # Figure 1
+ │   │   ├── 📜 figure_1.txt                   # launcher script for Figure 1
  │   │   ├── 📜 figure_2.py                    # Figure 2
  │   │   ├── 📜 figure_3.py                    # Figure 3 
  │   │   ├── 📜 figure_4.1.py                  # Figure 4 heatmap
