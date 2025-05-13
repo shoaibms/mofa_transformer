@@ -1,0 +1,54 @@
+flowchart TD
+    subgraph Data["1. Data Preprocessing"]
+        A1[Raw Hyperspectral Data] -->|QC & Filtering| B1[Curated Spectral Features]
+        A2[Raw LC-MS Data] -->|QC & Filtering| B2[Curated Metabolite Features]
+        B1 -->|Augmentation| C1[Augmented Spectral Data]
+        B2 -->|Augmentation| C2[Augmented Metabolite Data]
+        C1 --> D[Combined Multi-Omic Dataset]
+        C2 --> D
+    end
+    
+    %% Add explicit connection between Data and MOFA blocks
+    D --> E
+    
+    subgraph MOFA["2. MOFA+ Analysis"]
+        E[Multi-Omics Factor Analysis+]
+        E --> F1[Latent Factor Identification]
+        E --> F2[Feature Weight Assignment]
+        F1 --> G[Biological Factor Annotation]
+        F2 --> H[Feature Selection]
+    end
+    
+    %% Add explicit connection between MOFA and Model blocks
+    H --> I
+    
+    subgraph Model["3. Transformer Modeling"]
+        I[Selected Feature Subset]
+        I --> J[Multi-Task Transformer]
+        J --> K1[Prediction Tasks]
+        J --> K2[Cross-Modal Attention]
+        K1 --> L1[SHAP Feature Importance]
+        K2 --> L2[Attention Score Extraction]
+    end
+    
+    %% Add explicit connection between Model and Interpretation blocks
+    L1 --> M1
+    L2 --> M2
+    
+    subgraph Interpretation["4. Biological Interpretation"]
+        M1[Key Predictive Features]
+        M2[Feature-Feature Interactions]
+        M1 --> N[Genotype-Specific Mechanisms]
+        M2 --> N
+        N --> O[Stress Adaptation Insights]
+    end
+    
+    classDef preprocessing fill:#c5e8b7,stroke:#5d9c59,color:#333
+    classDef mofa fill:#a7d489,stroke:#5d9c59,color:#333
+    classDef model fill:#8cc084,stroke:#5d9c59,color:#333
+    classDef interpretation fill:#73a942,stroke:#5d9c59,color:#333
+    
+    class Data preprocessing
+    class MOFA mofa
+    class Model model
+    class Interpretation interpretation
