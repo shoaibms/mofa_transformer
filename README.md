@@ -8,9 +8,7 @@
 
 ## MOFA+ Transformer: An Interpretable Deep Learning Framework for Dynamic, Feature-Specific Multi-Omics Integration
 
-<p align="center">
-  <img src="docs/images/mofa_transformer_overview.png" alt="MOFA+ Transformer Framework Overview" width="800"/>
-</p>
+
 
 ## Overview
 
