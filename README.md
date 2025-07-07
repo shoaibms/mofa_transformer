@@ -6,7 +6,7 @@
 [![PyTorch](https://img.shields.io/badge/PyTorch-2.6.0-orange)](https://pytorch.org/)
 [![DOI](https://yet to be update.org/badge/DOI/10.5281/yet to be updated.xxxxxx.svg)](#citation)
 
-## MOFA+ Transformer: An Interpretable Deep Learning Framework for Elucidating Dynamic Spectral-Metabolomic Relationships in Plant Osmotic Stress Adaptation
+## MOFA+ Transformer: An Interpretable Deep Learning Framework for Dynamic, Feature-Specific Multi-Omics Integration
 
 <p align="center">
   <img src="docs/images/mofa_transformer_overview.png" alt="MOFA+ Transformer Framework Overview" width="800"/>
@@ -14,29 +14,35 @@
 
 ## Overview
 
-This repository contains the implementation of MOFA+ Transformer, a novel interpretable deep learning framework for multi-omics integration that uncovers dynamic relationships between spectral reflectance and metabolomic data in plant stress responses. By combining unsupervised variance decomposition (MOFA+) with attention-based deep learning (Transformer), this framework provides mechanistic insights into how plants coordinate physiological and biochemical processes during adaptation to osmotic stress.
+Multi-omics integration holds transformative potential for decoding complex biological systems. However, current analytical frameworks—including correlation-based and latent variable models—often fail to capture the directed, feature-specific relationships and temporal dynamics essential for mechanistic understanding. This repository contains the implementation of **MOFA+ Transformer**, a novel, interpretable deep learning framework designed to overcome these limitations.
+
+MOFA+ Transformer synergistically combines unsupervised variance decomposition (MOFA+) with an attention-based deep learning architecture (Transformer). This dual approach allows the framework to first identify robust, biologically relevant patterns of variation across multiple omics layers and then to dissect the specific, directed interactions that drive these patterns. By employing cross-modal attention, it explicitly quantifies inter-modality links and their evolution over time, shifting the analytical paradigm from simply identifying *what* features are correlated to revealing *how* and *when* they are coordinated.
 
 ## 🔍 Abstract
 
-Osmotic stress, driven by drought and salinity, significantly limits global crop productivity, yet the metabolomic mechanisms underlying plant adaptation remain poorly understood. To address this, we developed MOFA+ Transformer, a novel, interpretable deep learning framework that integrates physiological and biochemical responses by analysing dynamic relationships between spectral signatures and metabolomic profiles. This approach combines Multi-Omics Factor Analysis+ (MOFA+) for variance decomposition with a Transformer architecture employing cross-modal attention, enabling the discovery of mechanistic links between hyperspectral data and metabolic features.
-We applied this framework to time-resolved datasets from drought-tolerant and susceptible plant genotypes, revealing distinct tissue-specific coordination networks critical to stress adaptation. The tolerant genotype exhibited significantly stronger leaf network connectivity (+355% compared to the susceptible genotype) and established spectral-metabolic links earlier in the stress response. These links involved visible spectral features in leaves and Near-Infrared (NIR) features in roots, supporting an early response hypothesis for drought tolerance. Cross-modal attention analysis further identified genotype-specific hub molecular features orchestrating these networks, with the tolerant genotype demonstrating more focused and proactive coordination strategies. These findings highlight that successful adaptation relies not just on specific molecular features, but on their rapid, coordinated interplay with physiological processes.
-The MOFA+ Transformer framework advances systems biology by providing a powerful, interpretable tool for mechanistic discovery and hypothesis generation from complex multi-omic data. Beyond plant science, it offers a broadly applicable paradigm for integrating multi-omics datasets, moving beyond correlations to uncover dynamic, functional relationships in biological systems. This approach opens new possibilities for identifying resilience biomarkers, guiding crop improvement, and deepening our understanding of stress adaptation across disciplines.
+Multi-omics integration holds transformative potential for decoding complex biological systems. However, current analytical frameworks, including correlation-based and latent variable models, often fail to capture the directed, feature-specific relationships and temporal dynamics for mechanistic understanding. We present **MOFA+ Transformer**, an innovative deep learning framework that overcomes these limitations. It synergistically combines Multi-Omics Factor Analysis+ (MOFA+) for robust variance decomposition with a Transformer architecture, using cross-modal attention to explicitly quantify inter-modality links and their evolution.
 
+Applying the framework to an experiment comprising distinct wheat genotypes, converging hyperspectral and metabolomic data, we demonstrate that drought tolerance emerges not only from isolated molecular differences but from the timing and architecture of cross-modal coordination networks. Notably, tolerant wheat genotypes deployed a distinct coordination strategy, establishing spectral-metabolite networks at a quantifiably earlier stress stage and exhibiting **355% stronger connectivity** across key spectral-metabolite pairs in leaf tissue, orchestrated through different molecular hubs. Integrating variance-driven (MOFA+) and prediction-driven (SHAP) feature analyses, the framework uncovered complementary biological insights (**23.5% feature overlap**). 
+
+We confirmed the framework's generalisability on an independent single-cell dataset, where it discovered and **statistically validated (p=0.0099)** a non-linear link between a cellular spectral phenotype and the stress-related lncRNA **NEAT1**, a connection missed by standard correlation methods.
+
+By delivering interpretable, quantifiable, and dynamic biological knowledge, MOFA+ Transformer shifts the analytical paradigm from identifying what features are correlated to revealing how and when they are coordinated. This provides a powerful, broadly applicable tool for hypothesis generation and the discovery of actionable network patterns critical for advancing systems biology, clinical research, and beyond.
 
 ## ✨ Key Contributions & Highlights
 
-* **Novel Interpretable Framework:** Combines unsupervised factor analysis with interpretable deep learning for multi-omics integration
-* **Mechanistic Insights:** Quantifies directed associations between spectral features (physiology) and molecular features(biochemistry)
-* **Genotype-Specific Adaptation:** Uncovers distinct network architectures and key hub molecular features in tolerant vs susceptible plants
-* **Tissue-Specific Coordination Networks:** Identifies distinct spectral-metabolic communication patterns in leaf (visible spectrum) and root (NIR) tissues
-* **Temporal Dynamics:** Reveals that tolerant genotypes establish cross-modal links *earlier* in the stress response
-* **Potential Biomarkers:** Identifies spectral-metabolomic attention patterns that could serve as non-invasive indicators of stress tolerance
+* **Novel Interpretable Framework:** Combines unsupervised factor analysis with interpretable deep learning to move beyond correlation and uncover dynamic, functional relationships
+* **Quantifiable Directed Associations:** Explicitly quantifies directed relationships between specific features across modalities (e.g., from a physiological spectral band to a biochemical metabolite)
+* **Temporal Dynamics Revealed:** Uncovers that tolerant genotypes establish cross-modal coordination networks **earlier** in the stress response, providing quantitative evidence for an "early response" hypothesis of resilience
+* **Proven Generalisability:** Validated on an independent single-cell dataset, discovering a novel, non-linear link between a cellular phenotype and the stress-related lncRNA NEAT1
+* **Rigorous Statistical Validation:** All discoveries are backed by statistical testing, including permutation tests for the NEAT1 discovery (**p=0.0099**, Cohen's d=1.14)
+* **Complementary Feature Discovery:** Integrates variance-driven (MOFA+) and prediction-driven (SHAP) feature analysis to provide a more holistic view of feature importance
 
-> **Key numbers**
+> **Key Numbers**
 > * 336 raw plant samples × 4 omics views
 > * 2,151 spectral bands | 2,471 molecular features after curation
 > * 12 latent factors capturing genotype, time and treatment axes
 > * 519 MOFA-selected features driving 95-100% classifier F1 scores
+> * Independent validation on HyperSeq single-cell dataset with statistical significance (p=0.0099)
 
 ## 🛠️ Framework Workflow
 
@@ -189,7 +195,7 @@ flowchart TD
  │       ├── 📜 figure_S1.mmd                  # LCMS data processing flow-chart
  │       ├── 📜 figure_S3.py                   # Hyperspectral data quality assessment
  │       ├── 📜 figure_S4.mmd                  # Augmentation pipeline
- │       ├── 📜 figure_S5-8.py                 # Augmentation assesment
+ │       ├── 📜 figure_S5-8.py                 # Augmentation assessment
  │       ├── 📜 figure_S9.py                   # MOFA+ cross-view network
  │       ├── 📜 figure_S10.py                  # Confusion matrices - transformer
  │       └── 📜 figure_S11-13.py               # Cross-modal relationship, Temporal pattern , Biomarker
@@ -198,13 +204,13 @@ flowchart TD
  │    └── README.md                            # Description of data files, format, and origin.
  │
  ├── 📂 reports/
- │    └── README.md                              # HTML reports
+ │    └── README.md                            # HTML reports
  │
  ├── 📜 README.md                             # Project overview, setup, how to run, citation, and SR mapping.
  └── 📜 requirements.txt                      # Pip requirements file (can be generated from conda env).
 ```
 
-*Raw data is archived in (yet to be updated) ) (see `data/README` for download script)*
+*Raw data is archived at [repository link] (see `data/README` for download script)*
 
 ## 🚀 Installation
 
@@ -224,25 +230,43 @@ pip install -r requirements.txt
 pip install -e .
 ```
 
-## 📊 Dataset and Preprocessing
+## 📊 Applications and Use Cases
 
-Our study used a comprehensive dataset designed to capture diverse osmotic stress responses, including:
+The MOFA+ Transformer framework is designed for broad applicability across biological systems requiring multi-omics integration:
+
+### Primary Demonstration: Plant Osmotic Stress
+Our comprehensive validation used wheat genotypes under controlled osmotic stress conditions, including:
 
 - **Tissue Types**: Root and Leaf
 - **Stress Treatments**: Acute (Batch 1) and Mild prolonged (Batch 2) osmotic stress
 - **Genotypes**: G1 (drought-tolerant) and G2 (drought-susceptible)
-- **Time Points**: Days 1, 2, and 3
+- **Time Points**: Days 1, 2, and 3 (representing early, intermediate, and late adaptation phases)
 - **Data Types**:
-  - Hyperspectral reflectance (350-2500 nm, 2151 wavelengths)
-  - Untargeted metabolomics (1721 features in root, 1418 in leaf)
+  - Hyperspectral reflectance (350-2500 nm, 2,151 wavelengths)
+  - Untargeted metabolomics (1,721 molecular features in root, 1,418 in leaf)
 
+### Independent Validation: Single-Cell Multi-Omics
+Framework generalisability confirmed on the HyperSeq dataset, demonstrating:
+- Discovery of novel links between cellular phenotypes and molecular features
+- Statistical validation of attention patterns (p=0.0099)
+- Non-linear relationship detection beyond standard correlation methods
+
+### Broader Applications
+The framework's interpretable, dynamic approach makes it suitable for:
+- **Clinical Research**: Patient stratification and treatment response prediction
+- **Cancer Biology**: Tumour heterogeneity and therapeutic target identification
+- **Environmental Science**: Ecosystem response coordination analysis
+- **Biotechnology**: Pathway engineering optimisation
+- **Developmental Biology**: Temporal coordination during development
+
+## 🧬 Data Preprocessing Pipeline
 
 ### Metabolomic Data Quality Assessment and Preprocessing
 
-Before analysis, we performed rigorous quality assessment of the untargated LCMS data to ensure data integrity while preserving biologically relevant signals:
+Before analysis, we performed rigorous quality assessment of the untargeted LCMS data to ensure data integrity while preserving biologically relevant signals:
 
 ```mermaid
-   graph TD
+graph TD
     %% Major Steps with darker shades
     A([Raw Data]) --> B[Keep columns with ≥3 reps]
     B --> C[Visualise missing values]
@@ -289,10 +313,9 @@ Before analysis, we performed rigorous quality assessment of the untargated LCMS
     linkStyle default stroke:#2e7d32,stroke-width:1px
 ```
 
-
 ### Spectral Data Quality Assessment and Preprocessing
 
-Before analysis, we performed rigorous quality assessment of the hyperspectral data to ensure data integrity while preserving biologically relevant signals:
+Rigorous quality assessment was performed on the hyperspectral data to ensure data integrity while preserving biologically relevant signals:
 
 ```mermaid
 flowchart TB
@@ -415,13 +438,11 @@ flowchart TB
     classDef outputStyle fill:#e7f5d9,stroke:#333,stroke-width:1px
 ```
 
-
 ### Data Preprocessing Summary
 
 - **Metabolomic Data**: Missing value analysis, Random Forest imputation, outlier detection via Isolation Forest, and asinh transformation
 - **Spectral Data**: Quality assessment using robust statistical methods (IQR, Modified Z-score, Local Outlier Factor), signal quality analysis (Median STD=0.080), and normality assessment (90.7% non-normal)
 - **Augmentation**: 8-fold increase using spectral methods (GP, MIX, WARP, SCALE, NOISE, ADD, MULT) and metabolomic methods (SCALE: 5x, MIX: 2x)
-
 
 ## 🔧 Software Stack
 
@@ -437,51 +458,33 @@ flowchart TB
 
 A full, frozen dependency list is in `requirements.txt`.
 
-
 ## 📦 Validation Reports
 
-Detailed HTML validation reports are available in the `html/` directory:
+Detailed HTML validation reports are available in the `reports/` directory:
 
-- [SR1: Spectral Quality Control Report](html/integrated_qc_report_enhanced.html)
-- [SR2: Advanced Spectral Validation Report](html/advanced_validation_summary_spectra.html)
-- [SR3: Molecular Feature Leaf Quality Control Report](html/integrated_qc_report_leaf.html)
-- [SR4: Molecular Feature Root Quality Control Report](html/integrated_qc_report_root.html)
-- [SR5: Cross-Modality Validation Report](html/cross_modality_report_main_pipeline.html)
-- [SR6: Divergence Analysis Reports](html/divergence_summary.html)
-- [SR7: Molecular Feature Batch (acute and prolonged stress) Effect Validation](html/divergence_summary.html)
+- [SR1: Spectral Quality Control Report](reports/integrated_qc_report_enhanced.html)
+- [SR2: Advanced Spectral Validation Report](reports/advanced_validation_summary_spectra.html)
+- [SR3: Molecular Feature Leaf Quality Control Report](reports/integrated_qc_report_leaf.html)
+- [SR4: Molecular Feature Root Quality Control Report](reports/integrated_qc_report_root.html)
+- [SR5: Cross-Modality Validation Report](reports/cross_modality_report_main_pipeline.html)
+- [SR6: Divergence Analysis Reports](reports/divergence_summary.html)
+- [SR7: Molecular Feature Batch Effect Validation](reports/batch_effect_validation.html)
 
-These reports can also be accessed via GitHub at [https://github.com/shoaibms/mofa_transformer/tree/main/html](https://github.com/shoaibms/mofa_transformer/tree/main/html)
-
+These reports can also be accessed via GitHub at [https://github.com/shoaibms/mofa_transformer/tree/main/reports](https://github.com/shoaibms/mofa_transformer/tree/main/reports)
 
 ## 📜 License
 
 This project is released under the MIT License - see the [LICENSE](LICENSE) file for details.
 
-## 📇 Citation
-
-If you use this code or methodology in your research, please cite our paper:
-
-```bibtex
-@article{Mirza_etal_2025_MOFATransformer,
-  title={MOFA+ Transformer: An Interpretable Deep Learning Framework for Elucidating Dynamic Spectral-Metabolomic Relationships in Plant Osmotic Stress Adaptation},
-  author={Mirza, Shoaib M. and co-authors},
-  journal={Journal Name},
-  year={2025},
-  volume={},
-  pages={},
-  doi={10.5281/yet to be update.xxxxxx}
-}
-```
-
-BibTeX available in `CITATION.cff`.
-
 ## ✉️ Contact
 
-**Lead developer:** Shoaib M. Mirza – shoaibmirza2200@gmail.com
+**Lead Developer:** Shoaib M. Mirza – shoaibmirza2200@gmail.com
 
+**Project Repository:** [https://github.com/shoaibms/mofa_transformer](https://github.com/shoaibms/mofa_transformer)
 
 ## 🙏 Acknowledgments
 
 - This work was supported by Agriculture Victoria Research
-- We thank [acknowledgments] for their valuable feedback and support.
-
+- We thank the HyperSeq dataset authors for making their data publicly available
+- Special thanks to the MOFA+ and PyTorch development teams
+- We appreciate valuable feedback from the systems biology community
