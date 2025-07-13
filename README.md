@@ -485,4 +485,3 @@ This project is released under the MIT License.
 - This work was supported by Agriculture Victoria Research
 - We thank the HyperSeq dataset authors for making their data publicly available
 - Special thanks to the MOFA+ and PyTorch development teams
-- We appreciate valuable feedback from the systems biology community
