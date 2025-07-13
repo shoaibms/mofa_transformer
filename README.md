@@ -472,7 +472,7 @@ These reports can also be accessed via GitHub at [https://github.com/shoaibms/mo
 
 ## 📜 License
 
-This project is released under the MIT License - see the [LICENSE](LICENSE) file for details.
+This project is released under the MIT License.
 
 ## ✉️ Contact
 
