@@ -468,7 +468,7 @@ Detailed HTML validation reports are available in the `reports/` directory:
 - [SR6: Divergence Analysis Reports](https://github.com/shoaibms/mofa_transformer/blob/main/html/SR6.html)
 - [SR7: Molecular Feature Batch Effect Validation](https://github.com/shoaibms/mofa_transformer/blob/main/html/SR7.html)
 
-These reports can also be accessed via GitHub at [https://github.com/shoaibms/mofa_transformer/tree/main/reports](https://github.com/shoaibms/mofa_transformer/tree/main/reports)
+These reports can also be accessed via GitHub at [https://github.com/shoaibms/mofa_transformer/tree/main/reports](https://github.com/shoaibms/mofa_transformer/tree/main/html)
 
 ## 📜 License
 
