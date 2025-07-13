@@ -454,13 +454,13 @@ A full, frozen dependency list is in `requirements.txt`.
 
 Detailed HTML validation reports are available in the `reports/` directory:
 
-- [SR1: Spectral Quality Control Report](https://github.com/shoaibms/mofa_transformer/blob/main/html/SR1.html)
-- [SR2: Advanced Spectral Validation Report](https://github.com/shoaibms/mofa_transformer/blob/main/html/SR2.html)
-- [SR3: Molecular Feature Leaf Quality Control Report](https://github.com/shoaibms/mofa_transformer/blob/main/html/SR3.html)
-- [SR4: Molecular Feature Root Quality Control Report](https://github.com/shoaibms/mofa_transformer/blob/main/html/SR4.html)
-- [SR5: Cross-Modality Validation Report](https://github.com/shoaibms/mofa_transformer/blob/main/html/SR5.html)
-- [SR6: Divergence Analysis Reports](https://github.com/shoaibms/mofa_transformer/blob/main/html/SR6.html)
-- [SR7: Molecular Feature Batch Effect Validation](https://github.com/shoaibms/mofa_transformer/blob/main/html/SR7.html)
+- [SR1: Spectral Quality Control Report](https://htmlpreview.github.io/?https://github.com/shoaibms/mofa_transformer/blob/main/html/SR1.html)
+- [SR2: Advanced Spectral Validation Report](https://htmlpreview.github.io/?https://github.com/shoaibms/mofa_transformer/blob/main/html/SR2.html)
+- [SR3: Molecular Feature Leaf Quality Control Report](https://htmlpreview.github.io/?https://github.com/shoaibms/mofa_transformer/blob/main/html/SR3.html)
+- [SR4: Molecular Feature Root Quality Control Report](https://htmlpreview.github.io/?https://github.com/shoaibms/mofa_transformer/blob/main/html/SR4.html)
+- [SR5: Cross-Modality Validation Report](https://htmlpreview.github.io/?https://github.com/shoaibms/mofa_transformer/blob/main/html/SR5.html)
+- [SR6: Divergence Analysis Reports](https://htmlpreview.github.io/?https://github.com/shoaibms/mofa_transformer/blob/main/html/SR6.html)
+- [SR7: Molecular Feature Batch Effect Validation](https://htmlpreview.github.io/?https://github.com/shoaibms/mofa_transformer/blob/main/html/SR7.html)
 
 These reports can also be accessed via GitHub at [https://github.com/shoaibms/mofa_transformer/tree/main/reports](https://github.com/shoaibms/mofa_transformer/tree/main/html)
 
