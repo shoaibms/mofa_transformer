@@ -460,7 +460,7 @@ A full, frozen dependency list is in `requirements.txt`.
 
 Detailed HTML validation reports are available in the `reports/` directory:
 
-- [SR1: Spectral Quality Control Report](reports/integrated_qc_report_enhanced.html)
+- [SR1: Spectral Quality Control Report](https://github.com/shoaibms/mofa_transformer/blob/main/html/SR1.html)
 - [SR2: Advanced Spectral Validation Report](reports/advanced_validation_summary_spectra.html)
 - [SR3: Molecular Feature Leaf Quality Control Report](reports/integrated_qc_report_leaf.html)
 - [SR4: Molecular Feature Root Quality Control Report](reports/integrated_qc_report_root.html)
