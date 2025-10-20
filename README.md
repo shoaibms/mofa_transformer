@@ -12,29 +12,85 @@
 
 ## Overview
 
-Multi-omics integration holds transformative potential for decoding complex biological systems. However, current analytical frameworks—including correlation-based and latent variable models—often fail to capture the directed, feature-specific relationships and temporal dynamics essential for mechanistic understanding. This repository contains the implementation of **MOFA+ Transformer**, a novel, interpretable deep learning framework designed to overcome these limitations.
+Multi-omics integration promises mechanistic insight, but most pipelines—correlation matrices, latent-variable models, and off-the-shelf deep nets—struggle to resolve the feature-specific, time-resolved, and asymmetric (predictive) relationships that drive biological responses.
 
-MOFA+ Transformer synergistically combines unsupervised variance decomposition (MOFA+) with an attention-based deep learning architecture (Transformer). This dual approach allows the framework to first identify robust, biologically relevant patterns of variation across multiple omics layers and then to dissect the specific, directed interactions that drive these patterns. By employing cross-modal attention, it explicitly quantifies inter-modality links and their evolution over time, shifting the analytical paradigm from simply identifying *what* features are correlated to revealing *how* and *when* they are coordinated.
+**MOFA+ Transformer** addresses this by pairing unsupervised variance decomposition (MOFA+) with a cross-modal Transformer that reveals **when** and **how** specific feature pairs (e.g., spectral–metabolite) coordinate during stress adaptation.
+
+### How It Works
+
+1. **MOFA+** first organises variation into interpretable latent factors across data views (e.g., hyperspectral reflectance and LC-MS metabolomics)
+2. Those factors guide feature selection for a **Transformer** whose cross-attention mechanism provides quantitative, feature-pair interaction scores—both overall and condition-specific (by genotype, treatment, timepoint)
+3. **SHAP analysis** contrasts variance-driving (MOFA+) and prediction-driving (model) features, revealing where mechanistic and predictive insights converge or diverge
+
+This dual-discovery approach enables you to trace which specific feature pairs drive biological outcomes and when they activate during the response trajectory.
+
+### What's Included
+
+This repository contains the **complete, reproducible implementation**:
+- **Data preprocessing** → **MOFA+ decomposition** → **Transformer training + attention/SHAP analysis** → **Figure generation**
+- Step-by-step `REPRODUCE_*.md` guides aligned to manuscript sections
+- All analysis scripts organised by pipeline stage
+- Validation on independent HyperSeq single-cell dataset (GEO: GSE254034)
+
+> **Note:** Attention and SHAP expose asymmetric, predictive associations; they are not causal by themselves. Establishing causality requires additional experimental validation.
 
 ## 🔍 Abstract
 
-Current multi-omics integration methods fail to capture the directed, dynamic relationships essential for mechanistic understanding. We introduce MOFA+ Transformer, a novel framework combining Multi-Omics Factor Analysis+ (MOFA+) with Transformer cross-modal attention to quantify specific inter-modality feature relationships and their temporal evolution. Applied to plant drought stress, we demonstrate that tolerance emerges from coordination network timing and architecture, not just individual molecular differences, with tolerant genotypes deploying stronger, earlier spectral-metabolite networks than susceptible ones. Critically, integrating variance-driven (MOFA+) and prediction-driven (SHAP) feature analyses uncovered complementary mechanistic insights. On an independent single-cell dataset, the framework confirmed its generalisability, discovering and validating (p=0.0099) a non-linear link between cellular autofluorescence and the lncRNA NEAT1, a connection missed by correlation analysis. Thus, by delivering interpretable insights, MOFA+ Transformer enables the transition from descriptive multi-omics to predictive, mechanistic understanding, providing a powerful tool for hypothesis-driven discovery across systems biology and clinical research.
+Multi-omics studies often capture co-variation but struggle to resolve the asymmetric, time-resolved feature relationships that underpin biological responses. We present MOFA+ Transformer, an interpretable deep learning framework coupling variance decomposition (MOFA+) with cross-modal Transformer attention to quantify which specific feature pairs drive biological outcomes and when. A key innovation is explicitly contrasting variance-driving features (MOFA+) with prediction-driving features (SHAP), revealing largely distinct sets with complementary mechanistic insights. In time-series wheat osmotic stress integrating hyperspectral physiology with LC-MS metabolomics, tolerance reflects the timing and architecture of spectral-to-metabolite coordination rather than abundance per se, with 3.6-fold stronger coordination in tolerant genotypes at peak stress (FDR < 3.2×10⁻⁴). In an independent single-cell imaging-transcriptomics dataset (HyperSeq; human cells), we validate a non-linear link between cellular autofluorescence and the stress-related lncRNA NEAT1 (permutation p = 0.0099; Cohen's d = 1.14) undetectable by simple correlation (r = −0.023). MOFA+ Transformer yields testable, mechanism-centred hypotheses across data modalities, biological scales, and organisms whilst remaining interpretable.
 
 ## ✨ Key Contributions & Highlights
 
-* **Novel Interpretable Framework:** Combines unsupervised factor analysis with interpretable deep learning to move beyond correlation and uncover dynamic, functional relationships
-* **Quantifiable Directed Associations:** Explicitly quantifies directed relationships between specific features across modalities (e.g., from a physiological spectral band to a biochemical metabolite)
-* **Temporal Dynamics Revealed:** Uncovers that tolerant genotypes establish cross-modal coordination networks **earlier** in the stress response, providing quantitative evidence for an "early response" hypothesis of resilience
-* **Proven Generalisability:** Validated on an independent single-cell dataset, discovering a novel, non-linear link between a cellular phenotype and the stress-related lncRNA NEAT1
-* **Rigorous Statistical Validation:** All discoveries are backed by statistical testing, including permutation tests for the NEAT1 discovery (**p=0.0099**, Cohen's d=1.14)
-* **Complementary Feature Discovery:** Integrates variance-driven (MOFA+) and prediction-driven (SHAP) feature analysis to provide a more holistic view of feature importance
+### 🔬 Methodological Innovations
 
-> **Key Numbers**
-> * 336 raw plant samples × 4 omics views
-> * 2,151 spectral bands | 2,471 molecular features after curation
-> * 12 latent factors capturing genotype, time and treatment axes
-> * 519 MOFA-selected features driving 95-100% classifier F1 scores
-> * Independent validation on HyperSeq single-cell dataset with statistical significance (p=0.0099)
+**Interpretable Deep Learning for Multi-Omics**  
+Pairs MOFA+ (unsupervised variance decomposition) with Transformer cross-attention to move beyond static correlation and expose asymmetric, predictive, time-resolved feature-pair relationships.
+
+**Feature-Pair Granularity**  
+Quantifies specific cross-modal pairs (e.g., spectral wavelength `565 nm` → metabolite `N_1909`) so you can generate targeted, testable hypotheses.
+
+**Temporal Coordination Networks**  
+Shows that tolerance relates to when and how cross-modal coordination turns on: tolerant genotypes exhibit approximately 3.6× stronger coordination at peak stress and earlier onset (root first, then leaf).
+
+**Dual-Perspective "Importance"**  
+Integrates variance-driving features (MOFA+) with prediction-driving features (SHAP). Their limited overlap (Jaccard ≈ 0.02–0.18) highlights complementary biological insights and pinpoints robust biomarkers where they converge.
+
+> **Note:** Attention/SHAP reveal asymmetric, predictive associations; they are not causal by themselves.
+
+---
+
+### 🎯 Key Discoveries
+
+| Discovery | Evidence (Summary) |
+|-----------|-------------------|
+| **Early Response Hypothesis** | Tolerant lines show approximately 2.5× stronger coordination at initial stress (BH-FDR < 3.2×10⁻⁴) |
+| **Tissue-Specific Strategies** | Leaf: approximately 355% stronger coordination in tolerant vs susceptible at peak stress; Root: approximately 39% weaker (distinct strategy) |
+| **Spectral "Sweet Spot"** | 546–635 nm band repeatedly flagged by MOFA+ and SHAP (Jaccard ≈ 0.18) |
+| **Non-Linear Single-Cell Link** | Cellular autofluorescence → NEAT1 association in HyperSeq (p = 0.0099, Cohen's d ≈ 1.14); invisible to simple correlation (r ≈ −0.023) |
+
+---
+
+### 📊 Dataset Scale & Evaluation
+
+**Primary (Wheat Osmotic Stress)**
+- 336 raw samples → 2,688 training/validation via augmentation (7 QC reports: `SR1–SR7.html`); test set uses only original samples
+- 2,151 spectral features + 2,471 molecular features after curation
+- Approximately 11 active MOFA+ factors capturing genotype, treatment and time
+- MOFA+-guided subset (approximately 500 features total; e.g., approximately 519 in manuscript config)
+- Metrics logged to `model_performance_summary.csv` on the held-out original test set
+
+**Independent Validation (HyperSeq Single-Cell)**
+- GEO: GSE254034 (paired imaging-transcriptomics, human cells)
+- Recovers stress/metabolism signal (e.g., *HSPA6*, *COX6C*); validates NEAT1 link (permutation p = 0.0099, d ≈ 1.14)
+
+---
+
+### ✅ Reproducibility & Rigour
+
+- **End-to-end scripts**: Raw data → preprocessing → MOFA+ → Transformer → figures (`REPRODUCE_01–05`)
+- **Statistical validation**: BH-FDR throughout; permutation tests for single-cell validation; bootstrap stability (e.g., approximately 96% feature retention)
+- **Exact train/val/test splits** and environment files included
+
+> **Bottom Line:** MOFA+ Transformer shifts multi-omics from *"what co-varies"* to *"which features predictively coordinate, when, and how strongly"*—yielding testable, mechanism-centred hypotheses with quantified evidence.
 
 ## 🛠️ Framework Workflow
 
@@ -96,10 +152,10 @@ flowchart TD
 ```
 
 ## 🗂️ Repository Structure
-
 ```
 📦 mofa_transformer_osmotic_stress/
  ├── 📂 01_data_preprocessing/
+ │   ├── 📄 REPRODUCE_01_preprocessing.md     # Reproducibility guide for preprocessing
  │   ├── 📂 01_augmentation/
  │   │   ├── 📜 aug_mol_features.py            # Augments molecular feature datasets.
  │   │   ├── 📜 aug_spectral_data.py           # Augments spectral datasets.
@@ -140,67 +196,97 @@ flowchart TD
  │   │   ├── 📜 transform_metrics.py           # Metabolomics data transformation: evaluation metrics.
  │   │   └── 📜 variance_calc.py               # rMAD-based variable selection for metabolomics.
  │   │
- │   └── 📂 04_utilities/                      # General utilities
+ │   └── 📂 04_utilities/
  │       └── 📜 colour_utils.py                # Utility functions for colour handling in plots.
  │
  ├── 📂 02_analysis/
+ │   ├── 📄 REPRODUCE_02_mofa.md               # Reproducibility guide for MOFA+ analysis
+ │   ├── 📄 REPRODUCE_03_transformer.md        # Reproducibility guide for Transformer training & analysis
+ │   ├── 📄 REPRODUCE_04_hyperseq.md           # Reproducibility guide for HyperSeq validation
+ │   │
  │   ├── 📂 01_mofa_plus/
  │   │   ├── 📜 viz_mofa_results.py            # Enhanced MOFA+ results visualisation.
- │   │   ├── 📜 viz_mofa_results.txt           # launcher script for viz_mofa_results.py.
+ │   │   ├── 📜 viz_mofa_results.txt           # Launcher script for viz_mofa_results.py.
  │   │   ├── 📜 mofa_bootstrap.py              # MOFA+ bootstrap stability analysis.
  │   │   ├── 📜 mofa_permutation_test.py       # MOFA+ permutation test for factor-metadata association.
  │   │   ├── 📜 run_mofa_analysis.py           # Main script for MOFA+ analysis and validation.
  │   │   └── 📜 select_mofa_features.py        # MOFA+ feature selection script.
  │   │
  │   ├── 📂 02_transformer_model/
- │   │   ├── 📜 analyse_transformer_shap.py     # SHAP analysis for multi-omic transformer (feature attention).
- │   │   ├── 📜 plot_transformer_attention.py   # Multi-wavelength attention analysis for plant stress.
- │   │   ├── 📜 process_attention_data.py       # Process raw attention data from transformer.
- │   │   ├── 📜 transformer_model.py            # Multi-omic Transformer model implementation.
- │   │   ├── 📜 train_transformer_knn.py        # Trains Transformer (v2b) and compares with KNN.
- │   │   └── 📜 train_transformer_attn.py       # Trains Transformer (v3) with feature attention.
+ │   │   ├── 📜 analyse_transformer_shap.py    # SHAP analysis for multi-omic transformer (feature attention).
+ │   │   ├── 📜 plot_transformer_attention.py  # Multi-wavelength attention analysis for plant stress.
+ │   │   ├── 📜 process_attention_data.py      # Process raw attention data from transformer.
+ │   │   ├── 📜 transformer_model.py           # Multi-omic Transformer model implementation.
+ │   │   ├── 📜 train_transformer_knn.py       # Trains Transformer (v2b) and compares with KNN.
+ │   │   └── 📜 train_transformer_attn.py      # Trains Transformer (v3) with feature attention.
  │   │
- │   └── 📂 03_transformer_summary_and_evaluation/
- │       ├── 📜 summarise_mofa.py              # Summarises MOFA+ analysis results.
- │       ├── 📜 count_mofa_features.py         # Counts MOFA+ selected features.
- │       ├── 📜 aggregate_model_perf.py        # Aggregates predictive model performance metrics.
- │       ├── 📜 process_shap_results.py        # Processes SHAP analysis results.
- │       ├── 📜 analyse_mofa_shap_overlap.py   # Calculates and plots MOFA+ vs SHAP feature overlap.
- │       ├── 📜 analyse_view_attn_stats.py     # Analyses view-level attention statistics from Transformer.
- │       └── 📜 analyse_feature_attn.py        # Analyses conditional feature-level attention from Transformer.
+ │   ├── 📂 03_transformer_summary_and_evaluation/
+ │   │   ├── 📜 summarise_mofa.py              # Summarises MOFA+ analysis results.
+ │   │   ├── 📜 count_mofa_features.py         # Counts MOFA+ selected features.
+ │   │   ├── 📜 aggregate_model_perf.py        # Aggregates predictive model performance metrics.
+ │   │   ├── 📜 process_shap_results.py        # Processes SHAP analysis results.
+ │   │   ├── 📜 analyse_mofa_shap_overlap.py   # Calculates and plots MOFA+ vs SHAP feature overlap.
+ │   │   ├── 📜 analyse_view_attn_stats.py     # Analyses view-level attention statistics from Transformer.
+ │   │   └── 📜 analyse_feature_attn.py        # Analyses conditional feature-level attention from Transformer.
+ │   │
+ │   └── 📂 04_hyperseq_validation/
+ │       ├── 📜 1_mofa_decomposition.py        # MOFA+ factor analysis on HyperSeq dataset.
+ │       ├── 📜 2_train_transformer.py         # Train cross-attention model with permutation test.
+ │       ├── 📜 3_process_attention.py         # Process raw attention tensors from HDF5.
+ │       ├── 📜 4_prepare_visualization_data.py # Extract and compute statistics for Figure 8 plots.
+ │       └── 📜 utils_inspect_outputs.py       # Optional diagnostic utility for HDF5/Feather inspection.
  │
  ├── 📂 03_visualisation/
- │   ├── 📂 01_main_figures/                   # Scripts to generate main paper figures
- │   │   ├── 📜 figure_1.py                    # Figure 1
- │   │   ├── 📜 figure_1.txt                   # launcher script for Figure 1
- │   │   ├── 📜 figure_2.py                    # Figure 2
- │   │   ├── 📜 figure_3.py                    # Figure 3 
- │   │   ├── 📜 figure_4.1.py                  # Figure 4 heatmap
- │   │   ├── 📜 figure_4.2.py                  # Figure 4 stacked_bar
- │   │   ├── 📜 figure_4.3.py                  # Figure 4 attention
- │   │   ├── 📜 figure_5.py                    # Figure 5
- │   │   ├── 📜 figure_6.1.py                  # Figure 6 temporal_evalution
- │   │   ├── 📜 figure_6.2.py                  # Figure 6 temporal_networks
- │   │   └── 📜 figure_6.3.py                  # Figure 6 temporal_trajectories
+ │   ├── 📄 REPRODUCE_05_visualization.md      # Reproducibility guide for figure generation
  │   │
- │   └── 📂 02_supplementary_figures/          # Scripts and sources for supplementary figures
- │       ├── 📜 figure_S1.mmd                  # LCMS data processing flow-chart
- │       ├── 📜 figure_S3.py                   # Hyperspectral data quality assessment
- │       ├── 📜 figure_S4.mmd                  # Augmentation pipeline
- │       ├── 📜 figure_S5-8.py                 # Augmentation assessment
- │       ├── 📜 figure_S9.py                   # MOFA+ cross-view network
- │       ├── 📜 figure_S10.py                  # Confusion matrices - transformer
- │       └── 📜 figure_S11-13.py               # Cross-modal relationship, Temporal pattern , Biomarker
+ │   ├── 📂 01_main_figures/
+ │   │   ├── 📜 Figure_1.py                    # MOFA+ variance decomposition and factor annotation.
+ │   │   ├── 📜 Figure_1.txt                   # Launcher script for Figure 1.
+ │   │   ├── 📜 Figure_2.py                    # SHAP predictive importance analysis.
+ │   │   ├── 📜 Figure_3.py                    # Cross-modal attention networks and statistics.
+ │   │   ├── 📜 Figure_4_a-b.py                # Attention heatmaps (Panels A-B).
+ │   │   ├── 📜 Figure_4_c.py                  # Network coordination landscapes (Panel C).
+ │   │   ├── 📜 Figure_5.py                    # Model performance and biomarker identification.
+ │   │   ├── 📜 Figure_6.py                    # Temporal dynamics and MOFA+/SHAP complementarity.
+ │   │   ├── 📜 Figure_7_a-b.py                # Predictive feature clustering (Panels A-B).
+ │   │   ├── 📜 Figure_7_c-g.py                # Tissue-task predictive importance (Panels C-G).
+ │   │   └── 📜 Figure_8.py                    # HyperSeq validation: generalisability demonstration.
+ │   │
+ │   └── 📂 02_supplementary_figures/
+ │       ├── 📜 Fig_S1.mmd                     # LCMS data processing flowchart (Mermaid diagram).
+ │       ├── 📜 Fig_S2_3_5.py                  # Cross-modal attention dynamics and biomarkers (S2, S3, S5).
+ │       ├── 📜 Fig_S4.py                      # Transformer performance metrics.
+ │       ├── 📜 Fig_S6-7.py                    # LC-MS quality control and preprocessing.
+ │       ├── 📜 Fig_S8.py                      # Hyperspectral data quality assessment.
+ │       ├── 📜 Fig_S9.mmd                     # Data augmentation pipeline (Mermaid diagram).
+ │       ├── 📜 Fig_S10-13.py                  # Augmentation validation and quality assessment.
+ │       └── 📜 Fig_S14.py                     # MOFA+ cross-view integration network.
  │
- ├── 📂 data/                                 # Placeholder for data files (e.g., example data, metadata)
+ ├── 📂 data/
  │    └── README.md                            # Description of data files, format, and origin.
  │
  ├── 📂 reports/
- │    └── README.md                            # HTML reports
+ │    └── README.md                            # HTML reports.
  │
- ├── 📜 README.md                             # Project overview, setup, how to run, citation, and SR mapping.
- └── 📜 requirements.txt                      # Pip requirements file (can be generated from conda env).
+ ├── 📜 README.md                              # Project overview, setup, how to run, citation, and SR mapping.
+ └── 📜 requirements.txt                       # Pip requirements file (can be generated from conda env).
 ```
+
+---
+
+
+## 📖 Reproducibility Documentation
+
+**Complete step-by-step guides for manuscript reproduction:**
+
+1. **REPRODUCE_01_preprocessing.md** → Data preprocessing (LC-MS, spectral QC, augmentation)
+2. **REPRODUCE_02_mofa.md** → MOFA+ factor analysis and feature selection
+3. **REPRODUCE_03_transformer.md** → Transformer training and interpretability analysis
+4. **REPRODUCE_04_hyperseq.md** → External validation on HyperSeq dataset
+5. **REPRODUCE_05_visualization.md** → Figure generation
+
+**Execution order**: Follow documents sequentially (01 → 02 → 03 → 04 → 05)
+
 
 *Raw data is archived at [repository link] (see `data/README` for download script)*
 
@@ -478,4 +564,4 @@ This project is released under the MIT License.
 
 - This work was supported by Agriculture Victoria Research
 - We thank the HyperSeq dataset authors for making their data publicly available
-- Special thanks to the MOFA+ and PyTorch development teams
+
