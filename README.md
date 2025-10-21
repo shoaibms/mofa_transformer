@@ -536,9 +536,8 @@ flowchart TB
 
 A full, frozen dependency list is in `requirements.txt`.
 
-## 📦 Validation Reports
+## 📦 Data Augmentation Validation Reports
 
-Detailed HTML validation reports are available in the `reports/` directory:
 
 - [SR1: Spectral Quality Control Report](https://htmlpreview.github.io/?https://github.com/shoaibms/mofa_transformer/blob/main/html/SR1.html)
 - [SR2: Advanced Spectral Validation Report](https://htmlpreview.github.io/?https://github.com/shoaibms/mofa_transformer/blob/main/html/SR2.html)
