@@ -263,7 +263,11 @@ flowchart TD
  │       └── 📜 Fig_S14.py                     # MOFA+ cross-view integration network.
  │
  ├── 📂 data/
- │    └── README.md                            # Description of data files, format, and origin.
+ │    ├── 📄 hyper_full_w.csv                   # Hyperspectral reflectance data (336 samples × 2,151 wavelengths, 350-2500 nm)
+ │    ├── 📄 n_p_l2.csv                         # Leaf molecular features (N + P ionization modes)
+ │    ├── 📄 n_p_r2.csv                         # Root molecular features (N + P ionization modes)
+ │    └── 📜 README.md                         # Data files description, format, and origin
+ │
  │
  ├── 📂 html/                                 # HTML reports.
  │       ├── 📜 SR1.html                      # Spectral Quality Control Report.
@@ -281,6 +285,28 @@ flowchart TD
 
 ---
 
+
+## 🗄️ Data Availability
+
+### GitHub Data
+This repository includes the core preprocessed input files in the `data/` directory:
+- `hyper_full_w.csv`: Hyperspectral reflectance data (336 samples × 2,151 wavelengths)
+- `n_p_l2.csv`: Leaf molecular features (336 samples × 1,418 features)
+- `n_p_r2.csv`: Root molecular features (336 samples × 1,721 features)
+
+See `data/README.md` for detailed file descriptions and metadata information.
+
+### Raw Data Repository
+**Raw data has been deposited to MetaboLights; the permanent accession will be provided upon acceptance (accession pending during review).**
+
+🔗 **MetaboLights Repository**: https://www.ebi.ac.uk/metabolights/
+
+The MetaboLights repository contains:
+- Raw LC-MS data files (.raw format)
+- Complete sample metadata and experimental protocols
+- Full instrumental method files
+
+---
 
 ## 📖 Reproducibility Documentation
 
