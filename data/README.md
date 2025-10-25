@@ -115,7 +115,7 @@ Transformer Analysis (interpretable cross-modal attention)
 For complete preprocessing workflows, see:
 - **Scripts**: `01_data_preprocessing/` directory
 - **Documentation**: `REPRODUCE_01_preprocessing.md`
-- **QC Reports**: Supplementary Figures S6-S8
+- **QC Reports**: Supplementary Figures S6-S8 and SR1-SR7
 
 ---
 
