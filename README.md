@@ -265,11 +265,18 @@ flowchart TD
  ├── 📂 data/
  │    └── README.md                            # Description of data files, format, and origin.
  │
- ├── 📂 reports/
- │    └── README.md                            # HTML reports.
+ ├── 📂 html/                                 # HTML reports.
+ │       ├── 📜 SR1.html                      # Spectral Quality Control Report.
+ │       ├── 📜 SR2.html                      # Advanced Spectral Validation Report.
+ │       ├── 📜 FSR3.html                     # Molecular Feature Leaf Quality Control Report.
+ │       ├── 📜 FSR4.html                     # Molecular Feature Root Quality Control Report.
+ │       ├── 📜 FSR5.html                     # Cross-Modality Validation Report.
+ │       ├── 📜 SR6.html                      # Divergence Analysis Reports.
+ │       ├── 📜 SR7.html                      # Molecular Feature Batch Effect Validation.
+ │       └── 📜 plots                         # Plot associated with the above 7 reports.
  │
- ├── 📜 README.md                              # Project overview, setup, how to run, citation, and SR mapping.
- └── 📜 requirements.txt                       # Pip requirements file (can be generated from conda env).
+ ├── 📜 README.md                             # Project overview, setup, how to run, citation, and SR mapping.
+ └── 📜 requirements.txt                      # Pip requirements file (can be generated from conda env).
 ```
 
 ---
