@@ -201,7 +201,7 @@ flowchart TD
  │
  ├── 📂 02_analysis/
  │   ├── 📄 REPRODUCE_02_mofa.md               # Reproducibility guide for MOFA+ analysis
- │   ├── 📄 REPRODUCE_03_transformer.md        # Reproducibility guide for Transformer training & analysis
+ │   ├── 📄 REPRODUCE_03_transformer.md        # Reproducibility guide for Transformer analysis
  │   ├── 📄 REPRODUCE_04_hyperseq.md           # Reproducibility guide for HyperSeq validation
  │   │
  │   ├── 📂 01_mofa_plus/
