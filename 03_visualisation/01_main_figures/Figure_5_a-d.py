@@ -9,8 +9,8 @@ Transformer manuscript, analyzing system dynamics, feature integration, and
 coordination efficiency with a consistent and polished aesthetic.
 
 Panels:
-- (a) S→M Attention Structure Dynamics (Coordination Focus)
-- (b) S→M Attention Intensity Dynamics (Peak Connection Strength) 
+- (a) S2M Attention Structure Dynamics (Coordination Focus)
+- (b) S2M Attention Intensity Dynamics (Peak Connection Strength) 
 - (c) Predictive Feature Integration (SHAP vs. Attention)
 - (d) Coordination Efficiency Landscape (Composite Performance Metric)
 
@@ -76,7 +76,7 @@ class Figure5Generator:
             'style': {
                 'colors': {
                     'G1': "#00FA9A",        # Tolerant Genotype
-                    'G2': "#48D1CC",        # Susceptible Genotype
+                    'G2': "#48C8D1",        # Susceptible Genotype
                     'Spectral': '#4169E1',   # Royal Blue
                     'Molecular': '#08722C',  # Dark Green
                     'Hub': "#EFED64",        # Highlight Yellow
@@ -239,7 +239,14 @@ class Figure5Generator:
             
         colors = self.config['style']['colors']
         for (tissue, genotype), subset in data.groupby(['Tissue', 'Genotype']):
-            style = {'linestyle': '-' if tissue == 'Leaf' else '--', 
+            # Distinguish Tissues by line style: Leaf (Solid) vs Root (Dotted/Dashed)
+            # Root G1 is dashed, Root G2 is dotted. Leaf is always solid.
+            if tissue == 'Leaf':
+                linestyle = '-'
+            else:
+                linestyle = '--' if genotype == 'G1' else ':'
+                
+            style = {'linestyle': linestyle, 
                      'marker': 'o' if tissue == 'Leaf' else '^'}
             ax.errorbar(subset['Time_Point'], subset[y_col], yerr=subset[y_err_col],
                         color=colors[genotype], label=f'{genotype} {tissue}', 
@@ -251,16 +258,16 @@ class Figure5Generator:
         ax.set_xticks(sorted(data['Time_Point'].unique()))
 
     def plot_panel_a(self, ax: plt.Axes, data: Optional[pd.DataFrame]):
-        """Plots S→M Attention Structure Dynamics (Coordination Focus)."""
-        self._setup_panel_axis(ax, 'S→M Attention Structure Dynamics', 'a')
+        """Plots S2M Attention Structure Dynamics (Coordination Focus)."""
+        self._setup_panel_axis(ax, 'S2M Attention Structure Dynamics', 'a')
         self._plot_dynamics(ax, data, 'StdAttn_Mean', 'StdAttn_SEM', 
-                            'Network Coordination Focus\n(Mean SD of S→M Attention)')
+                            'Network Coordination Focus\n(Mean SD of S2M Attention)')
     
     def plot_panel_b(self, ax: plt.Axes, data: Optional[pd.DataFrame]):
-        """Plots S→M Attention Intensity Dynamics (Peak Connection Strength)."""
-        self._setup_panel_axis(ax, 'S→M Attention Intensity Dynamics', 'b')
+        """Plots S2M Attention Intensity Dynamics (Peak Connection Strength)."""
+        self._setup_panel_axis(ax, 'S2M Attention Intensity Dynamics', 'b')
         self._plot_dynamics(ax, data, 'P95Attn_Mean', 'P95Attn_SEM',
-                            'Peak Connection Strength\n(Mean 95th Percentile of S→M Attention)')
+                            'Peak Connection Strength\n(Mean 95th Percentile of S2M Attention)')
 
     def plot_panel_c(self, ax: plt.Axes, data: Optional[pd.DataFrame]):
         """Plots Predictive Feature Integration (SHAP vs. Attention)."""
