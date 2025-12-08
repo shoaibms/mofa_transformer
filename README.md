@@ -154,7 +154,7 @@ flowchart TD
 ## 🗂️ Repository Structure
 ```
 📦 mofa_transformer_osmotic_stress/
- ├── 📂 01_data_preprocessing/
+ ├── 📂 1_data_preprocessing/
  │   ├── 📄 REPRODUCE_01_preprocessing.md     # Reproducibility guide for preprocessing
  │   ├── 📂 01_augmentation/
  │   │   ├── 📜 aug_mol_features.py            # Augments molecular feature datasets.
@@ -199,7 +199,7 @@ flowchart TD
  │   └── 📂 04_utilities/
  │       └── 📜 colour_utils.py                # Utility functions for colour handling in plots.
  │
- ├── 📂 02_analysis/
+ ├── 📂 2_analysis/
  │   ├── 📄 REPRODUCE_02_mofa.md               # Reproducibility guide for MOFA+ analysis
  │   ├── 📄 REPRODUCE_03_transformer.md        # Reproducibility guide for Transformer analysis
  │   ├── 📄 REPRODUCE_04_hyperseq.md           # Reproducibility guide for HyperSeq validation
@@ -236,7 +236,7 @@ flowchart TD
  │       ├── 📜 4_prepare_visualization_data.py # Extract and compute statistics for Figure 8 plots.
  │       └── 📜 utils_inspect_outputs.py       # Optional diagnostic utility for HDF5/Feather inspection.
  │
- ├── 📂 03_visualisation/
+ ├── 📂 3_visualisation/
  │   ├── 📄 REPRODUCE_05_visualization.md      # Reproducibility guide for figure generation
  │   │
  │   ├── 📂 01_main_figures/
