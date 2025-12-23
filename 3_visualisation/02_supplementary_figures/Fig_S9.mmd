@@ -1,0 +1,71 @@
+flowchart TB
+    %% Main Input
+    A["Input: Spectral and Molecular Features Data"]:::inputStyle
+    
+    %% Data Augmentation Blocks
+    subgraph DataAug["Data Augmentation"]
+        direction LR
+        B["Spectral Augmentation\n(GP, MIX, WARP, SCALE,\nNOISE, ADD, MULT)"]:::spectralStyle
+        C["Molecular Features Augmentation\nRoot\n(SCALE: 5x, MIX: 2x)"]:::metaStyle
+        D["Molecular Features Augmentation\nLeaf\n(SCALE: 5x, MIX: 2x)"]:::metaStyle
+        BA["Generate Augmented Spectral Data\n(8x increase)"]:::lightSpectralStyle
+        CA["Generate Augmented Root Data\n(8x increase)"]:::lightMetaStyle
+        DA["Generate Augmented Leaf Data\n(8x increase)"]:::lightMetaStyle
+        
+        B --> BA
+        C --> CA
+        D --> DA
+    end
+    
+    %% Validation Block
+    E{"Validation & QC"}:::validationStyle
+    
+    %% Specific Validation Tasks with simplified structure
+    subgraph SpecificTasks["Validation Tasks"]
+        F["Spectral Validation & QC\n- Basic QC, Detailed & Advanced Validation"]:::taskStyle
+        G["Root Features Validation\n- Validation, QC & Batch Effects"]:::taskStyle
+        H["Leaf Features Validation\n- Validation, QC & Batch Effects"]:::taskStyle
+        I["Cross-Modality Validation\n- Cross-Checks & Divergence Analysis"]:::taskStyle
+    end
+    
+    %% Visualisation & Reporting
+    K{"Visualisation & Synthesis"}:::vizStyle
+    L["Integrated Plots & Dashboards"]:::taskStyle
+    M["Final Outputs\n(HTML Reports, Figures, Supplement)"]:::reportStyle
+    
+    %% Main Connections
+    A --> DataAug
+    A --> E
+    
+    %% Data to Validation
+    BA --> E
+    CA --> E
+    DA --> E
+    
+    %% Validation to Specific Tasks
+    E --> F
+    E --> G
+    E --> H
+    E --> I
+    
+    %% Specific Tasks to Visualisation
+    F --> K
+    G --> K
+    H --> K
+    I --> K
+    
+    %% Visualisation to Reporting
+    K --> L
+    L --> M
+    
+    %% Styling
+    classDef inputStyle fill:#5d9c59,stroke:#333,stroke-width:3px
+    classDef spectralStyle fill:#8cc084,stroke:#333,stroke-width:1px
+    classDef metaStyle fill:#a7d489,stroke:#333,stroke-width:1px
+    classDef lightSpectralStyle fill:#c5e8b7,stroke:#333,stroke-width:1px
+    classDef lightMetaStyle fill:#d8f0c6,stroke:#333,stroke-width:1px
+    classDef validationStyle fill:#5d9c59,stroke:#333,stroke-width:3px
+    classDef taskStyle fill:#8cc084,stroke:#333,stroke-width:1px
+    classDef vizStyle fill:#5d9c59,stroke:#333,stroke-width:3px
+    classDef reportStyle fill:#c5e8b7,stroke:#333,stroke-width:3px
+    classDef outputStyle fill:#e7f5d9,stroke:#333,stroke-width:1px
