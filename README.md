@@ -229,7 +229,6 @@ flowchart TD
  │   │   ├── 📜 analyse_mofa_shap_overlap.py   # Calculates and plots MOFA+ vs SHAP feature overlap.
  │   │   ├── 📜 analyse_view_attn_stats.py     # Analyses view-level attention statistics from Transformer.
  │   │   ├── 📜 analyse_feature_attn_v2.py     # Analyses conditional feature-level attention from Transformer.
- │   │   ├── 📜 filter_test_samples_for_interpretability.py  # Filters test samples, removes augmented data.
  │   │   └── 📜 generate_robustness_contract.py # Creates robustness contract JSON for Figure 6.
  │   │
  │   └── 📂 04_hyperseq_validation/
