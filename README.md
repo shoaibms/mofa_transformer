@@ -216,10 +216,10 @@ flowchart TD
  │   ├── 📂 02_transformer_model/
  │   │   ├── 📜 analyse_transformer_shap.py    # SHAP analysis for multi-omic transformer (feature attention).
  │   │   ├── 📜 plot_transformer_attention.py  # Multi-wavelength attention analysis for plant stress.
- │   │   ├── 📜 process_attention_data.py      # Process raw attention data from transformer (v2).
+ │   │   ├── 📜 process_attention_data_v2.py    # Process raw attention data from transformer (v2).
  │   │   ├── 📜 transformer_model.py           # Multi-omic Transformer model implementation.
  │   │   ├── 📜 train_transformer_knn.py       # Trains Transformer (v2b) and compares with KNN.
- │   │   └── 📜 train_transformer_attn.py      # Trains Transformer (v3) with feature attention.
+ │   │   └── 📜 train_transformer_attn_v3.py   # Trains Transformer (v3) with feature attention.
  │   │
  │   ├── 📂 03_transformer_summary_and_evaluation/
  │   │   ├── 📜 summarise_mofa.py              # Summarises MOFA+ analysis results.
@@ -247,7 +247,7 @@ flowchart TD
  │   │   ├── 📜 Figure_2.py                    # SHAP predictive importance analysis.
  │   │   ├── 📜 Figure_3.py                    # Cross-modal attention networks and statistics.
  │   │   ├── 📜 Figure_4_a-b.py                # Attention heatmaps (Panels A-B).
- │   │   ├── 📜 Figure_4_c_f.py                # Network coordination landscapes (Panels C-F).
+ │   │   ├── 📜 Figure_4_c_f_v3.py              # Network coordination landscapes (Panels C-F).
  │   │   ├── 📜 Figure_5.py                    # Model performance and biomarker identification.
  │   │   ├── 📜 Figure_6.py                    # Temporal dynamics and MOFA+/SHAP complementarity (reads robustness contract).
  │   │   ├── 📜 Figure_7_a-b.py                # Predictive feature clustering (Panels A-B).
