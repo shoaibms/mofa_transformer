@@ -34,9 +34,9 @@ This repository contains the **complete, reproducible implementation**:
 
 > **Note:** Attention and SHAP expose asymmetric, predictive associations; they are not causal by themselves. Establishing causality requires additional experimental validation.
 
-## 🔍 Abstract
+## 📝 Abstract
 
-Multi-omics studies often capture co-variation but struggle to resolve the asymmetric, time-resolved feature relationships that underpin biological responses. We present MOFA+ Transformer, an interpretable deep learning framework coupling variance decomposition (MOFA+) with cross-modal Transformer attention to quantify which specific feature pairs drive biological outcomes and when. A key innovation is explicitly contrasting variance-driving features (MOFA+) with prediction-driving features (SHAP), revealing largely distinct sets with complementary mechanistic insights. In time-series wheat osmotic stress integrating hyperspectral physiology with LC-MS metabolomics, tolerance reflects the timing and architecture of spectral-to-metabolite coordination rather than abundance per se, with 3.6-fold stronger coordination in tolerant genotypes at peak stress (FDR < 3.2×10⁻⁴). In an independent single-cell imaging-transcriptomics dataset (HyperSeq; human cells), we validate a non-linear link between cellular autofluorescence and the stress-related lncRNA NEAT1 (permutation p = 0.0099; Cohen's d = 1.14) undetectable by simple correlation (r = −0.023). MOFA+ Transformer yields testable, mechanism-centred hypotheses across data modalities, biological scales, and organisms whilst remaining interpretable.
+Multi-omics studies often capture co-variation but struggle to resolve the asymmetric, time-resolved feature relationships that underpin biological responses. We present MOFA+ Transformer, an interpretable deep learning framework coupling variance decomposition (MOFA+) with cross-modal Transformer attention to quantify which specific feature pairs drive biological outcomes and when. A key innovation is explicitly contrasting variance-driving features (MOFA+) with prediction-driving features (SHAP), revealing largely distinct sets whose rare intersection localises to a constrained spectral interface (546–560 nm; Jaccard = 0.035–0.055). In time-series wheat osmotic stress integrating hyperspectral physiology with LC-MS metabolomics, tolerance reflects the timing and architecture of spectral-to-metabolite coordination rather than abundance per se: tolerant plants show 2.11-fold stronger coordination at stress onset, increasing to 4.74-fold at peak stress (Time Point 3; Mann–Whitney U, BH-FDR < 0.001; Cohen's d = 2.52; genotype × time-point interaction p = 0.007), while root coordination differences remain non-significant (p = 0.705). In an independent single-cell imaging-transcriptomics dataset (HyperSeq; human cells), we validate a non-linear link between cellular autofluorescence and the stress-related lncRNA NEAT1 (permutation p_perm = 0.0002; Cohen's d = 6.63) undetectable by simple correlation (r = −0.023). MOFA+ Transformer yields testable, mechanism-centred hypotheses across data modalities, biological scales, and organisms whilst remaining interpretable.
 
 ## ✨ Key Contributions & Highlights
 
@@ -49,10 +49,10 @@ Pairs MOFA+ (unsupervised variance decomposition) with Transformer cross-attenti
 Quantifies specific cross-modal pairs (e.g., spectral wavelength `565 nm` → metabolite `N_1909`) so you can generate targeted, testable hypotheses.
 
 **Temporal Coordination Networks**  
-Shows that tolerance relates to when and how cross-modal coordination turns on: tolerant genotypes exhibit approximately 3.6× stronger coordination at peak stress and earlier onset (root first, then leaf).
+Shows that tolerance relates to when and how cross-modal coordination turns on: tolerant genotypes exhibit 4.74× stronger coordination at peak stress (leaf tissue) with significant genotype × time interaction (p = 0.007).
 
 **Dual-Perspective "Importance"**  
-Integrates variance-driving features (MOFA+) with prediction-driving features (SHAP). Their limited overlap (Jaccard ≈ 0.02–0.18) highlights complementary biological insights and pinpoints robust biomarkers where they converge.
+Integrates variance-driving features (MOFA+) with prediction-driving features (SHAP). Their limited overlap (Jaccard ≈ 0.035–0.055) highlights complementary biological insights and pinpoints robust biomarkers where they converge.
 
 > **Note:** Attention/SHAP reveal asymmetric, predictive associations; they are not causal by themselves.
 
@@ -62,10 +62,11 @@ Integrates variance-driving features (MOFA+) with prediction-driving features (S
 
 | Discovery | Evidence (Summary) |
 |-----------|-------------------|
-| **Early Response Hypothesis** | Tolerant lines show approximately 2.5× stronger coordination at initial stress (BH-FDR < 3.2×10⁻⁴) |
-| **Tissue-Specific Strategies** | Leaf: approximately 355% stronger coordination in tolerant vs susceptible at peak stress; Root: approximately 39% weaker (distinct strategy) |
-| **Spectral "Sweet Spot"** | 546–635 nm band repeatedly flagged by MOFA+ and SHAP (Jaccard ≈ 0.18) |
-| **Non-Linear Single-Cell Link** | Cellular autofluorescence → NEAT1 association in HyperSeq (p = 0.0099, Cohen's d ≈ 1.14); invisible to simple correlation (r ≈ −0.023) |
+| **Early Response Hypothesis** | Tolerant lines show 2.11× stronger coordination at initial stress (BH-FDR = 0.009) |
+| **Peak Stress Coordination** | Leaf: 4.74× stronger coordination in tolerant vs susceptible at peak stress (Cohen's d = 2.52; BH-FDR < 0.001) |
+| **Tissue-Specific Strategies** | Leaf: progressive coordination advantage; Root: non-significant differences (p = 0.705) |
+| **Spectral "Sweet Spot"** | 546–560 nm band repeatedly flagged by MOFA+ and SHAP (Jaccard ≈ 0.035–0.055) |
+| **Non-Linear Single-Cell Link** | Cellular autofluorescence → NEAT1 association in HyperSeq (p_perm = 0.0002, Cohen's d = 6.63); invisible to simple correlation (r ≈ −0.023) |
 
 ---
 
@@ -80,7 +81,7 @@ Integrates variance-driving features (MOFA+) with prediction-driving features (S
 
 **Independent Validation (HyperSeq Single-Cell)**
 - GEO: GSE254034 (paired imaging-transcriptomics, human cells)
-- Recovers stress/metabolism signal (e.g., *HSPA6*, *COX6C*); validates NEAT1 link (permutation p = 0.0099, d ≈ 1.14)
+- Recovers stress/metabolism signal (e.g., *HSPA6*, *COX6C*); validates NEAT1 link (permutation p_perm = 0.0002, d = 6.63)
 
 ---
 
@@ -215,7 +216,7 @@ flowchart TD
  │   ├── 📂 02_transformer_model/
  │   │   ├── 📜 analyse_transformer_shap.py    # SHAP analysis for multi-omic transformer (feature attention).
  │   │   ├── 📜 plot_transformer_attention.py  # Multi-wavelength attention analysis for plant stress.
- │   │   ├── 📜 process_attention_data.py      # Process raw attention data from transformer.
+ │   │   ├── 📜 process_attention_data.py      # Process raw attention data from transformer (v2).
  │   │   ├── 📜 transformer_model.py           # Multi-omic Transformer model implementation.
  │   │   ├── 📜 train_transformer_knn.py       # Trains Transformer (v2b) and compares with KNN.
  │   │   └── 📜 train_transformer_attn.py      # Trains Transformer (v3) with feature attention.
@@ -227,7 +228,9 @@ flowchart TD
  │   │   ├── 📜 process_shap_results.py        # Processes SHAP analysis results.
  │   │   ├── 📜 analyse_mofa_shap_overlap.py   # Calculates and plots MOFA+ vs SHAP feature overlap.
  │   │   ├── 📜 analyse_view_attn_stats.py     # Analyses view-level attention statistics from Transformer.
- │   │   └── 📜 analyse_feature_attn.py        # Analyses conditional feature-level attention from Transformer.
+ │   │   ├── 📜 analyse_feature_attn_v2.py     # Analyses conditional feature-level attention from Transformer.
+ │   │   ├── 📜 filter_test_samples_for_interpretability.py  # Filters test samples, removes augmented data.
+ │   │   └── 📜 generate_robustness_contract.py # Creates robustness contract JSON for Figure 6.
  │   │
  │   └── 📂 04_hyperseq_validation/
  │       ├── 📜 1_mofa_decomposition.py        # MOFA+ factor analysis on HyperSeq dataset.
@@ -245,9 +248,9 @@ flowchart TD
  │   │   ├── 📜 Figure_2.py                    # SHAP predictive importance analysis.
  │   │   ├── 📜 Figure_3.py                    # Cross-modal attention networks and statistics.
  │   │   ├── 📜 Figure_4_a-b.py                # Attention heatmaps (Panels A-B).
- │   │   ├── 📜 Figure_4_c.py                  # Network coordination landscapes (Panel C).
+ │   │   ├── 📜 Figure_4_c_f.py                # Network coordination landscapes (Panels C-F).
  │   │   ├── 📜 Figure_5.py                    # Model performance and biomarker identification.
- │   │   ├── 📜 Figure_6.py                    # Temporal dynamics and MOFA+/SHAP complementarity.
+ │   │   ├── 📜 Figure_6.py                    # Temporal dynamics and MOFA+/SHAP complementarity (reads robustness contract).
  │   │   ├── 📜 Figure_7_a-b.py                # Predictive feature clustering (Panels A-B).
  │   │   ├── 📜 Figure_7_c-g.py                # Tissue-task predictive importance (Panels C-G).
  │   │   └── 📜 Figure_8.py                    # HyperSeq validation: generalisability demonstration.
@@ -359,7 +362,7 @@ Our comprehensive validation used wheat genotypes under controlled osmotic stres
 ### Independent Validation: Single-Cell Multi-Omics
 Framework generalisability confirmed on the HyperSeq dataset, demonstrating:
 - Discovery of novel links between cellular phenotypes and molecular features
-- Statistical validation of attention patterns (p=0.0099)
+- Statistical validation of attention patterns (p_perm = 0.0002)
 - Non-linear relationship detection beyond standard correlation methods
 
 ### Broader Applications
@@ -588,7 +591,7 @@ This project is released under the MIT License.
 
 ## ✉️ Contact
 
-**Lead Developer:** Shoaib M. Mirza – shoaibmirza2200@gmail.com
+**Lead Developer:** Shoaib M. Mirza — shoaibmirza2200@gmail.com
 
 **Project Repository:** [https://github.com/shoaibms/mofa_transformer](https://github.com/shoaibms/mofa_transformer)
 
@@ -596,4 +599,3 @@ This project is released under the MIT License.
 
 - This work was supported by Agriculture Victoria Research
 - We thank the HyperSeq dataset authors for making their data publicly available
-
