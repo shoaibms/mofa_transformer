@@ -255,14 +255,14 @@ flowchart TD
  │   │   └── 📜 Figure_8.py                    # HyperSeq validation: generalisability demonstration.
  │   │
  │   └── 📂 02_supplementary_figures/
- │       ├── 📜 Fig_S1.mmd                     # LCMS data processing flowchart (Mermaid diagram).
+ │       ├── 📜 Fig_S1.py                      # Cross-View Feature Integration Network.
  │       ├── 📜 Fig_S2_3_5.py                  # Cross-modal attention dynamics and biomarkers (S2, S3, S5).
  │       ├── 📜 Fig_S4.py                      # Transformer performance metrics.
- │       ├── 📜 Fig_S6-7.py                    # LC-MS quality control and preprocessing.
+ │       ├── 📜 Fig_S6.mmd                     # LC-MS Data Preprocessing Workflow.
+ │       ├── 📜 Fig_S7.py                      # LC-MS Data Preprocessing and Evaluation.
  │       ├── 📜 Fig_S8.py                      # Hyperspectral data quality assessment.
  │       ├── 📜 Fig_S9.mmd                     # Data augmentation pipeline (Mermaid diagram).
- │       ├── 📜 Fig_S10-13.py                  # Augmentation validation and quality assessment.
- │       └── 📜 Fig_S14.py                     # MOFA+ cross-view integration network.
+ │       └── 📜 Fig_S10-13.py                  # Augmentation validation and quality assessment.
  │
  ├── 📂 data/
  │    ├── 📄 hyper_full_w.csv                   # Hyperspectral reflectance data (336 samples × 2,151 wavelengths, 350-2500 nm)
