@@ -211,8 +211,7 @@ flowchart TD
  │   │   ├── 📜 mofa_bootstrap.py              # MOFA+ bootstrap stability analysis.
  │   │   ├── 📜 mofa_permutation.py            # MOFA+ permutation test for factor-metadata association.
  │   │   ├── 📜 run_mofa_analysis.py           # Main script for MOFA+ analysis and validation.
- │   │   ├── 📜 select_mofa_features.py        # MOFA+ feature selection script.
- │   │   └── 📜 create_supplementary_data_s1.py # Generates Supplementary Data S1.
+ │   │   └── 📜 select_mofa_features.py        # MOFA+ feature selection script.
  │   │
  │   ├── 📂 02_transformer_model/
  │   │   ├── 📜 analyse_transformer_shap_v2.py # SHAP analysis for multi-omic transformer (feature attention).
