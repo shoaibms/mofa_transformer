@@ -31,12 +31,12 @@ python train_transformer_attn.py
 - **Decoder**: Separate heads for 3 tasks (Genotype, Treatment, Timepoint)
 
 **Key parameters**:
-- `hidden_dim=64`
-- `num_heads=4`
+- `hidden_dim=128`
+- `num_heads=8`
 - `num_layers=2`
 - `dropout=0.1`
-- `epochs=150`
-- `batch_size=16`
+- `epochs=100`
+- `batch_size=32`
 
 **Process**:
 1. Split data (train/val/test: 60/20/20)
@@ -55,31 +55,7 @@ python train_transformer_attn.py
 
 ---
 
-### Step 2: Filter Test Samples
-
-```bash
-python filter_test_samples_for_interpretability.py
-```
-
-**Purpose**: Ensure test set contains only original (non-augmented) samples for interpretability analysis.
-
-**Inputs**:
-- `raw_attention_metadata_{Tissue}.feather`
-
-**Process**:
-1. Identify augmented samples by suffix patterns (_GP, _WARP, _SCALE, _NOISE, _ADD, _MULT, _MIX)
-2. Filter to retain only original samples (ending with _L suffix)
-3. Validate sample counts match expected biological replicates
-
-**Outputs**:
-- Filtered metadata for downstream analysis
-- Sample count verification logs
-
-**What next**: Process attention data with clean test samples
-
----
-
-### Step 3: Process Raw Attention Data
+### Step 2: Process Raw Attention Data
 
 ```bash
 python process_attention_data.py
@@ -111,7 +87,7 @@ python process_attention_data.py
 
 ## 📊 Phase 2: Analysis & Interpretation
 
-### Step 4: SHAP Feature Importance Analysis
+### Step 3: SHAP Feature Importance Analysis
 
 ```bash
 python analyse_transformer_shap.py
@@ -140,7 +116,7 @@ python analyse_transformer_shap.py
 
 ---
 
-### Step 5: MOFA+/SHAP Complementarity Analysis
+### Step 4: MOFA+/SHAP Complementarity Analysis
 
 ```bash
 python analyse_mofa_shap_overlap.py
@@ -158,42 +134,15 @@ python analyse_mofa_shap_overlap.py
 
 **Outputs**:
 - `mofa_shap_overlap_analysis.csv`: Overlap metrics per task/tissue
+- Venn diagrams, correlation scatter plots
 
-**Key finding**: Limited overlap (Jaccard ≈ 0.035–0.055) with convergence localised to 546–560 nm spectral range, indicating complementary insights from variance-driving vs prediction-driving features.
+**Key finding**: Leaf-Genotype prediction shows convergence (Jaccard=0.1765) in 546-635 nm spectral range, indicating complementary insights.
 
 **What next**: Results inform Figure 6 analysis
 
 ---
 
-### Step 6: Generate Robustness Contract
-
-```bash
-python generate_robustness_contract.py
-```
-
-**Purpose**: Create robustness verification for MOFA+/SHAP overlap across sensitivity thresholds.
-
-**Inputs**:
-- MOFA+ feature loadings
-- SHAP importance rankings
-
-**Process**:
-1. Sweep across top percentile thresholds (1%, 2.5%, 5%, 10%)
-2. Calculate Jaccard overlap at each threshold
-3. Identify spectral range of overlapping features
-4. Verify in-band percentage (546–560 nm range)
-
-**Outputs**:
-- `robustness_contract.json`: Threshold-specific overlap metrics
-  - Jaccard indices per threshold
-  - Spectral ranges
-  - In-band percentages
-
-**What next**: Figure 6 reads this contract for consistent reporting
-
----
-
-### Step 7: Attention-Based Network Analysis
+### Step 5: Attention-Based Network Analysis
 
 **View-level statistics**:
 ```bash
@@ -204,26 +153,16 @@ python analyse_view_attn_stats.py
 
 **Feature-level analysis**:
 ```bash
-python analyse_feature_attn_v2.py
+python analyse_feature_attn.py
 ```
-**Purpose**: Analyze conditional attention patterns (genotype, treatment, timepoint) with plant-level statistics.  
+**Purpose**: Analyze conditional attention patterns (genotype, treatment, timepoint).  
 **Outputs**: 
 - `feature_attention_by_condition_{Tissue}.csv`
 - Temporal trajectory data for Figure 4
-- Plant-level coordination scores with bootstrap CIs
-
-**Key results** (Leaf tissue):
-- Day 1: 2.11× [95% CI: 1.09–4.91], Cohen's d = 1.01, FDR = 0.009
-- Day 2: 4.18× [95% CI: 1.96–7.72], Cohen's d = 1.67, FDR = 0.002
-- Day 3: 4.74× [95% CI: 3.38–6.70], Cohen's d = 2.52, FDR < 0.001
-- Genotype × Time interaction: p = 0.007
-
-**Key results** (Root tissue):
-- No significant coordination differences (p = 0.705)
 
 ---
 
-### Step 8: Summary Statistics
+### Step 6: Summary Statistics
 
 **MOFA results**:
 ```bash
@@ -257,7 +196,6 @@ python aggregate_model_perf.py
 **Interpretability**:
 - SHAP importance rankings (per task/tissue)
 - MOFA+/SHAP overlap analysis
-- Robustness contract (JSON)
 - Feature contribution breakdowns
 
 **Summary stats**:
@@ -285,7 +223,6 @@ python train_transformer_knn.py
 - **File paths**: Update in configuration sections of each script
 - **SHAP computation**: Computationally intensive; uses 100 background samples by default
 - **Attention processing**: Runs separately for leaf/root tissues
-- **Test samples**: Always use original (non-augmented) samples for interpretability to avoid pseudo-replication
 
 ---
 
