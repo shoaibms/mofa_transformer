@@ -209,27 +209,30 @@ flowchart TD
  │   │   ├── 📜 viz_mofa_results.py            # Enhanced MOFA+ results visualisation.
  │   │   ├── 📜 viz_mofa_results.txt           # Launcher script for viz_mofa_results.py.
  │   │   ├── 📜 mofa_bootstrap.py              # MOFA+ bootstrap stability analysis.
- │   │   ├── 📜 mofa_permutation_test.py       # MOFA+ permutation test for factor-metadata association.
+ │   │   ├── 📜 mofa_permutation.py            # MOFA+ permutation test for factor-metadata association.
  │   │   ├── 📜 run_mofa_analysis.py           # Main script for MOFA+ analysis and validation.
- │   │   └── 📜 select_mofa_features.py        # MOFA+ feature selection script.
+ │   │   ├── 📜 select_mofa_features.py        # MOFA+ feature selection script.
+ │   │   └── 📜 create_supplementary_data_s1.py # Generates Supplementary Data S1.
  │   │
  │   ├── 📂 02_transformer_model/
- │   │   ├── 📜 analyse_transformer_shap.py    # SHAP analysis for multi-omic transformer (feature attention).
+ │   │   ├── 📜 analyse_transformer_shap_v2.py # SHAP analysis for multi-omic transformer (feature attention).
  │   │   ├── 📜 plot_transformer_attention.py  # Multi-wavelength attention analysis for plant stress.
- │   │   ├── 📜 process_attention_data_v2.py    # Process raw attention data from transformer (v2).
+ │   │   ├── 📜 process_attention_data_v2.py   # Process raw attention data from transformer (v2).
  │   │   ├── 📜 transformer_model.py           # Multi-omic Transformer model implementation.
  │   │   ├── 📜 train_transformer_knn.py       # Trains Transformer (v2b) and compares with KNN.
- │   │   └── 📜 train_transformer_attn_v3.py   # Trains Transformer (v3) with feature attention.
+ │   │   ├── 📜 train_transformer_attn_v3.py   # Trains Transformer (v3) with feature attention.
+ │   │   └── 📜 filter_test_samples_for_interpretability.py # Filters test samples for interpretability analysis.
  │   │
  │   ├── 📂 03_transformer_summary_and_evaluation/
  │   │   ├── 📜 summarise_mofa.py              # Summarises MOFA+ analysis results.
  │   │   ├── 📜 count_mofa_features.py         # Counts MOFA+ selected features.
  │   │   ├── 📜 aggregate_model_perf.py        # Aggregates predictive model performance metrics.
  │   │   ├── 📜 process_shap_results.py        # Processes SHAP analysis results.
- │   │   ├── 📜 analyse_mofa_shap_overlap.py   # Calculates and plots MOFA+ vs SHAP feature overlap.
+ │   │   ├── 📜 analyse_mofa_shap_overlap_v2.py # Calculates and plots MOFA+ vs SHAP feature overlap.
  │   │   ├── 📜 analyse_view_attn_stats.py     # Analyses view-level attention statistics from Transformer.
  │   │   ├── 📜 analyse_feature_attn_v2.py     # Analyses conditional feature-level attention from Transformer.
- │   │   └── 📜 generate_robustness_contract.py # Creates robustness contract JSON for Figure 6.
+ │   │   ├── 📜 generate_robustness_contract.py # Creates robustness contract JSON for Figure 6.
+ │   │   └── 📜 validate_manuscript_values.py  # Validates manuscript statistics against source data.
  │   │
  │   └── 📂 04_hyperseq_validation/
  │       ├── 📜 1_mofa_decomposition.py        # MOFA+ factor analysis on HyperSeq dataset.
@@ -242,13 +245,15 @@ flowchart TD
  │   ├── 📄 REPRODUCE_05_visualization.md      # Reproducibility guide for figure generation
  │   │
  │   ├── 📂 01_main_figures/
+ │   │   ├── 📜 colour.py                      # Colour palette definitions for figures.
  │   │   ├── 📜 Figure_1.py                    # MOFA+ variance decomposition and factor annotation.
  │   │   ├── 📜 Figure_1.txt                   # Launcher script for Figure 1.
  │   │   ├── 📜 Figure_2.py                    # SHAP predictive importance analysis.
  │   │   ├── 📜 Figure_3.py                    # Cross-modal attention networks and statistics.
  │   │   ├── 📜 Figure_4_a-b.py                # Attention heatmaps (Panels A-B).
- │   │   ├── 📜 Figure_4_c_f_v3.py              # Network coordination landscapes (Panels C-F).
- │   │   ├── 📜 Figure_5.py                    # Model performance and biomarker identification.
+ │   │   ├── 📜 Figure_4_c_f_v3.py             # Network coordination landscapes (Panels C-F).
+ │   │   ├── 📜 figure4_analysis.py            # Analysis utilities for Figure 4.
+ │   │   ├── 📜 Figure_5_a-d.py                # Model performance and biomarker identification (Panels A-D).
  │   │   ├── 📜 Figure_6.py                    # Temporal dynamics and MOFA+/SHAP complementarity (reads robustness contract).
  │   │   ├── 📜 Figure_7_a-b.py                # Predictive feature clustering (Panels A-B).
  │   │   ├── 📜 Figure_7_c-g.py                # Tissue-task predictive importance (Panels C-G).
@@ -259,7 +264,7 @@ flowchart TD
  │       ├── 📜 Fig_S2_3_5.py                  # Cross-modal attention dynamics and biomarkers (S2, S3, S5).
  │       ├── 📜 Fig_S4.py                      # Transformer performance metrics.
  │       ├── 📜 Fig_S6.mmd                     # LC-MS Data Preprocessing Workflow.
- │       ├── 📜 Fig_S7.py                      # LC-MS Data Preprocessing and Evaluation.
+ │       ├── 📜 Fig_S7.txt                     # Launcher script for Fig S7.
  │       ├── 📜 Fig_S8.py                      # Hyperspectral data quality assessment.
  │       ├── 📜 Fig_S9.mmd                     # Data augmentation pipeline (Mermaid diagram).
  │       └── 📜 Fig_S10-13.py                  # Augmentation validation and quality assessment.
