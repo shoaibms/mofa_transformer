@@ -1,0 +1,11 @@
+Reproducibility Note
+Section: Framework Validation on HyperSeq Single-Cell Dataset
+This validates the MOFA+ Transformer framework on an independent public dataset (GEO: GSE254034) with paired single-cell hyperspectral imaging and transcriptomic data.
+
+1_mofa_decomposition.py - Applies MOFA+ to decompose 2-view variance into 15 latent factors, identifying Factor 3 as the key "Stress & Metabolism" integration factor driven by stress genes (HSPA6, COX6C) and specific spectral channels.
+2_train_transformer.py - Trains cross-attention Transformer (64-dim, 4 heads, 2 layers) on MOFA-selected features. Saves raw 4D attention tensors to HDF5 and runs integrated permutation test (n=100 shuffles) to validate the spectral-NEAT1 link (p=0.0099, Cohen's d=1.14).
+3_process_attention.py - Loads raw 4D attention tensors from HDF5, calculates overall and conditional (by Batch) mean attention statistics, and saves processed attention pairs ranked by importance.
+4_prepare_visualization_data.py - Extracts MOFA factor loadings, computes Pearson correlations between features for comparison with attention scores (r=-0.023), and prepares all data structures for Figure 8 visualization demonstrating non-linear relationship discovery.
+
+Optional: utils_inspect_outputs.py - Diagnostic utility to inspect MOFA+ HDF5 models and Transformer metadata for troubleshooting.
+All scripts demonstrate framework generalizability across biological systems and data modalities.herent, non-linear relationships in diverse multi-modal datasets beyond the original plant stress model.
