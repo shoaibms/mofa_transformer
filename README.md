@@ -250,7 +250,7 @@ flowchart TD
  │   │   ├── 📜 Figure_2.py                    # SHAP predictive importance analysis.
  │   │   ├── 📜 Figure_3.py                    # Cross-modal attention networks and statistics.
  │   │   ├── 📜 Figure_4_a-b.py                # Attention heatmaps (Panels A-B).
- │   │   ├── 📜 Figure_4_c_f_v3.py             # Network coordination landscapes (Panels C-F).
+ │   │   ├── 📜 Figure_4_c_f.py                # Network coordination landscapes (Panels C-F).
  │   │   ├── 📜 figure4_analysis.py            # Analysis utilities for Figure 4.
  │   │   ├── 📜 Figure_5_a-d.py                # Model performance and biomarker identification (Panels A-D).
  │   │   ├── 📜 Figure_6.py                    # Temporal dynamics and MOFA+/SHAP complementarity (reads robustness contract).
