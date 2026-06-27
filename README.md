@@ -231,6 +231,7 @@ flowchart TD
  │   │   ├── 📜 analyse_view_attn_stats.py     # Analyses view-level attention statistics from Transformer.
  │   │   ├── 📜 analyse_feature_attn_v2.py     # Analyses conditional feature-level attention from Transformer.
  │   │   ├── 📜 generate_robustness_contract.py # Creates robustness contract JSON for Figure 6.
+ │   │   ├── 📜 protocol_sensitivity.py        # Stress protocol sensitivity check
  │   │   └── 📜 validate_manuscript_values.py  # Validates manuscript statistics against source data.
  │   │
  │   └── 📂 04_hyperseq_validation/
