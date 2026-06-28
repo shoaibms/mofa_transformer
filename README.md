@@ -210,7 +210,7 @@ flowchart TD
  │   │   ├── 📜 viz_mofa_results.txt           # Launcher script for viz_mofa_results.py.
  │   │   ├── 📜 mofa_bootstrap.py              # MOFA+ bootstrap stability analysis.
  │   │   ├── 📜 mofa_permutation.py            # MOFA+ permutation test for factor-metadata association.
- │   │   ├── 📜 run_mofa_analysis.py           # Main script for MOFA+ analysis and validation.
+ │   │   ├── 📜 run_mofa_analysis_v2.py           # Main script for MOFA+ analysis and validation.
  │   │   └── 📜 select_mofa_features.py        # MOFA+ feature selection script.
  │   │
  │   ├── 📂 02_transformer_model/
@@ -219,7 +219,7 @@ flowchart TD
  │   │   ├── 📜 process_attention_data_v2.py   # Process raw attention data from transformer (v2).
  │   │   ├── 📜 transformer_model.py           # Multi-omic Transformer model implementation.
  │   │   ├── 📜 train_transformer_knn.py       # Trains Transformer (v2b) and compares with KNN.
- │   │   ├── 📜 train_transformer_attn_v3.py   # Trains Transformer (v3) with feature attention.
+ │   │   ├── 📜 train_transformer_attn_v4.py   # Trains Transformer (v3) with feature attention.
  │   │   └── 📜 filter_test_samples_for_interpretability.py # Filters test samples for interpretability analysis.
  │   │
  │   ├── 📂 03_transformer_summary_and_evaluation/
@@ -230,9 +230,9 @@ flowchart TD
  │   │   ├── 📜 analyse_mofa_shap_overlap_v2.py # Calculates and plots MOFA+ vs SHAP feature overlap.
  │   │   ├── 📜 analyse_view_attn_stats.py     # Analyses view-level attention statistics from Transformer.
  │   │   ├── 📜 analyse_feature_attn_v2.py     # Analyses conditional feature-level attention from Transformer.
- │   │   ├── 📜 generate_robustness_contract.py # Creates robustness contract JSON for Figure 6.
+ │   │   ├── 📜 generate_robustness_contract_v2.py # Creates robustness contract JSON for Figure 6.
  │   │   ├── 📜 protocol_sensitivity.py        # Stress protocol sensitivity check
- │   │   └── 📜 validate_manuscript_values.py  # Validates manuscript statistics against source data.
+ │   │   └── 📜 validate_manuscript_values_v2.py  # Validates manuscript statistics against source data.
  │   │
  │   └── 📂 04_hyperseq_validation/
  │       ├── 📜 1_mofa_decomposition.py        # MOFA+ factor analysis on HyperSeq dataset.
@@ -254,10 +254,10 @@ flowchart TD
  │   │   ├── 📜 Figure_4_c_f.py                # Network coordination landscapes (Panels C-F).
  │   │   ├── 📜 figure4_analysis.py            # Analysis utilities for Figure 4.
  │   │   ├── 📜 Figure_5_a-d.py                # Model performance and biomarker identification (Panels A-D).
- │   │   ├── 📜 Figure_6.py                    # Temporal dynamics and MOFA+/SHAP complementarity (reads robustness contract).
+ │   │   ├── 📜 Figure_6_v2.py                    # Temporal dynamics and MOFA+/SHAP complementarity (reads robustness contract).
  │   │   ├── 📜 Figure_7_a-b.py                # Predictive feature clustering (Panels A-B).
- │   │   ├── 📜 Figure_7_c-g.py                # Tissue-task predictive importance (Panels C-G).
- │   │   └── 📜 Figure_8.py                    # HyperSeq validation: generalisability demonstration.
+ │   │   ├── 📜 Figure_7_c-g_v2.py                # Tissue-task predictive importance (Panels C-G).
+ │   │   └── 📜 Figure_8_v2.py                    # HyperSeq validation: generalisability demonstration.
  │   │
  │   └── 📂 02_supplementary_figures/
  │       ├── 📜 Fig_S1.py                      # Cross-View Feature Integration Network.
@@ -265,9 +265,9 @@ flowchart TD
  │       ├── 📜 Fig_S4.py                      # Transformer performance metrics.
  │       ├── 📜 Fig_S6.mmd                     # LC-MS Data Preprocessing Workflow.
  │       ├── 📜 Fig_S7.txt                     # Launcher script for Fig S7.
- │       ├── 📜 Fig_S8.py                      # Hyperspectral data quality assessment.
+ │       ├── 📜 Fig_S8_v2.py                      # Hyperspectral data quality assessment.
  │       ├── 📜 Fig_S9.mmd                     # Data augmentation pipeline (Mermaid diagram).
- │       └── 📜 Fig_S10-13.py                  # Augmentation validation and quality assessment.
+ │       └── 📜 Fig_S10-13_v2.py                  # Augmentation validation and quality assessment.
  │
  ├── 📂 data/
  │    ├── 📄 hyper_full_w.csv                   # Hyperspectral reflectance data (336 samples × 2,151 wavelengths, 350-2500 nm)
