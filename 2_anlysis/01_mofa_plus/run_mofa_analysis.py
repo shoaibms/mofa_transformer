@@ -974,111 +974,17 @@ def calculate_factor_metadata_associations(factors_df, metadata_df, fdr_alpha=0.
     print(f"     Factor-Metadata associations saved to {outfile}")
     return results_df
 
-# --- 9.2 Bootstrap Validation (Outline & Hypothetical Output) ---
-def outline_bootstrap_analysis(weights_dict, factors_df, output_dir, num_bootstrap_runs=100):
-    print("\n   - Bootstrap Validation (Outline & Hypothetical Output):")
-    print(f"     PURPOSE: Assess stability of feature weights/factor loadings.")
-    print(f"     PROCESS: Requires running MOFA+ ~{num_bootstrap_runs} times on bootstrapped data samples.")
-    print(f"              Factors across runs need alignment (complex step).")
-    print(f"              Feature stability = frequency feature is 'important' for an aligned factor.")
-    print(f"     OUTPUT: Generating a *hypothetical* stability file structure.")
-    
-    if not weights_dict or factors_df is None or factors_df.empty:
-        print("     Skipping hypothetical output generation (weights/factors unavailable).")
-        return None
-    
-    hypothetical_stability_data = []
-    for view_name, weights_df in weights_dict.items():
-        if weights_df is None or weights_df.empty:
-            continue
-        for factor_name in factors_df.columns:
-            if factor_name not in weights_df.columns:
-                continue
-            abs_weights = weights_df[factor_name].abs().sort_values(ascending=False)
-            n_feat = len(abs_weights)
-            rank = 1
-            if n_feat == 0:
-                continue
-            # Simplified random stability score generation
-            stability_scores = np.random.uniform(0.0, 1.0, n_feat)
-            for feature_name, abs_weight in abs_weights.items():
-                hypothetical_stability_data.append({
-                    'Factor': factor_name, 
-                    'View': view_name, 
-                    'Feature': feature_name, 
-                    'StabilityScore': stability_scores[rank-1], 
-                    'Rank_AbsWeight_OriginalRun': rank
-                })
-                rank += 1
-    
-    if not hypothetical_stability_data:
-        print("     No data to create hypothetical stability file.")
-        return None
-    
-    stability_df = pd.DataFrame(hypothetical_stability_data).sort_values(
-        by=['Factor', 'View', 'StabilityScore'], ascending=[True, True, False])
-    outfile = os.path.join(output_dir, "mofa_bootstrap_stability_HYPOTHETICAL.csv")
-    stability_df.to_csv(outfile, index=False)
-    print(f"     Hypothetical bootstrap stability structure saved to: {outfile}")
-    print(f"     NOTE: Scores in this file are RANDOM placeholders for illustration.")
-    return stability_df
-
-# --- 9.3 Permutation Testing (Outline & Hypothetical Output) ---
-def outline_permutation_testing(factors_df, factor_metadata_corr, output_dir, num_permutations=1000):
-    print("\n   - Permutation Testing (Outline & Hypothetical Output):")
-    print(f"     PURPOSE: Assess significance of factor-metadata associations against random chance.")
-    print(f"     PROCESS: Requires calculating association metric (e.g., correlation) between")
-    print(f"              factor scores and ~{num_permutations} permutations of metadata labels.")
-    print(f"              Compare real association metric to the null distribution from permutations.")
-    print(f"     OUTPUT: Generating a *hypothetical* permutation p-value file structure.")
-    
-    if factors_df is None or factors_df.empty or factor_metadata_corr is None or factor_metadata_corr.empty:
-        print("     Skipping hypothetical output generation (factors/correlations unavailable).")
-        return None
-    
-    hypothetical_perm_data = []
-    tested_metadata_vars = factor_metadata_corr['Metadata'].unique()
-    for factor_name in factors_df.columns:
-        for meta_var in tested_metadata_vars:
-            real_corr_row = factor_metadata_corr[
-                (factor_metadata_corr['Factor'] == factor_name) & 
-                (factor_metadata_corr['Metadata'] == meta_var)
-            ]
-            if real_corr_row.empty:
-                continue
-            
-            real_metric_value = real_corr_row['Correlation'].iloc[0]
-            real_p_value_fdr = real_corr_row['P_value_FDR'].iloc[0]
-            is_significant_fdr = real_corr_row['Significant_FDR'].iloc[0]
-            
-            # Generate hypothetical p-value based on significance
-            if is_significant_fdr:
-                hypothetical_p_val = np.random.uniform(0.0001, 0.049)
-            elif not np.isnan(real_p_value_fdr):
-                hypothetical_p_val = np.random.uniform(0.1, 1.0)
-            else:
-                hypothetical_p_val = np.nan
-                
-            hypothetical_perm_data.append({
-                'Factor': factor_name, 
-                'Tested_Metadata': meta_var, 
-                'Real_Association_Metric': real_metric_value, 
-                'Real_P_value_FDR': real_p_value_fdr, 
-                'Real_Significant_FDR': is_significant_fdr, 
-                'Hypothetical_Permutation_P_Value': hypothetical_p_val
-            })
-    
-    if not hypothetical_perm_data:
-        print("     No data to create hypothetical permutation results file.")
-        return None
-    
-    perm_df = pd.DataFrame(hypothetical_perm_data).sort_values(
-        by=['Tested_Metadata', 'Hypothetical_Permutation_P_Value'])
-    outfile = os.path.join(output_dir, "mofa_permutation_test_results_HYPOTHETICAL.csv")
-    perm_df.to_csv(outfile, index=False)
-    print(f"     Hypothetical permutation test structure saved to: {outfile}")
-    print(f"     NOTE: P-values in this file are RANDOM placeholders for illustration.")
-    return perm_df
+# --- 9.2 / 9.3 Bootstrap Validation & Permutation Testing ---
+# Deprecated non-production outlines removed. Earlier development versions of
+# this script contained illustrative bootstrap/permutation routines that wrote
+# non-production output files filled with randomly generated values; these were
+# never valid results and have been deleted.
+#
+# Real bootstrap stability and permutation testing must be implemented as
+# dedicated, reproducible analyses (e.g. re-running MOFA+ on bootstrapped
+# samples with factor alignment, and comparing real association metrics against
+# a true permutation null distribution) before any stability/significance
+# claims are made.
 
 # --- 9.4 Genotype Comparison Analysis ---
 def analyze_genotype_differences(factors_df, metadata_df, fdr_alpha=0.05, output_dir="."):
@@ -1208,10 +1114,6 @@ print("   Executing validation functions...")
 # Pass the potentially modified combined_metadata_df (with BaseSampleID index)
 factor_metadata_corr = calculate_factor_metadata_associations(
     factors_df, combined_metadata_df, config["fdr_alpha"], config["output_dir"])
-hypothetical_stability_df = outline_bootstrap_analysis(
-    weights_dict, factors_df, config["output_dir"])
-hypothetical_perm_results_df = outline_permutation_testing(
-    factors_df, factor_metadata_corr, config["output_dir"])
 genotype_diff_results = analyze_genotype_differences(
     factors_df, combined_metadata_df, config["fdr_alpha"], config["output_dir"])
 tissue_coordination_results = analyze_tissue_coordination(
@@ -1308,46 +1210,12 @@ else:
 overall_feature_importance_dict = calculate_overall_feature_importance(
     weights_dict, all_relevant_factors_names_list, config["output_dir"])
 
-# --- 10.2 Placeholder: Bootstrap Stability Integration ---
-def placeholder_integrate_bootstrap_stability(overall_importance_dict, hypothetical_stability_df):
-    print("\n   - Placeholder: Integrating Bootstrap Stability...")
-    if overall_importance_dict is None:
-        print("     Skipping stability integration: Overall importance unavailable.")
-        return None
-    if hypothetical_stability_df is None:
-        print("     Skipping stability integration: Stability data unavailable.")
-        return overall_importance_dict
-    
-    print("     Integrating HYPOTHETICAL stability scores into importance dataframes...")
-    updated_importance = {}
-    for view_name, importance_df in overall_importance_dict.items():
-        if importance_df is None or importance_df.empty:
-            updated_importance[view_name] = importance_df
-            continue
-        
-        current_importance_df = importance_df.copy()
-        view_stability = hypothetical_stability_df[hypothetical_stability_df['View'] == view_name]
-        if not view_stability.empty:
-            feature_stability = view_stability.groupby('Feature')['StabilityScore'].max().reset_index()
-            current_importance_df.reset_index(inplace=True)
-            merged_df = pd.merge(current_importance_df, feature_stability, 
-                               left_on='index', right_on='Feature', how='left')
-            merged_df.set_index('index', inplace=True)
-            merged_df.index.name = None
-            if 'Feature' in merged_df.columns:
-                merged_df.drop(columns=['Feature'], inplace=True)
-            merged_df['StabilityScore'] = merged_df['StabilityScore'].fillna(0)
-            updated_importance[view_name] = merged_df
-        else:
-            current_importance_df['StabilityScore'] = 0.0
-            updated_importance[view_name] = current_importance_df
-    
-    print("     (NOTE: Stability scores used here are RANDOM placeholders).")
-    return updated_importance
-
-# --- Apply Placeholder ---
-overall_feature_importance_dict_with_stability = placeholder_integrate_bootstrap_stability(
-    overall_feature_importance_dict, hypothetical_stability_df)
+# --- 10.2 Bootstrap Stability Integration ---
+# Deprecated non-production step removed. A development version previously merged
+# randomly generated stability scores into the overall feature importance
+# dataframes. Real stability scores from a proper bootstrap analysis should be
+# integrated here once available; until then, no stability column is added so
+# that downstream outputs cannot be mistaken for validated stability estimates.
 
 # --- 10.3 Select Top Features using Hybrid Stratified Method ---
 def select_features_hybrid_stratified(
@@ -1770,71 +1638,14 @@ transformer_prep_end_time = time.time()
 print(f"   Feature Selection & Transformer Prep Completed (Time: "
       f"{transformer_prep_end_time - transformer_prep_start_time:.2f} seconds)")
 
-# --- Section 11: Placeholders for Downstream Analysis Frameworks ---
-print("\n11. Placeholders for Downstream Analysis Frameworks...")
-
-def placeholder_consensus_scoring(mofa_importance_file, transformer_importance_file):
-    """Placeholder function for outlining consensus feature importance scoring."""
-    print("\n   - Placeholder: Consensus Feature Importance Framework")
-    print("     PURPOSE: Combine importance scores from MOFA+ and Transformer.")
-    print(f"     INPUTS: MOFA+ importance ('{mofa_importance_file}'), hypothetical Transformer importance "
-          f"('{transformer_importance_file}').")
-    print("     METHOD: Requires Z-score normalization, weighted combination (e.g., 0.6*MOFA + "
-          "0.4*Transformer), and confidence tiering.")
-    print("     STATUS: Not implemented. Needs actual Transformer results.")
-    return None  # Return None as it's just a placeholder
-
-def placeholder_cross_modal_analysis(transformer_attention_file):
-    """Placeholder function for outlining cross-modal analysis using Transformer attention."""
-    print("\n   - Placeholder: Cross-Modal Relationship Extraction")
-    print("     PURPOSE: Identify direct spectral-metabolite links using Transformer attention.")
-    print(f"     INPUTS: Hypothetical Transformer attention weights ('{transformer_attention_file}').")
-    print("     METHOD: Requires extracting high attention weights between features of different "
-          "modalities, potentially visualized as networks.")
-    print("     STATUS: Not implemented. Needs actual Transformer results.")
-    return None  # Return None as it's just a placeholder
-
-def placeholder_temporal_analysis(factors_df, factor_metadata_corr, selected_features_dict):
-    """Placeholder function for outlining temporal analysis of factors and features."""
-    print("\n   - Placeholder: Temporal Patterns Extraction")
-    print("     PURPOSE: Analyze how factors and top features evolve over time (Day).")
-    print("     INPUTS: MOFA+ factors, factor-day correlations, selected features.")
-    print("     METHOD: Plot time-correlated factors over days; analyze trajectories of top "
-          "features associated with these factors.")
-    
-    # Example Check: See if Day correlated factors exist
-    if factor_metadata_corr is not None and not factor_metadata_corr.empty:
-        # Ensure required columns exist before filtering
-        if ('Metadata' in factor_metadata_corr.columns and 
-                'Significant_FDR' in factor_metadata_corr.columns and 
-                'Factor' in factor_metadata_corr.columns):
-            day_corr = factor_metadata_corr[
-                (factor_metadata_corr['Metadata'] == 'Day') & 
-                (factor_metadata_corr['Significant_FDR'])
-            ]
-            if not day_corr.empty:
-                print(f"     (Found {len(day_corr)} factors significantly correlated with Day, "
-                      f"e.g., {day_corr['Factor'].tolist()[:3]}, which could be analyzed temporally).")
-        else:
-            print("     (WARN: Could not check for Day correlations - required columns missing "
-                  "in factor_metadata_corr).")
-
-    print("     STATUS: Basic checks possible, full analysis requires dedicated methods.")
-    return None  # Return None as it's just a placeholder
-
-# --- Ensure variables exist ---
-if 'factors_df' not in locals():
-    factors_df = None
-if 'factor_metadata_corr' not in locals():
-    factor_metadata_corr = None
-if 'selected_features_for_transformer' not in locals():
-    selected_features_for_transformer = None
-
-# --- Call placeholder functions ---
-placeholder_consensus_scoring("mofa_feature_importance_VIEW.csv", 
-                             "hypothetical_transformer_importance_VIEW.csv")
-placeholder_cross_modal_analysis("hypothetical_transformer_attention.csv")
-placeholder_temporal_analysis(factors_df, factor_metadata_corr, selected_features_for_transformer)
+# --- Section 11 (removed) ---
+# Deprecated non-production outlines removed. A development version of this
+# script contained outline-only routines for three future downstream frameworks
+# (consensus MOFA+/Transformer scoring, cross-modal attention analysis, and
+# temporal trajectory analysis). They only printed design notes and produced no
+# real results, so they have been deleted from the production code path. They
+# should be implemented as standalone, reproducible modules once real
+# Transformer attention/importance outputs are available.
 
 # --- Section 12: Final Summary & Next Steps ---
 print("\n" + "="*80)
@@ -1842,13 +1653,13 @@ print("12. Final Summary & Next Steps:")
 print("="*80)
 print("   - Ran MOFA+ and extracted results for active factors.")
 print("   - Performed enhanced validation: Factor-Metadata correlations, Genotype diffs, View coordination.")
-print("   - **Generated HYPOTHETICAL output files for Bootstrap Stability & Permutation Tests.**")
+print("   - NOTE: Bootstrap stability & permutation testing are NOT yet implemented (no non-production or randomly generated files are produced).")
 print("   - **Implemented HYBRID STRATIFIED Feature Selection** based on biological context.")
 print("     - Calculated context-specific importance & variance proxy.")
 print("   - Generated Transformer input files (`transformer_input_{view}.csv`) using selected features and "
       "**aligned using mapping file**.")
 print("   - **Performed simple CV check** on selected features for signal preservation.")
-print("   - Added placeholders for Consensus Scoring, Cross-Modal, and Temporal analysis.")
+print("   - NOTE: Consensus Scoring, Cross-Modal, and Temporal analyses are planned future work (not implemented; no outline-only code in production path).")
 print("\n   Further Steps:")
 print("   - Review feature selection summary & variance proxy values.")
 print("   - **Review the CV check results** printed above.")
