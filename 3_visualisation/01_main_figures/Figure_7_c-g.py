@@ -13,7 +13,7 @@ FONTS_SANS = {
     'family': 'sans-serif',
     'sans_serif': ['Arial', 'Helvetica', 'DejaVu Sans', 'Liberation Sans', 'sans-serif'],
     'main_title': 22,         # Figure Title
-    'panel_label': 19,        # Panel Labels (e.g., "A)", "B)")
+    'panel_label': 19,        # Panel Labels (e.g., "A", "B")
     'panel_title': 17,        # Title for each subplot/panel
     'axis_label': 17,         # X and Y axis labels
     'tick_label': 16,         # Axis tick numbers/text
@@ -26,7 +26,7 @@ FONTS_SANS = {
 }
 
 # Create output directory
-output_dir = r"C:/Users/ms/Desktop/hyper/output/transformer/novility_plot"
+output_dir = r"C:/Users/ms/Desktop/hyper/output/figure"
 os.makedirs(output_dir, exist_ok=True)
 
 # Define paths to SHAP importance data files
@@ -78,71 +78,72 @@ def create_figure_7_omics_contribution_plot(output_path):
         tissue_task_data[tissue] = {}
         
         for task, file_path in task_files.items():
-            try:
-                print(f"Processing {tissue} {task} data from {file_path}")
-                if os.path.exists(file_path):
-                    df = pd.read_csv(file_path)
-                    
-                    # Check for required columns
-                    if 'Feature' not in df.columns or 'MeanAbsoluteShap' not in df.columns:
-                        print(f"Required columns missing in {file_path}. Skipping.")
-                        continue
-                    
-                    # Determine feature type based on naming patterns if not already present
-                    if 'FeatureType' not in df.columns:
-                        def infer_feature_type(feature_name):
-                            if isinstance(feature_name, str):
-                                if any(prefix in feature_name for prefix in ['W_', 'nm']):
-                                    return 'Spectral'
-                                elif any(prefix in feature_name for prefix in ['P_Cluster', 'N_Cluster']):
-                                    return 'Molecular'
-                            return 'Unknown'
-                        
-                        df['FeatureType'] = df['Feature'].apply(infer_feature_type)
-                        print(f"Inferred feature types for {tissue} {task} from feature names.")
-                    
-                    # Normalize FeatureType values
-                    df['FeatureType'] = df['FeatureType'].replace({'Metabolite': 'Molecular', 'Molecular feature': 'Molecular'})
-                    
-                    # Ensure only Spectral and Molecular feature types are considered
-                    df['FeatureType'] = df['FeatureType'].replace('Unknown', 'Other')
-                    
-                    # Handle Task column nomenclature
-                    if 'Task' in df.columns:
-                        df['Task'] = df['Task'].replace('Day', 'Time Point')
-                    
-                    # Calculate sum of importance by feature type
-                    feature_type_contribs = df.groupby('FeatureType')['MeanAbsoluteShap'].sum()
-                    
-                    # Filter for Spectral and Molecular types
-                    if 'Other' in feature_type_contribs.index:
-                        other_importance = feature_type_contribs['Other']
-                        if other_importance > 0.01 * feature_type_contribs.sum():
-                            print(f"Note: {tissue} {task} has {other_importance:.2f} importance in 'Other' category")
-                        feature_type_contribs = feature_type_contribs[feature_type_contribs.index.isin(['Spectral', 'Molecular'])]
-                    
-                    # Calculate relative contribution (%)
-                    total_importance = feature_type_contribs.sum()
-                    relative_contribs = (feature_type_contribs / total_importance) * 100
-                    
-                    # Ensure both spectral and molecular keys exist
-                    for ft in ['Spectral', 'Molecular']:
-                        if ft not in relative_contribs:
-                            relative_contribs[ft] = 0.0
-                    
-                    tissue_task_data[tissue][task] = relative_contribs
-                
-                else:
-                    print(f"File not found: {file_path}")
-                    # Use placeholder data if file is missing
-                    dummy_data = pd.Series({'Spectral': 50.0, 'Molecular': 50.0})
-                    tissue_task_data[tissue][task] = dummy_data
-                    
-            except Exception as e:
-                print(f"Error processing {file_path}: {e}")
-                # Use placeholder data on error
-                dummy_data = pd.Series({'Spectral': 50.0, 'Molecular': 50.0})
-                tissue_task_data[tissue][task] = dummy_data
+            print(f"Processing {tissue} {task} data from {file_path}")
+
+            # Contribution files are required. Do NOT substitute placeholder
+            # values: a missing or malformed file must stop figure generation.
+            if not os.path.exists(file_path):
+                raise FileNotFoundError(
+                    f"Required contribution file missing for {tissue} {task}: {file_path}"
+                )
+
+            df = pd.read_csv(file_path)
+
+            # Check for required columns
+            if 'Feature' not in df.columns or 'MeanAbsoluteShap' not in df.columns:
+                raise ValueError(
+                    f"Required columns ('Feature', 'MeanAbsoluteShap') missing in {file_path}"
+                )
+
+            # Determine feature type based on naming patterns if not already present
+            if 'FeatureType' not in df.columns:
+                def infer_feature_type(feature_name):
+                    if isinstance(feature_name, str):
+                        if any(prefix in feature_name for prefix in ['W_', 'nm']):
+                            return 'Spectral'
+                        elif feature_name.startswith(('P_Cluster_', 'N_Cluster_', 'P_', 'N_')):
+                            return 'Molecular'
+                    return 'Unknown'
+
+                df['FeatureType'] = df['Feature'].apply(infer_feature_type)
+                print(f"Inferred feature types for {tissue} {task} from feature names.")
+
+            # Normalize FeatureType values
+            df['FeatureType'] = df['FeatureType'].replace({'Metabolite': 'Molecular', 'Molecular feature': 'Molecular'})
+
+            # Ensure only Spectral and Molecular feature types are considered
+            df['FeatureType'] = df['FeatureType'].replace('Unknown', 'Other')
+
+            # Handle Task column nomenclature
+            if 'Task' in df.columns:
+                df['Task'] = df['Task'].replace('Day', 'Time Point')
+
+            # Calculate sum of importance by feature type
+            feature_type_contribs = df.groupby('FeatureType')['MeanAbsoluteShap'].sum()
+
+            # Filter for Spectral and Molecular types
+            if 'Other' in feature_type_contribs.index:
+                other_importance = feature_type_contribs['Other']
+                if other_importance > 0.01 * feature_type_contribs.sum():
+                    print(f"Note: {tissue} {task} has {other_importance:.2f} importance in 'Other' category")
+
+            feature_type_contribs = feature_type_contribs[feature_type_contribs.index.isin(['Spectral', 'Molecular'])]
+
+            if feature_type_contribs.empty or feature_type_contribs.sum() <= 0:
+                raise ValueError(
+                    f"No positive Spectral or Molecular SHAP contribution detected for {tissue} {task}: {file_path}"
+                )
+
+            # Calculate relative contribution (%)
+            total_importance = feature_type_contribs.sum()
+            relative_contribs = (feature_type_contribs / total_importance) * 100
+
+            # Ensure both spectral and molecular keys exist
+            for ft in ['Spectral', 'Molecular']:
+                if ft not in relative_contribs:
+                    relative_contribs[ft] = 0.0
+
+            tissue_task_data[tissue][task] = relative_contribs
     
     # Prepare data for plotting
     plot_data = []
@@ -163,31 +164,9 @@ def create_figure_7_omics_contribution_plot(output_path):
     
     # Handle empty data case
     if plot_df.empty:
-        print("No data to plot. Creating sample data.")
-        tissues = ['Leaf', 'Root']
-        tasks = ['Genotype', 'Treatment', 'Time Point']
-        
-        sample_data = []
-        for tissue in tissues:
-            for task in tasks:
-                spectral_contrib = np.random.uniform(40, 60)
-                molecular_contrib = 100 - spectral_contrib
-                
-                sample_data.append({
-                    'Tissue': tissue,
-                    'Task': task,
-                    'Feature Type': 'Spectral',
-                    'Relative Contribution (%)': spectral_contrib
-                })
-                
-                sample_data.append({
-                    'Tissue': tissue,
-                    'Task': task,
-                    'Feature Type': 'Molecular',
-                    'Relative Contribution (%)': molecular_contrib
-                })
-        
-        plot_df = pd.DataFrame(sample_data)
+        raise RuntimeError(
+            "No valid SHAP contribution data were assembled; refusing to generate Figure 7C-G from sample or placeholder data."
+        )
     
     print(f"Prepared data for plotting: {len(plot_df)} rows")
     
@@ -218,12 +197,12 @@ def create_figure_7_omics_contribution_plot(output_path):
         panel_label = title.split(' ')[0]
         plot_title = ' '.join(title.split(' ')[1:])
 
-        ax.text(-0.1, 1.15, panel_label, transform=ax.transAxes,
+        ax.text(-0.1, 1.22, panel_label, transform=ax.transAxes,
                 fontsize=FONTS_SANS['panel_label'],
                 fontweight='bold',
                 va='top',
                 ha='left')
-        
+
         # Pivot data for stacked bar plot
         pivot_data = data.pivot(index='Task', columns='Feature Type', values='Relative Contribution (%)')
         
@@ -355,7 +334,7 @@ def create_figure_7_omics_contribution_plot(output_path):
         panel_label = title.split(' ')[0]
         plot_title = ' '.join(title.split(' ')[1:])
         
-        ax.text(-0.1, 1.15, panel_label, transform=ax.transAxes,
+        ax.text(-0.1, 1.1, panel_label, transform=ax.transAxes,
                 fontsize=FONTS_SANS['panel_label'],
                 fontweight='bold',
                 va='top',
@@ -533,15 +512,15 @@ def create_figure_7_omics_contribution_plot(output_path):
     root_data = plot_df[plot_df['Tissue'] == 'Root']
     
     # First row: Stacked bar charts
-    leaf_insights = plot_stacked_bars(leaf_data, ax1, "c Feature Contribution by Task Leaf", "Leaf")
-    root_insights = plot_stacked_bars(root_data, ax2, "d Feature Contribution by Task Root", "Root", show_ylabel=False, show_legend=False)
-    
+    leaf_insights = plot_stacked_bars(leaf_data, ax1, "C Feature Contribution by Task Leaf", "Leaf")
+    root_insights = plot_stacked_bars(root_data, ax2, "D Feature Contribution by Task Root", "Root", show_ylabel=False, show_legend=False)
+
     # Second row: Feature distribution charts
-    plot_feature_distribution(leaf_data, ax3, "e Task Distribution by Feature Type Leaf", "Leaf", show_legend=True, show_y_labels=True)
-    plot_feature_distribution(root_data, ax4, "f Task Distribution by Feature Type Root", "Root", show_legend=False, show_y_labels=False)
-    
+    plot_feature_distribution(leaf_data, ax3, "E Task Distribution by Feature Type Leaf", "Leaf", show_legend=True, show_y_labels=True)
+    plot_feature_distribution(root_data, ax4, "F Task Distribution by Feature Type Root", "Root", show_legend=False, show_y_labels=False)
+
     # Third row: Tissue comparison
-    plot_tissue_comparison(leaf_data, root_data, ax5, "g Tissue-Specific Differences in Spectral Feature Contribution")
+    plot_tissue_comparison(leaf_data, root_data, ax5, "G Tissue-Specific Differences in Spectral Feature Contribution")
     
     # Insights (generated but not currently used in plot text, kept for logging)
     leaf_highlight = (
@@ -569,7 +548,7 @@ def create_figure_7_omics_contribution_plot(output_path):
     print(f"Figure 7 omics contribution plot saved to {output_path}")
 
 # Create the omics contribution plot
-output_path = os.path.join(output_dir, "fig7_omics_contribution.png")
+output_path = os.path.join(output_dir, "fig_7_c-g.png")
 create_figure_7_omics_contribution_plot(output_path)
 
 print("Figure 7 visualization completed successfully!")
