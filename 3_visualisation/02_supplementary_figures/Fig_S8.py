@@ -40,7 +40,7 @@ except ImportError:
 
 # Input and Output Paths
 INPUT_FILE_HYPER = r"C:\\Users\\ms\\Desktop\\hyper\\data\\hyper_full_w.csv"
-OUTPUT_DIR = r"C:\\Users\\ms\\Desktop\\hyper\\output\\data_quality"
+OUTPUT_DIR = r"C:\\Users\\ms\\Desktop\\hyper\\output\\figure"
 
 # Data Processing
 SPECTRAL_DATA_START_COL = 10
@@ -419,6 +419,7 @@ def perform_core_quality_assessment(spectral_data, wavelengths, output_dir_base)
                 logging.info("Using full bands for correlation plot.")
                 
             if num_bands > 500:
+                np.random.seed(42)
                 sample_cols_metric = np.random.choice(
                     num_bands, 500, replace=False
                 )
@@ -948,13 +949,14 @@ def generate_composite_figure(core_plotting_data, normality_plotting_data,
         fig, axes = plt.subplots(3, 3, figsize=(18, 16))
 
         panel_titles = [
-            'A) Outlier Samples', 'B) Spectral Standard Deviation',
-            'C) Correlation Heatmap', 'D) Shapiro P-value Distribution',
-            'E) Example Band KDEs', 'F) Distribution of Baseline Slopes',
-            'G) Boxplot of Baseline Slopes',
-            'H) Median 1st Derivative (Sav-Gol)',
-            'I) Median 2nd Derivative (Sav-Gol)'
+            'Outlier Samples', 'Spectral Standard Deviation',
+            'Correlation Heatmap', 'Shapiro P-value Distribution',
+            'Example Band KDEs', 'Distribution of Baseline Slopes',
+            'Boxplot of Baseline Slopes',
+            'Median 1st Derivative (Sav-Gol)',
+            'Median 2nd Derivative (Sav-Gol)'
         ]
+        panel_labels = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I']
 
         # Row 1: Core Quality
         ax = axes[0, 0]
@@ -1147,6 +1149,12 @@ def generate_composite_figure(core_plotting_data, normality_plotting_data,
         ax.set_title(panel_titles[8], weight='bold')
         ax.grid(True, linestyle='--', alpha=0.6)
 
+        # Add panel labels (A-I) at top-left of each subplot for consistency
+        for ax_panel, label in zip(axes.flat, panel_labels):
+            ax_panel.text(-0.1, 1.1, label, transform=ax_panel.transAxes,
+                          fontsize=PLOT_TITLE_FONTSIZE, fontweight='bold',
+                          va='top', ha='left')
+
         fig.suptitle(
             'Comprehensive Data Quality Assessment Summary',
             fontsize=PLOT_TITLE_FONTSIZE + 4, y=1.0, weight='bold'
@@ -1154,7 +1162,7 @@ def generate_composite_figure(core_plotting_data, normality_plotting_data,
         plt.tight_layout(rect=[0, 0.02, 1, 0.98])
 
         composite_plot_filename = os.path.join(
-            output_dir_plots, 'composite_quality_summary.png'
+            output_dir_plots, 'fig_S8.png'
         )
         plt.savefig(composite_plot_filename, dpi=PLOT_DPI, bbox_inches='tight')
         plt.close(fig)
