@@ -4,95 +4,103 @@
 [![License: MIT](https://img.shields.io/badge/license-MIT-green)](https://opensource.org/licenses/MIT)
 [![Python](https://img.shields.io/badge/python-3.10+-yellow)](https://www.python.org/)
 [![PyTorch](https://img.shields.io/badge/PyTorch-2.6.0-orange)](https://pytorch.org/)
-[![DOI](https://yet to be update.org/badge/DOI/10.5281/yet to be updated.xxxxxx.svg)](#citation)
 
-## MOFA+ Transformer: An Interpretable Deep Learning Framework for Dynamic, Feature-Specific Multi-Omics Integration
+**MOFA+ Transformer** is an interpretable multi-omics framework that links unsupervised latent-factor structure with Transformer cross-modal attention and SHAP attribution to quantify feature-pair coordination across longitudinal biological data.
 
+> **Manuscript status:** citation and DOI will be added after publication/release.
 
+---
 
 ## Overview
 
-Multi-omics integration promises mechanistic insight, but most pipelines—correlation matrices, latent-variable models, and off-the-shelf deep nets—struggle to resolve the feature-specific, time-resolved, and asymmetric (predictive) relationships that drive biological responses.
+Multi-omics studies can identify broad patterns of co-variation, but they often do not resolve which specific cross-modal relationships change, when they change, and whether those relationships are relevant for prediction. MOFA+ Transformer addresses this gap by combining:
 
-**MOFA+ Transformer** addresses this by pairing unsupervised variance decomposition (MOFA+) with a cross-modal Transformer that reveals **when** and **how** specific feature pairs (e.g., spectral–metabolite) coordinate during stress adaptation.
+1. **MOFA+ latent-factor decomposition** to organise shared and view-specific variance across omics layers;
+2. **MOFA+-guided feature selection** to reduce high-dimensional spectral and metabolomic inputs to an interpretable feature set;
+3. **Transformer cross-modal attention** to quantify feature-pair coordination, including spectral-to-metabolite and metabolite-to-spectral asymmetry;
+4. **SHAP attribution** to contrast variance-dominant features with prediction-dominant features.
 
-### How It Works
+The framework was developed using paired wheat hyperspectral reflectance and LC-MS metabolomics profiles under osmotic stress, and then tested as an external demonstration on an independent HyperSeq single-cell multi-modal dataset.
 
-1. **MOFA+** first organises variation into interpretable latent factors across data views (e.g., hyperspectral reflectance and LC-MS metabolomics)
-2. Those factors guide feature selection for a **Transformer** whose cross-attention mechanism provides quantitative, feature-pair interaction scores—both overall and condition-specific (by genotype, treatment, timepoint)
-3. **SHAP analysis** contrasts variance-driving (MOFA+) and prediction-driving (model) features, revealing where mechanistic and predictive insights converge or diverge
-
-This dual-discovery approach enables you to trace which specific feature pairs drive biological outcomes and when they activate during the response trajectory.
-
-### What's Included
-
-This repository contains the **complete, reproducible implementation**:
-- **Data preprocessing** → **MOFA+ decomposition** → **Transformer training + attention/SHAP analysis** → **Figure generation**
-- Step-by-step `REPRODUCE_*.md` guides aligned to manuscript sections
-- All analysis scripts organised by pipeline stage
-- Validation on independent HyperSeq single-cell dataset (GEO: GSE254034)
-
-> **Note:** Attention and SHAP expose asymmetric, predictive associations; they are not causal by themselves. Establishing causality requires additional experimental validation.
-
-## 📝 Abstract
-
-Plant stress tolerance emerges from coordinated physiology and metabolism over time, yet current multi-omics methods rarely pinpoint which cross-modal relationships change, when, and in which tissue. We introduce MOFA+ Transformer, an interpretable deep learning framework that integrates unsupervised variance decomposition with cross-modal attention to quantify when and how specific feature pairs coordinate. We apply this framework to longitudinal leaf and root hyperspectral–metabolomic profiling of wheat genotypes contrasting for osmotic stress tolerance. A key innovation is explicitly contrasting variance-driving features with prediction-driving features (SHAP), revealing largely distinct hierarchies that intersect only at a constrained spectral interface (546–560 nm; Jaccard = 0.035). The analysis shows that tolerance is reflected not by static molecular abundance but by a progressive, leaf-specific coordination programme: tolerant genotypes exhibit a 4.7-fold increase in spectral–metabolite coupling at peak stress (Cohen’s d = 2.52; interaction P = 0.007), while root coordination remains comparatively static. Validated on an independent single-cell dataset (HyperSeq), the model identifies a non-linear link between autofluorescence and the stress-related lncRNA NEAT1 (P < 0.001) that is undetectable by linear correlation (r = −0.023). Together, these results establish coordination dynamics, rather than static abundance, as a mechanistically informative signature of stress tolerance and provide an interpretable basis for prioritising spectral windows for precision phenotyping and breeding.
-
-## ✨ Key Contributions & Highlights
-
-### 🔬 Methodological Innovations
-
-**Interpretable Deep Learning for Multi-Omics**  
-Pairs MOFA+ (unsupervised variance decomposition) with Transformer cross-attention to move beyond static correlation and expose asymmetric, predictive, time-resolved feature-pair relationships.
-
-**Feature-Pair Granularity**  
-Quantifies specific cross-modal pairs (e.g., spectral wavelength `565 nm` → metabolite `N_1909`) so you can generate targeted, testable hypotheses.
-
-**Temporal Coordination Networks**  
-Shows that tolerance relates to when and how cross-modal coordination turns on: tolerant genotypes exhibit 4.74× stronger coordination at peak stress (leaf tissue) with significant genotype × time interaction (p = 0.007).
-
-**Dual-Perspective "Importance"**  
-Integrates variance-driving features (MOFA+) with prediction-driving features (SHAP). Their limited overlap (Jaccard ≈ 0.035–0.055) highlights complementary biological insights and pinpoints robust biomarkers where they converge.
-
-> **Note:** Attention/SHAP reveal asymmetric, predictive associations; they are not causal by themselves.
+> **Important interpretation note:** attention and SHAP identify asymmetric, predictive associations. They do not establish causality by themselves. Causal interpretation requires targeted experimental validation.
 
 ---
 
-### 🎯 Key Discoveries
+## What this repository contains
 
-| Discovery | Evidence (Summary) |
-|-----------|-------------------|
-| **Early Response Hypothesis** | Tolerant lines show 2.11× stronger coordination at initial stress (BH-FDR = 0.009) |
-| **Peak Stress Coordination** | Leaf: 4.74× stronger coordination in tolerant vs susceptible at peak stress (Cohen's d = 2.52; BH-FDR < 0.001) |
-| **Tissue-Specific Strategies** | Leaf: progressive coordination advantage; Root: non-significant differences (p = 0.705) |
-| **Spectral "Sweet Spot"** | 546–560 nm band repeatedly flagged by MOFA+ and SHAP (Jaccard ≈ 0.035–0.055) |
-| **Non-Linear Single-Cell Link** | Cellular autofluorescence → NEAT1 association in HyperSeq (p_perm = 0.0002, Cohen's d = 6.63); invisible to simple correlation (r ≈ −0.023) |
+This repository provides the analysis code and documentation used to reproduce the manuscript workflow:
 
----
+- data preprocessing, quality control and augmentation scripts;
+- MOFA+ decomposition, feature selection, bootstrap and permutation analyses;
+- Transformer training, model comparison, cross-modal attention extraction and SHAP analysis;
+- HyperSeq external validation scripts;
+- figure-generation scripts and manuscript-value validation utilities;
+- step-by-step `REPRODUCE_*.md` guides aligned with the manuscript workflow.
 
-### 📊 Dataset Scale & Evaluation
-
-**Primary (Wheat Osmotic Stress)**
-- 336 raw samples → 2,688 training/validation via augmentation (7 QC reports: `SR1–SR7.html`); test set uses only original samples
-- 2,151 spectral features + 2,471 molecular features after curation
-- Approximately 11 active MOFA+ factors capturing genotype, treatment and time
-- MOFA+-guided subset (approximately 500 features total; e.g., approximately 519 in manuscript config)
-- Metrics logged to `model_performance_summary.csv` on the held-out original test set
-
-**Independent Validation (HyperSeq Single-Cell)**
-- GEO: GSE254034 (paired imaging-transcriptomics, human cells)
-- Recovers stress/metabolism signal (e.g., *HSPA6*, *COX6C*); validates NEAT1 link (permutation p_perm = 0.0002, d = 6.63)
+The repository is organised so users can reproduce the complete pipeline or inspect individual analysis stages.
 
 ---
 
-### ✅ Reproducibility & Rigour
+## Manuscript summary
 
-- **End-to-end scripts**: Raw data → preprocessing → MOFA+ → Transformer → figures (`REPRODUCE_01–05`)
-- **Statistical validation**: BH-FDR throughout; permutation tests for single-cell validation; bootstrap stability (e.g., approximately 96% feature retention)
-- **Exact train/val/test splits** and environment files included
+MOFA+ Transformer was applied to longitudinal leaf and root hyperspectral–metabolomic profiling of wheat genotypes contrasting for osmotic stress tolerance. The analysis supports three main conclusions.
 
-> **Bottom Line:** MOFA+ Transformer shifts multi-omics from *"what co-varies"* to *"which features predictively coordinate, when, and how strongly"*—yielding testable, mechanism-centred hypotheses with quantified evidence.
+First, variance-dominant MOFA+ features and SHAP-ranked predictive features were largely distinct. Their overlap was sparse and threshold-dependent, but when present it localised to a narrow green-band spectral interface: 550–554 nm at the primary top-5% threshold (Jaccard = 0.026) and 546–560 nm at the top-10% threshold (Jaccard = 0.040).
 
+Second, tolerance-associated differences were better captured by dynamic spectral–metabolite coordination than by static molecular abundance alone. In leaf tissue, the tolerant genotype showed progressively stronger spectral–metabolite coordination across stress progression, reaching a 4.74-fold difference at peak stress relative to the susceptible genotype (Cohen's d = 2.52; genotype × time interaction p = 0.007). Root coordination remained comparatively static.
+
+Third, in the independent HyperSeq single-cell dataset, the model identified an attention-enriched association between autofluorescence features and the stress-related lncRNA NEAT1 (permutation p = 0.0002; Monte Carlo z = 19.86) that was not captured by linear correlation (r = -0.023).
+
+Together, these results support coordination dynamics as a mechanistically informative and testable signature associated with stress-tolerance contrasts in this dataset.
+
+---
+
+## Key results
+
+| Result | Evidence summary |
+|---|---|
+| **MOFA+ provides a variance scaffold** | 11 active latent factors captured major genotype, treatment/protocol and temporal axes. |
+| **Predictive signal is task-dependent** | Treatment prediction was strongest, genotype prediction was moderate-to-strong, and time-point prediction was weaker on the held-out original test set. |
+| **Leaf coordination is progressive** | Tolerant genotype showed increasing spectral–metabolite coordination across stress progression, with the strongest difference at peak stress. |
+| **Root coordination is comparatively static** | Root genotype differences were modest and did not show the same progressive pattern as leaf. |
+| **MOFA+ and SHAP prioritise different features** | Overlap was sparse, but convergent features localised to a green-band spectral interface. |
+| **HyperSeq supports transferability as an external demonstration** | NEAT1 showed attention enrichment despite negligible linear correlation with autofluorescence. |
+
+---
+
+## Dataset and evaluation summary
+
+### Primary wheat osmotic-stress dataset
+
+- Paired leaf and root profiles from a controlled wheat osmotic-stress experiment.
+- Data modalities: hyperspectral reflectance and untargeted LC-MS metabolomics.
+- Preprocessed files include tissue-level spectral and molecular-feature tables in the `data/` directory.
+- Training and validation used augmented data after quality-control checks.
+- Held-out model testing used original, non-augmented samples only.
+- MOFA-guided feature selection yielded the final feature subset used for Transformer modelling and downstream interpretability analyses.
+
+### External HyperSeq demonstration
+
+- Dataset: HyperSeq single-cell multi-modal data (`GSE254034`).
+- Modalities: cellular autofluorescence and transcriptome features.
+- Purpose: test whether the framework could recover interpretable cross-modal associations outside the wheat hyperspectral–metabolomics setting.
+
+---
+
+## Reproducibility and rigour
+
+The workflow includes several safeguards intended to reduce over-interpretation and improve reproducibility:
+
+- base-ID-aware data splitting so augmented variants do not cross train/validation/test boundaries;
+- original-only held-out test evaluation for predictive models;
+- bootstrap stability assessment for MOFA-selected features;
+- permutation testing for selected associations;
+- BH-FDR correction where multiple testing is applied;
+- manuscript-value validation scripts to check reported numerical values against source outputs.
+
+The analysis still remains observational. Attention, SHAP and coordination scores should be interpreted as evidence for predictive association and hypothesis generation, not proof of causal mechanism.
+
+---
 ## 🛠️ Framework Workflow
 
 ```mermaid
@@ -292,312 +300,117 @@ flowchart TD
 
 ---
 
+## Data availability
 
-## 🗄️ Data Availability
+### Data included in this repository
 
-### GitHub Data
-This repository includes the core preprocessed input files in the `data/` directory:
-- `hyper_full_w.csv`: Hyperspectral reflectance data (336 samples × 2,151 wavelengths)
-- `n_p_l2.csv`: Leaf molecular features (336 samples × 1,418 features)
-- `n_p_r2.csv`: Root molecular features (336 samples × 1,721 features)
+The repository includes the core preprocessed input files required for reproducing the analysis workflow:
 
-See `data/README.md` for detailed file descriptions and metadata information.
+- `data/hyper_full_w.csv` — hyperspectral reflectance data;
+- `data/n_p_l2.csv` — leaf molecular features;
+- `data/n_p_r2.csv` — root molecular features;
+- `data/README.md` — file descriptions, metadata notes and expected input formats.
 
-### Raw Data Repository
-**Raw data has been deposited to MetaboLights; the permanent accession will be provided upon acceptance (accession pending during review).**
+### Raw LC-MS data
 
-🔗 **MetaboLights Repository**: https://www.ebi.ac.uk/metabolights/
+Raw LC-MS data have been deposited to MetaboLights. The permanent accession will be added after release/acceptance.
 
-The MetaboLights repository contains:
-- Raw LC-MS data files (.raw format)
-- Complete sample metadata and experimental protocols
-- Full instrumental method files
+MetaboLights: https://www.ebi.ac.uk/metabolights/
 
 ---
 
-## 📖 Reproducibility Documentation
+## Reproducibility documentation
 
-**Complete step-by-step guides for manuscript reproduction:**
+Follow the reproducibility guides sequentially:
 
-1. **REPRODUCE_01_preprocessing.md** → Data preprocessing (LC-MS, spectral QC, augmentation)
-2. **REPRODUCE_02_mofa.md** → MOFA+ factor analysis and feature selection
-3. **REPRODUCE_03_transformer.md** → Transformer training and interpretability analysis
-4. **REPRODUCE_04_hyperseq.md** → External validation on HyperSeq dataset
-5. **REPRODUCE_05_visualization.md** → Figure generation
+1. `REPRODUCE_01_preprocessing.md` — preprocessing, spectral QC, LC-MS processing and augmentation;
+2. `REPRODUCE_02_mofa.md` — MOFA+ factor analysis and feature selection;
+3. `REPRODUCE_03_transformer.md` — Transformer training, attention extraction and SHAP analysis;
+4. `REPRODUCE_04_hyperseq.md` — HyperSeq external validation;
+5. `REPRODUCE_05_visualization.md` — figure generation and manuscript-value checks.
 
-**Execution order**: Follow documents sequentially (01 → 02 → 03 → 04 → 05)
+---
 
-
-*Raw data is archived at [repository link] (see `data/README` for download script)*
-
-## 🚀 Installation
+## Installation
 
 ```bash
 # Clone the repository
 git clone https://github.com/shoaibms/mofa_transformer.git
 cd mofa_transformer
 
-# Create a conda environment
+# Create and activate a conda environment
 conda create -n mofa_transformer python=3.10
 conda activate mofa_transformer
 
 # Install dependencies
 pip install -r requirements.txt
 
-# Install package in development mode
+# Optional: install as editable package if package metadata is included
 pip install -e .
 ```
 
-## 📊 Applications and Use Cases
+---
 
-The MOFA+ Transformer framework is designed for broad applicability across biological systems requiring multi-omics integration:
-
-### Primary Demonstration: Plant Osmotic Stress
-Our comprehensive validation used wheat genotypes under controlled osmotic stress conditions, including:
-
-- **Tissue Types**: Root and Leaf
-- **Stress Treatments**: Acute (Batch 1) and Mild prolonged (Batch 2) osmotic stress
-- **Genotypes**: G1 (drought-tolerant) and G2 (drought-susceptible)
-- **Time Points**: Days 1, 2, and 3 (representing early, intermediate, and late adaptation phases)
-- **Data Types**:
-  - Hyperspectral reflectance (350-2500 nm, 2,151 wavelengths)
-  - Untargeted metabolomics (1,721 molecular features in root, 1,418 in leaf)
-
-### Independent Validation: Single-Cell Multi-Omics
-Framework generalisability confirmed on the HyperSeq dataset, demonstrating:
-- Discovery of novel links between cellular phenotypes and molecular features
-- Statistical validation of attention patterns (p_perm = 0.0002)
-- Non-linear relationship detection beyond standard correlation methods
-
-### Broader Applications
-The framework's interpretable, dynamic approach makes it suitable for:
-- **Clinical Research**: Patient stratification and treatment response prediction
-- **Cancer Biology**: Tumour heterogeneity and therapeutic target identification
-- **Environmental Science**: Ecosystem response coordination analysis
-- **Biotechnology**: Pathway engineering optimisation
-- **Developmental Biology**: Temporal coordination during development
-
-## 🧬 Data Preprocessing Pipeline
-
-### Metabolomic Data Quality Assessment and Preprocessing
-
-Before analysis, we performed rigorous quality assessment of the untargeted LCMS data to ensure data integrity while preserving biologically relevant signals:
-
-```mermaid
-graph TD
-    %% Major Steps with darker shades
-    A([Raw Data]) --> B[Keep columns with ≥3 reps]
-    B --> C[Visualise missing values]
-    C --> D[Test for MCAR<br>Little's MCAR test]
-    D --> E[Test for MAR<br>Logistic Regression]
-    E --> F{Impute missing data}
-    F --> |R|G1[Random Forest, PMM]
-    F --> |Python|G2[kNN, Median, SVD, GPR, EM]
-    G1 & G2 --> H[Evaluate imputation methods]
-    H --> H1[EMD]
-    H --> H2[Hellinger Distance]
-    H --> H3[Calculate richness, Shannon entropy,<br>Simpson's diversity index, & sparsity]
-    H --> H4[Visualisations: Q-Q, ECDF, KDE plots]
-    H1 & H2 & H3 & H4 --> I[Select best method:<br>Random Forest]
-    I --> J{Outlier detection}
-    J --> K[Methods: Z-Score, IQR, Isolation Forest,<br>Elliptic Envelope, Mahalanobis, Robust PCA]
-    K --> L[Evaluate outlier detection methods]
-    L --> L1[PCA and t-SNE visualisations]
-    L --> L2[Plots of 30 most impacted variables]
-    L --> L3[Number of outliers per method]
-    L1 & L2 & L3 --> M[Select method: Isolation Forest]
-    M --> N[Remove outliers and<br>impute with Random Forest]
-    N --> O{Data Transformation}
-    O --> P[Methods: Log, Square Root, Box-Cox,<br>Yeo-Johnson, asinh, glog, Anscombe]
-    P --> Q[Evaluate transformations]
-    Q --> Q1[Metrics: CV, MA-transform,<br>RSD, rMAD]
-    Q --> Q2[Normality tests:<br>Shapiro-Wilk, Anderson-Darling]
-    Q --> Q3[Visualise: Density plots]
-    Q1 & Q2 & Q3 --> R{Variable Selection}
-    R --> S[Exclude variables with rMAD > 30%]
-    S --> T([End: Clean Data])
-
-    %% Styling major steps (dark green)
-    style A fill:#2e7d32,stroke:#1b5e20,stroke-width:3px,color:#fff
-    style F fill:#2e7d32,stroke:#1b5e20,stroke-width:3px,color:#fff
-    style J fill:#2e7d32,stroke:#1b5e20,stroke-width:3px,color:#fff
-    style O fill:#2e7d32,stroke:#1b5e20,stroke-width:3px,color:#fff
-    style R fill:#2e7d32,stroke:#1b5e20,stroke-width:3px,color:#fff
-
-    %% Styling endpoint (lightest green)
-    style T fill:#f1f8f1,stroke:#2e7d32,stroke-width:2px
-
-    %% Styling edges
-    linkStyle default stroke:#2e7d32,stroke-width:1px
-```
-
-### Spectral Data Quality Assessment and Preprocessing
-
-Rigorous quality assessment was performed on the hyperspectral data to ensure data integrity while preserving biologically relevant signals:
-
-```mermaid
-flowchart TB
-    A[Hyperspectral Data Input\n336 samples × 2151 bands\n350-2500 nm] --> B{Data Integrity Check}
-    
-    B -->|Outlier Detection| C[Statistical Screening\nIQR, Modified Z-score, LOF]
-    C --> D[28 potential outliers identified\n8.3% of dataset]
-    D --> E{Review & Decision}
-    E -->|Retain all samples| F[Complete Dataset\n336 samples]
-    
-    B -->|Signal Quality| G[Signal Assessment\nMedian STD = 0.080\nSNR = 2.39]
-    G --> H[High Signal Quality\nNo smoothing required]
-    
-    B -->|Distribution Check| I[Normality Assessment\nShapiro-Wilk Test]
-    I --> J[90.7% non-normal distribution\nKernel density verification]
-    
-    B -->|Baseline Assessment| K[Theil-Sen Regression\nMedian slope = -2.17e-4]
-    K --> L[Subtle negative baseline\nModel can handle]
-    
-    B -->|Derivative Analysis| M[Savitzky-Golay Filter\nWindow=5, polyorder=2]
-    M --> N[Stable spectral shapes\nConsistent features]
-    
-    F --> O[Final Dataset\n336 samples × 2151 features]
-    H --> O
-    J --> O
-    L --> O
-    N --> O
-    
-    O --> P[Ready for Augmentation\nand MOFA+ Analysis]
-    
-    classDef inputStyle fill:#5d9c59,stroke:#333,stroke-width:3px
-    classDef processStyle fill:#8cc084,stroke:#333,stroke-width:1px
-    classDef decisionStyle fill:#5d9c59,stroke:#333,stroke-width:3px
-    classDef resultStyle fill:#a7d489,stroke:#333,stroke-width:1px
-    classDef outputStyle fill:#c5e8b7,stroke:#333,stroke-width:2px
-    
-    class A inputStyle
-    class B,E decisionStyle
-    class C,G,I,K,M processStyle
-    class D,H,J,L,N resultStyle
-    class F,O outputStyle
-    class P inputStyle
-```
-
-### Data Augmentation Workflow
-
-To enhance statistical power for deep learning analysis, we developed a specialised data augmentation pipeline that expanded our dataset while preserving biological signals and relationships:
-
-```mermaid
-flowchart TB
-    %% Main Input
-    A["Input: Spectral and Molecular Features Data"]:::inputStyle
-    
-    %% Data Augmentation Blocks
-    subgraph DataAug["Data Augmentation"]
-        direction LR
-        B["Spectral Augmentation\n(GP, MIX, WARP, SCALE,\nNOISE, ADD, MULT)"]:::spectralStyle
-        C["Molecular Features Augmentation\nRoot\n(SCALE: 5x, MIX: 2x)"]:::metaStyle
-        D["Molecular Features Augmentation\nLeaf\n(SCALE: 5x, MIX: 2x)"]:::metaStyle
-        BA["Generate Augmented Spectral Data\n(8x increase)"]:::lightSpectralStyle
-        CA["Generate Augmented Root Data\n(8x increase)"]:::lightMetaStyle
-        DA["Generate Augmented Leaf Data\n(8x increase)"]:::lightMetaStyle
-        
-        B --> BA
-        C --> CA
-        D --> DA
-    end
-    
-    %% Validation Block
-    E{"Validation & QC"}:::validationStyle
-    
-    %% Specific Validation Tasks with simplified structure
-    subgraph SpecificTasks["Validation Tasks"]
-        F["Spectral Validation & QC\n- Basic QC, Detailed & Advanced Validation"]:::taskStyle
-        G["Root Features Validation\n- Validation, QC & Batch Effects"]:::taskStyle
-        H["Leaf Features Validation\n- Validation, QC & Batch Effects"]:::taskStyle
-        I["Cross-Modality Validation\n- Cross-Checks & Divergence Analysis"]:::taskStyle
-    end
-    
-    %% Visualisation & Reporting
-    K{"Visualisation & Synthesis"}:::vizStyle
-    L["Integrated Plots & Dashboards"]:::taskStyle
-    M["Final Outputs\n(HTML Reports, Figures, Supplement)"]:::reportStyle
-    
-    %% Main Connections
-    A --> DataAug
-    A --> E
-    
-    %% Data to Validation
-    BA --> E
-    CA --> E
-    DA --> E
-    
-    %% Validation to Specific Tasks
-    E --> F
-    E --> G
-    E --> H
-    E --> I
-    
-    %% Specific Tasks to Visualisation
-    F --> K
-    G --> K
-    H --> K
-    I --> K
-    
-    %% Visualisation to Reporting
-    K --> L
-    L --> M
-    
-    %% Styling
-    classDef inputStyle fill:#5d9c59,stroke:#333,stroke-width:3px
-    classDef spectralStyle fill:#8cc084,stroke:#333,stroke-width:1px
-    classDef metaStyle fill:#a7d489,stroke:#333,stroke-width:1px
-    classDef lightSpectralStyle fill:#c5e8b7,stroke:#333,stroke-width:1px
-    classDef lightMetaStyle fill:#d8f0c6,stroke:#333,stroke-width:1px
-    classDef validationStyle fill:#5d9c59,stroke:#333,stroke-width:3px
-    classDef taskStyle fill:#8cc084,stroke:#333,stroke-width:1px
-    classDef vizStyle fill:#5d9c59,stroke:#333,stroke-width:3px
-    classDef reportStyle fill:#c5e8b7,stroke:#333,stroke-width:3px
-    classDef outputStyle fill:#e7f5d9,stroke:#333,stroke-width:1px
-```
-
-### Data Preprocessing Summary
-
-- **Metabolomic Data**: Missing value analysis, Random Forest imputation, outlier detection via Isolation Forest, and asinh transformation
-- **Spectral Data**: Quality assessment using robust statistical methods (IQR, Modified Z-score, Local Outlier Factor), signal quality analysis (Median STD=0.080), and normality assessment (90.7% non-normal)
-- **Augmentation**: 8-fold increase using spectral methods (GP, MIX, WARP, SCALE, NOISE, ADD, MULT) and metabolomic methods (SCALE: 5x, MIX: 2x)
-
-## 🔧 Software Stack
+## Software stack
 
 | Package | Version |
-|---------|---------|
+|---|---:|
+| Python | 3.10+ |
 | PyTorch | 2.6.0 |
-| MOFApy 2 | 0.7.2 |
+| MOFApy2 | 0.7.2 |
 | scikit-learn | 1.6.1 |
 | pandas | 2.2.3 |
 | shap | 0.47.1 |
 | networkx | 3.4.2 |
-| matplotlib / seaborn | 3.10.1 / 0.13.2 |
+| matplotlib | 3.10.1 |
+| seaborn | 0.13.2 |
 
-A full, frozen dependency list is in `requirements.txt`.
+A full dependency list is provided in `requirements.txt`.
 
-## 📦 Data Augmentation Validation Reports
+---
 
+## Data-augmentation validation reports
+
+The HTML reports document spectral and molecular-feature augmentation quality checks:
 
 - [SR1: Spectral Quality Control Report](https://htmlpreview.github.io/?https://github.com/shoaibms/mofa_transformer/blob/main/html/SR1.html)
 - [SR2: Advanced Spectral Validation Report](https://htmlpreview.github.io/?https://github.com/shoaibms/mofa_transformer/blob/main/html/SR2.html)
 - [SR3: Molecular Feature Leaf Quality Control Report](https://htmlpreview.github.io/?https://github.com/shoaibms/mofa_transformer/blob/main/html/SR3.html)
 - [SR4: Molecular Feature Root Quality Control Report](https://htmlpreview.github.io/?https://github.com/shoaibms/mofa_transformer/blob/main/html/SR4.html)
 - [SR5: Cross-Modality Validation Report](https://htmlpreview.github.io/?https://github.com/shoaibms/mofa_transformer/blob/main/html/SR5.html)
-- [SR6: Divergence Analysis Reports](https://htmlpreview.github.io/?https://github.com/shoaibms/mofa_transformer/blob/main/html/SR6.html)
+- [SR6: Divergence Analysis Report](https://htmlpreview.github.io/?https://github.com/shoaibms/mofa_transformer/blob/main/html/SR6.html)
 - [SR7: Molecular Feature Batch Effect Validation](https://htmlpreview.github.io/?https://github.com/shoaibms/mofa_transformer/blob/main/html/SR7.html)
 
-These reports can also be accessed via GitHub at [https://github.com/shoaibms/mofa_transformer/tree/main/reports](https://github.com/shoaibms/mofa_transformer/tree/main/html)
+The reports can also be accessed from the repository `html/` directory.
 
-## 📜 License
+---
+
+## Citation
+
+A manuscript citation and Zenodo DOI will be added after publication/release.
+
+For now, please cite the repository and associated manuscript preprint/publication when available.
+
+---
+
+## License
 
 This project is released under the MIT License.
 
-## ✉️ Contact
+---
 
-**Lead Developer:** Shoaib M. Mirza — shoaibmirza2200@gmail.com
+## Contact
 
-**Project Repository:** [https://github.com/shoaibms/mofa_transformer](https://github.com/shoaibms/mofa_transformer)
+**Lead developer:** Shoaib M. Mirza — shoaibmirza2200@gmail.com
+
+**Repository:** https://github.com/shoaibms/mofa_transformer
+
+---
+
+## Acknowledgments
+
+This work was supported by Agriculture Victoria Research. We thank the HyperSeq dataset authors for making their data publicly available.
+
 
 ## 🙏 Acknowledgments
 
