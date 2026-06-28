@@ -403,6 +403,7 @@ class VisualizationSuite:
 
             for level in factor_levels:
                  if level in augmented_only[factor].unique():
+                    np.random.seed(42)
                     divergence_wavelengths = np.random.choice(self.wavelength_cols, min(20, len(self.wavelength_cols)), replace=False)
                     results = Parallel(n_jobs=-1)(
                         delayed(calculate_level_divergence)(level, wl) for wl in divergence_wavelengths
@@ -750,9 +751,9 @@ class VisualizationSuite:
         plt.tight_layout(rect=[0, 0.03, 1, 0.97])
 
         # Save the plot
-        output_path = os.path.join(self.output_dir, 'publication_spectral_signatures.png')
+        output_path = os.path.join(self.output_dir, 'fig_S10.png')
         plt.savefig(output_path, dpi=600, bbox_inches='tight', facecolor=fig.get_facecolor())
-        pdf_path = os.path.join(self.output_dir, 'publication_spectral_signatures.pdf')
+        pdf_path = os.path.join(self.output_dir, 'fig_S10.pdf')
         plt.savefig(pdf_path, format='pdf', bbox_inches='tight', facecolor=fig.get_facecolor())
         plt.close(fig)
 
@@ -927,8 +928,19 @@ class VisualizationSuite:
 
         # Create DataFrame and pivot
         df_long = pd.DataFrame(metrics_data)
+        # Exclude any computed scores that are NaN before pivoting.
+        df_long = df_long.dropna(subset=['Score'])
         df_wide = df_long.pivot_table(index=['Method', 'Type'], columns='Metric', values='Score').reset_index()
-        df_wide = df_wide.fillna(0.5) # Fill missing metrics with a neutral score
+        # A parallel-coordinate line requires a value on every axis. Drop methods
+        # missing any metric rather than imputing a neutral placeholder score.
+        metric_axis_cols = [c for c in df_wide.columns if c not in ('Method', 'Type')]
+        df_wide = df_wide.dropna(subset=metric_axis_cols)
+        if df_wide.empty:
+            raise RuntimeError(
+                "Parallel coordinate plot: no method had a complete set of computed "
+                "metrics; refusing to plot placeholder values."
+            )
+        print(f"     Parallel coordinate plot: plotting {len(df_wide)} methods with complete metrics.")
 
         # Define colors for each method based on type
         method_colors = {}
@@ -1030,6 +1042,7 @@ class VisualizationSuite:
         if not feature_cols or not methods or augmented_data.empty: return {}
 
         # Sample features for efficiency
+        np.random.seed(42)
         sampled_cols = np.random.choice(feature_cols, min(50, len(feature_cols)), replace=False)
 
         for method in methods:
@@ -1063,7 +1076,9 @@ class VisualizationSuite:
                 preservation_score = max(0, 1 - min(1, mean_js * 1.5))
                 metrics[method] = preservation_score
             else:
-                 metrics[method] = 0.5
+                 # No valid JS divergences could be computed for this method.
+                 # Record NaN (exclude) rather than a favourable placeholder.
+                 metrics[method] = np.nan
 
 
         return metrics
@@ -1081,6 +1096,7 @@ class VisualizationSuite:
         # Sample features for efficiency
         n_sample = min(50, len(feature_cols))
         if n_sample < 2: return {}
+        np.random.seed(42)
         sampled_cols = np.random.choice(feature_cols, n_sample, replace=False)
 
         try:
@@ -1092,19 +1108,19 @@ class VisualizationSuite:
             if np.isnan(orig_corr_vec).all(): raise ValueError("Original correlation vector is all NaN")
         except Exception as e:
             print(f"Warning: Could not calculate original correlation matrix for {modality}: {e}")
-            return {method: 0.5 for method in methods} # Return default if original fails
+            return {method: np.nan for method in methods} # Cannot compute reference; exclude all
 
         for method in methods:
             method_data = augmented_data[augmented_data['Row_names'].str.contains(f'_{method}', regex=False, na=False)]
             if len(method_data) < 2:
-                 metrics[method] = 0.0 # Penalize if too few samples
+                 metrics[method] = np.nan # Too few samples to compute; exclude
                  continue
 
             try:
                 # Drop non-numeric, handle NaNs
                 method_numeric = method_data[sampled_cols].apply(pd.to_numeric, errors='coerce').dropna()
                 if len(method_numeric) < 2:
-                    metrics[method] = 0.0
+                    metrics[method] = np.nan # Too few samples to compute; exclude
                     continue
 
                 method_corr_mat = method_numeric.corr(method='spearman')
@@ -1112,16 +1128,16 @@ class VisualizationSuite:
 
                 valid_indices = ~np.isnan(orig_corr_vec) & ~np.isnan(method_corr_vec)
                 if np.sum(valid_indices) < 2: # Need at least 2 pairs to correlate
-                     metrics[method] = 0.5 # Neutral score if cannot compare
+                     metrics[method] = np.nan # Cannot compare; exclude
                      continue
 
                 corr_similarity, _ = spearmanr(orig_corr_vec[valid_indices], method_corr_vec[valid_indices])
 
                 preservation_score = (corr_similarity + 1) / 2
-                metrics[method] = preservation_score if not np.isnan(preservation_score) else 0.5
+                metrics[method] = preservation_score if not np.isnan(preservation_score) else np.nan
 
             except Exception:
-                 metrics[method] = 0.5
+                 metrics[method] = np.nan
 
         return metrics
 
@@ -1141,18 +1157,19 @@ class VisualizationSuite:
              common_factors = [f for f in self.common_metadata if original_data[f].dtype == 'object' or (original_data[f].nunique() < 10 and original_data[f].nunique() > 1)]
 
         if not common_factors or len(feature_cols) < 2 or not methods or augmented_data.empty:
-            return {method: 0.5 for method in methods} # Default if no factors or data
+            return {method: np.nan for method in methods} # No factors/data; exclude
 
 
         # Sample features for efficiency
         n_sample = min(50, len(feature_cols))
-        if n_sample < 2: return {method: 0.5 for method in methods}
+        if n_sample < 2: return {method: np.nan for method in methods}
+        np.random.seed(42)
         sampled_cols = np.random.choice(feature_cols, n_sample, replace=False)
 
         for method in methods:
             method_data = augmented_data[augmented_data['Row_names'].str.contains(f'_{method}', regex=False, na=False)]
             if method_data.empty:
-                metrics[method] = 0.0
+                metrics[method] = np.nan
                 continue
 
             factor_preservation_scores = []
@@ -1203,7 +1220,7 @@ class VisualizationSuite:
             if factor_preservation_scores:
                 metrics[method] = np.mean(factor_preservation_scores)
             else:
-                metrics[method] = 0.5
+                metrics[method] = np.nan
 
         return metrics
 
@@ -1322,21 +1339,28 @@ class VisualizationSuite:
         bio_m = self._calculate_biological_metrics(modality)
 
         for method in methods:
-            d = dist_m.get(method, 0.5)
-            s = struct_m.get(method, 0.5)
-            b = bio_m.get(method, 0.5)
+            d = dist_m.get(method, np.nan)
+            s = struct_m.get(method, np.nan)
+            b = bio_m.get(method, np.nan)
+            valid = [v for v in [d, s, b] if not np.isnan(v)]
             metrics[method] = {
                 'Distribution': d,
                 'Structure': s,
                 'Biological': b,
-                'Overall': np.mean([d, s, b])
+                'Overall': np.mean(valid) if valid else np.nan
             }
 
         df = pd.DataFrame(metrics).T # Transpose to get methods as rows
         df = df[['Distribution', 'Structure', 'Biological', 'Overall']] # Ensure column order
+        # Drop methods for which no metric could be computed rather than showing
+        # favourable placeholder cells.
+        df = df.dropna(how='all')
 
         if df.empty:
-            ax.text(0.5, 0.5, "No metrics available", ha='center', va='center', fontsize=self.FONTS['annotation'])
+            raise RuntimeError(
+                f"{modality.capitalize()} quality panel: no metrics could be "
+                f"computed (all NaN); refusing to plot placeholder values."
+            )
         else:
             sns.heatmap(df, annot=True, cmap='viridis', vmin=0, vmax=1, ax=ax, fmt=".2f",
                         linewidths=0.5, linecolor=self.COLORS['Grid'],
@@ -1376,6 +1400,13 @@ class VisualizationSuite:
             ax.set_title(f'{metric_name} Preservation', fontsize=self.FONTS['panel_title'], color=self.COLORS['Text_Dark']) # Set title even if no data
         else:
             df = pd.DataFrame(data)
+            # Exclude method/modality scores that could not be computed.
+            df = df.dropna(subset=['Score'])
+            if df.empty:
+                raise RuntimeError(
+                    f"{metric_name} preservation panel: all scores were NaN "
+                    f"(could not be computed); refusing to plot placeholder values."
+                )
             df = df.sort_values('Score', ascending=False)
              # Define palette based on type
             palette = {'Spectral': self.COLORS.get('Spectral', 'blue'),
@@ -1434,21 +1465,22 @@ class VisualizationSuite:
             method_data = augmented_data[augmented_data['Row_names'].str.contains(f'_{method}', regex=False, na=False)]
 
             if method_data.empty or factor not in original_data.columns or factor not in method_data.columns or len(feature_cols) < 2:
-                return 0.5
+                return np.nan
 
             if original_data[factor].dtype != method_data[factor].dtype:
                 try:
                     method_data[factor] = method_data[factor].astype(original_data[factor].dtype)
                 except:
-                    return 0.5
+                    return np.nan
 
 
             factor_levels = sorted(original_data[factor].dropna().unique())
-            if len(factor_levels) < 2: return 0.5
+            if len(factor_levels) < 2: return np.nan
 
             # Sample features
             n_sample = min(50, len(feature_cols))
-            if n_sample < 2: return 0.5
+            if n_sample < 2: return np.nan
+            np.random.seed(42)
             sampled_cols = np.random.choice(feature_cols, n_sample, replace=False)
 
             level_medians_orig = []
@@ -1464,15 +1496,15 @@ class VisualizationSuite:
                     valid_levels.append(level)
 
             if len(valid_levels) < 2:
-                return 0.5
+                return np.nan
 
             try:
                 median_mat_orig = np.vstack(level_medians_orig)
                 median_mat_method = np.vstack(level_medians_method)
                 corr, _ = spearmanr(median_mat_orig.flatten(), median_mat_method.flatten())
-                return (corr + 1) / 2 if not np.isnan(corr) else 0.5
+                return (corr + 1) / 2 if not np.isnan(corr) else np.nan
             except Exception:
-                return 0.5
+                return np.nan
 
 
         all_methods = sorted(list(set(self.spectral_methods + self.metabolite_methods)))
@@ -1490,15 +1522,31 @@ class VisualizationSuite:
 
 
         if not factor_scores_data:
-            ax.text(0.5, 0.5, "No factor scores calculated", ha='center', va='center', fontsize=self.FONTS['annotation'])
+            raise RuntimeError(
+                "Factor preservation panel: no factor scores could be calculated; "
+                "refusing to plot placeholder values."
+            )
         else:
             df = pd.DataFrame(factor_scores_data)
+            # Drop rows where the score could not be computed (NaN) rather than
+            # plotting favourable placeholder values.
+            df = df.dropna(subset=['Score'])
+            if df.empty:
+                raise RuntimeError(
+                    "Factor preservation panel: all factor scores were NaN (could not be "
+                    "computed); refusing to plot placeholder values."
+                )
+            n_scores_used = len(df)
             pivot_data = df.pivot_table(index=['Factor', 'Method'], columns='Modality', values='Score')
             pivot_data = pivot_data.dropna(how='all').sort_index()
 
             if pivot_data.empty:
-                 ax.text(0.5, 0.5, "No factor scores calculated", ha='center', va='center', fontsize=self.FONTS['annotation'])
+                 raise RuntimeError(
+                     "Factor preservation panel: no valid factor scores after pivot; "
+                     "refusing to plot placeholder values."
+                 )
             else:
+                print(f"     Factor preservation panel: plotting {n_scores_used} computed scores.")
                 sns.heatmap(pivot_data, annot=True, cmap='viridis', vmin=0, vmax=1, ax=ax, fmt=".2f",
                             linewidths=0.5, linecolor=self.COLORS['Grid'],
                             annot_kws={"size": self.FONTS['annotation'] - 4},
@@ -1589,9 +1637,9 @@ class VisualizationSuite:
                          fontsize=self.FONTS['main_title'], fontweight='bold', y=1.02, color=self.COLORS['Text_Dark'])
 
         plt.tight_layout(rect=[0, 0.05, 1, 0.95])
-        output_path = os.path.join(self.output_dir, 'publication_method_comparison.png')
+        output_path = os.path.join(self.output_dir, 'fig_S12.png')
         plt.savefig(output_path, dpi=600, bbox_inches='tight', facecolor=fig.get_facecolor())
-        pdf_path = os.path.join(self.output_dir, 'publication_method_comparison.pdf')
+        pdf_path = os.path.join(self.output_dir, 'fig_S12.pdf')
         plt.savefig(pdf_path, format='pdf', bbox_inches='tight', facecolor=fig.get_facecolor())
         plt.close(fig)
 
@@ -1615,15 +1663,31 @@ class VisualizationSuite:
         method_names = sorted(metrics_dict.keys())
         color_map = plt.cm.get_cmap('tab10', len(method_names))
 
-
+        n_methods_plotted = 0
         for i, method in enumerate(method_names):
             metrics = metrics_dict[method]
-            values = [metrics.get(cat, 0.5) for cat in categories] # Default to 0.5 if metric missing
-            values += values[:1] # Close the loop
+            # A radar polygon requires a real value for every category. If any
+            # category is missing or could not be computed (NaN), skip this
+            # method rather than substituting a favourable placeholder.
+            raw_values = [metrics.get(cat, np.nan) for cat in categories]
+            if any(np.isnan(v) for v in raw_values):
+                missing = [cat for cat, v in zip(categories, raw_values) if np.isnan(v)]
+                print(f"     Radar ({title}): skipping method '{method}' "
+                      f"- missing metrics for {missing}.")
+                continue
+
+            values = raw_values + raw_values[:1] # Close the loop
 
             color = self.COLORS.get(method, color_map(i))
             ax.plot(angles, values, 'o-', linewidth=2, markersize=4, label=method, color=color, alpha=0.9)
             ax.fill(angles, values, alpha=0.15, color=color)
+            n_methods_plotted += 1
+
+        if n_methods_plotted == 0:
+            raise RuntimeError(
+                f"Radar chart ({title}): no method had a complete set of computed "
+                f"metrics; refusing to plot placeholder values."
+            )
 
         ax.legend(loc='lower right', bbox_to_anchor=(1.1, -0.15), # Below and to the right
                   fontsize=self.FONTS['legend_text'] - 4, title='Method', title_fontsize=self.FONTS['legend_title'] - 4)
@@ -1633,23 +1697,23 @@ class VisualizationSuite:
     def _distribution_metric(self, modality, method):
         """Calculate distribution preservation score for a single method."""
         metrics = self._calculate_distribution_metrics(modality)
-        return metrics.get(method, 0.5)
+        return metrics.get(method, np.nan)
 
     def _structure_metric(self, modality, method):
         """Calculate structure preservation score for a single method."""
         metrics = self._calculate_structure_metrics(modality)
-        return metrics.get(method, 0.5)
+        return metrics.get(method, np.nan)
 
     def _biological_metric(self, modality, method):
         """Calculate biological signal preservation score for a single method."""
         metrics = self._calculate_biological_metrics(modality)
-        return metrics.get(method, 0.5)
+        return metrics.get(method, np.nan)
 
     def _treatment_metric(self, modality, method):
         """Calculate treatment effect preservation score for a single method."""
         factor = 'Treatment'
         if factor not in self.common_metadata or self.spectral_original[factor].nunique() < 2:
-            return 0.5 # Cannot calculate
+            return np.nan # Cannot calculate
 
         original_data = self.spectral_original if modality == 'spectral' else self.metabolite_original
         augmented_data = self.spectral_augmented if modality == 'spectral' else self.metabolite_augmented
@@ -1657,19 +1721,20 @@ class VisualizationSuite:
         method_data = augmented_data[augmented_data['Row_names'].str.contains(f'_{method}', regex=False, na=False)]
 
         if method_data.empty or len(feature_cols) < 2:
-            return 0.5
+            return np.nan
 
         if original_data[factor].dtype != method_data[factor].dtype:
             try:
                 method_data[factor] = method_data[factor].astype(original_data[factor].dtype)
-            except: return 0.5
+            except: return np.nan
 
         factor_levels = sorted(original_data[factor].dropna().unique())
-        if len(factor_levels) < 2: return 0.5
+        if len(factor_levels) < 2: return np.nan
 
         # Sample features
         n_sample = min(50, len(feature_cols))
-        if n_sample < 2: return 0.5
+        if n_sample < 2: return np.nan
+        np.random.seed(42)
         sampled_cols = np.random.choice(feature_cols, n_sample, replace=False)
 
         level_medians_orig = []
@@ -1684,21 +1749,21 @@ class VisualizationSuite:
                  valid_levels.append(level)
 
         if len(valid_levels) < 2:
-            return 0.5
+            return np.nan
 
         try:
             median_mat_orig = np.vstack(level_medians_orig)
             median_mat_method = np.vstack(level_medians_method)
             corr, _ = spearmanr(median_mat_orig.flatten(), median_mat_method.flatten())
-            return (corr + 1) / 2 if not np.isnan(corr) else 0.5
+            return (corr + 1) / 2 if not np.isnan(corr) else np.nan
         except Exception:
-            return 0.5
+            return np.nan
 
     def _batch_metric(self, modality, method):
         """Calculate batch effect preservation score for a single method."""
         factor = 'Batch'
         if factor not in self.common_metadata or self.spectral_original[factor].nunique() < 2:
-            return 0.5
+            return np.nan
 
         original_data = self.spectral_original if modality == 'spectral' else self.metabolite_original
         augmented_data = self.spectral_augmented if modality == 'spectral' else self.metabolite_augmented
@@ -1706,19 +1771,20 @@ class VisualizationSuite:
         method_data = augmented_data[augmented_data['Row_names'].str.contains(f'_{method}', regex=False, na=False)]
 
         if method_data.empty or len(feature_cols) < 2:
-            return 0.5
+            return np.nan
 
         if original_data[factor].dtype != method_data[factor].dtype:
             try:
                 method_data[factor] = method_data[factor].astype(original_data[factor].dtype)
-            except: return 0.5
+            except: return np.nan
 
         factor_levels = sorted(original_data[factor].dropna().unique())
-        if len(factor_levels) < 2: return 0.5
+        if len(factor_levels) < 2: return np.nan
 
         # Sample features
         n_sample = min(50, len(feature_cols))
-        if n_sample < 2: return 0.5
+        if n_sample < 2: return np.nan
+        np.random.seed(42)
         sampled_cols = np.random.choice(feature_cols, n_sample, replace=False)
 
         level_medians_orig = []
@@ -1732,15 +1798,15 @@ class VisualizationSuite:
                  level_medians_method.append(level_data_method.median().values)
                  valid_levels.append(level)
 
-        if len(valid_levels) < 2: return 0.5
+        if len(valid_levels) < 2: return np.nan
 
         try:
             median_mat_orig = np.vstack(level_medians_orig)
             median_mat_method = np.vstack(level_medians_method)
             corr, _ = spearmanr(median_mat_orig.flatten(), median_mat_method.flatten())
-            return (corr + 1) / 2 if not np.isnan(corr) else 0.5
+            return (corr + 1) / 2 if not np.isnan(corr) else np.nan
         except Exception:
-            return 0.5
+            return np.nan
 
     def _calculate_method_metric(self, modality, method, metric_type):
         """Helper to call the correct single-method metric calculator."""
@@ -1755,14 +1821,14 @@ class VisualizationSuite:
         elif metric_type == 'batch':
             return self._batch_metric(modality, method)
         else:
-            return 0.5
+            return np.nan
 
     def _calculate_factor_score(self, factor):
         """Calculate average quality score for a specific factor across methods/modalities"""
         spectral_scores = []
         metabolite_scores = []
 
-        if factor not in self.common_metadata: return 0.5
+        if factor not in self.common_metadata: return np.nan
 
         for method in self.spectral_methods:
             score = self._treatment_metric('spectral', method) if factor=='Treatment' else \
@@ -1778,7 +1844,7 @@ class VisualizationSuite:
 
 
         all_scores = [s for s in spectral_scores + metabolite_scores if not np.isnan(s)]
-        return np.mean(all_scores) if all_scores else 0.5
+        return np.mean(all_scores) if all_scores else np.nan
 
     def _create_augmentation_quality_figure(self):
         """
@@ -1791,25 +1857,25 @@ class VisualizationSuite:
         # Panel 1: Overall Quality Metrics (across methods & modalities)
         ax1 = fig.add_subplot(gs[0, 0])
         self._create_quality_metrics_panel(ax1)
-        ax1.text(-0.1, 1.05, "A)", transform=ax1.transAxes, size=self.FONTS['panel_label'], weight='bold')
+        ax1.text(-0.1, 1.1, "A", transform=ax1.transAxes, size=self.FONTS['panel_label'], weight='bold', va='top', ha='left')
 
 
         # Panel 2: Modality Comparison (Spectral vs Metabolite)
         ax2 = fig.add_subplot(gs[0, 1])
         self._create_modality_comparison_panel(ax2)
-        ax2.text(-0.1, 1.05, "B)", transform=ax2.transAxes, size=self.FONTS['panel_label'], weight='bold')
+        ax2.text(-0.1, 1.1, "B", transform=ax2.transAxes, size=self.FONTS['panel_label'], weight='bold', va='top', ha='left')
 
 
         # Panel 3: Method Comparison (Overall score per method)
         ax3 = fig.add_subplot(gs[1, 0])
         self._create_method_comparison_panel(ax3)
-        ax3.text(-0.1, 1.05, "C)", transform=ax3.transAxes, size=self.FONTS['panel_label'], weight='bold')
+        ax3.text(-0.1, 1.1, "C", transform=ax3.transAxes, size=self.FONTS['panel_label'], weight='bold', va='top', ha='left')
 
 
         # Panel 4: Factor-Specific Quality (Average score per factor)
         ax4 = fig.add_subplot(gs[1, 1])
         self._create_factor_quality_panel(ax4)
-        ax4.text(-0.1, 1.05, "D)", transform=ax4.transAxes, size=self.FONTS['panel_label'], weight='bold')
+        ax4.text(-0.1, 1.1, "D", transform=ax4.transAxes, size=self.FONTS['panel_label'], weight='bold', va='top', ha='left')
 
 
         plt.suptitle("Comprehensive Augmentation Quality Assessment",
@@ -1821,9 +1887,9 @@ class VisualizationSuite:
 
         # Save the figure
         plt.tight_layout(rect=[0, 0.03, 1, 0.95]) # Adjust layout
-        output_path = os.path.join(self.output_dir, 'publication_quality_metrics.png')
+        output_path = os.path.join(self.output_dir, 'fig_S13.png')
         plt.savefig(output_path, dpi=600, bbox_inches='tight', facecolor=fig.get_facecolor())
-        pdf_path = os.path.join(self.output_dir, 'publication_quality_metrics.pdf')
+        pdf_path = os.path.join(self.output_dir, 'fig_S13.pdf')
         plt.savefig(pdf_path, format='pdf', bbox_inches='tight', facecolor=fig.get_facecolor())
         plt.close(fig)
 
@@ -1843,6 +1909,15 @@ class VisualizationSuite:
 
 
         metrics_df = pd.DataFrame(list(metrics.items()), columns=['Metric', 'Score'])
+        # Exclude metrics that could not be computed rather than plotting placeholders.
+        metrics_df = metrics_df.dropna(subset=['Score'])
+        if metrics_df.empty:
+            raise RuntimeError(
+                "Overall quality metrics panel: no metrics could be computed "
+                "(all NaN); refusing to plot placeholder values."
+            )
+        n_metrics_used = len(metrics_df)
+        print(f"     Overall quality metrics panel: plotting {n_metrics_used} computed metrics.")
         metrics_df = metrics_df.sort_values('Score', ascending=True) # Horizontal bars look better ascending
 
         # Define colors based on score thresholds
@@ -1892,6 +1967,13 @@ class VisualizationSuite:
             data.append({'Modality': 'Molecular Features', 'Metric': mname, 'Score': score_mol})
 
         df = pd.DataFrame(data)
+        # Exclude modality/metric combinations that could not be computed.
+        df = df.dropna(subset=['Score'])
+        if df.empty:
+            raise RuntimeError(
+                "Modality comparison panel: no scores could be computed "
+                "(all NaN); refusing to plot placeholder values."
+            )
 
         # Define palette
         palette = {'Spectral': self.COLORS.get('Spectral', '#6baed6'),
@@ -1918,20 +2000,31 @@ class VisualizationSuite:
         # Spectral methods
         for method in self.spectral_methods:
             scores = [self._calculate_method_metric('spectral', method, mtype) for mtype in metrics_to_average]
-            method_scores[f"{method} (S)"] = np.mean([s for s in scores if not np.isnan(s)]) if any(~np.isnan(scores)) else 0.5
+            valid = [s for s in scores if not np.isnan(s)]
+            method_scores[f"{method} (S)"] = np.mean(valid) if valid else np.nan
 
         # Metabolite methods
         for method in self.metabolite_methods:
             scores = [self._calculate_method_metric('metabolite', method, mtype) for mtype in metrics_to_average]
-            method_scores[f"{method} (M)"] = np.mean([s for s in scores if not np.isnan(s)]) if any(~np.isnan(scores)) else 0.5
+            valid = [s for s in scores if not np.isnan(s)]
+            method_scores[f"{method} (M)"] = np.mean(valid) if valid else np.nan
 
         if not method_scores:
-            ax.text(0.5, 0.5, "No method scores calculated", ha='center', va='center', fontsize=self.FONTS['annotation'])
-            ax.set_title('Method Quality Comparison', fontsize=self.FONTS['panel_title'])
-            return
+            raise RuntimeError(
+                "Method quality panel: no method scores calculated; "
+                "refusing to plot placeholder values."
+            )
 
 
         method_df = pd.DataFrame(list(method_scores.items()), columns=['Method', 'Score'])
+        # Exclude methods that could not be scored rather than plotting placeholders.
+        method_df = method_df.dropna(subset=['Score'])
+        if method_df.empty:
+            raise RuntimeError(
+                "Method quality panel: all method scores were NaN (could not be "
+                "computed); refusing to plot placeholder values."
+            )
+        print(f"     Method quality panel: plotting {len(method_df)} computed method scores.")
         method_df = method_df.sort_values('Score', ascending=True) # Horizontal bars look better ascending
 
         # Define colors based on modality marker in name
@@ -1975,6 +2068,14 @@ class VisualizationSuite:
         factor_scores = {factor: self._calculate_factor_score(factor) for factor in common_factors}
 
         factor_df = pd.DataFrame(list(factor_scores.items()), columns=['Factor', 'Score'])
+        # Exclude factors that could not be scored rather than plotting placeholders.
+        factor_df = factor_df.dropna(subset=['Score'])
+        if factor_df.empty:
+            raise RuntimeError(
+                "Factor quality panel: no factor scores could be computed "
+                "(all NaN); refusing to plot placeholder values."
+            )
+        print(f"     Factor quality panel: plotting {len(factor_df)} computed factor scores.")
         factor_df = factor_df.sort_values('Score', ascending=True)
 
         # Define colors based on score thresholds
@@ -2007,18 +2108,18 @@ class VisualizationSuite:
 
         # Average the modality scores
         scores = [s for s in [spectral_score, metabolite_score] if not np.isnan(s)]
-        return np.mean(scores) if scores else 0.5
+        return np.mean(scores) if scores else np.nan
 
     def _calculate_modality_metric(self, modality, metric_type):
         """Calculate quality metric for a modality by averaging across its methods"""
         methods = self.spectral_methods if modality == 'spectral' else self.metabolite_methods
-        if not methods: return 0.5 # Return default if no methods for this modality
+        if not methods: return np.nan # No methods; exclude
 
         method_scores = [self._calculate_method_metric(modality, method, metric_type)
                          for method in methods]
 
         scores = [s for s in method_scores if not np.isnan(s)]
-        return np.mean(scores) if scores else 0.5
+        return np.mean(scores) if scores else np.nan
 
     def run_all_visualizations(self):
         """Run all visualization methods with timing."""
@@ -2066,9 +2167,9 @@ class VisualizationSuite:
                      ha='center', va='center', fontsize=self.FONTS['panel_title'])
              ax.set_title("Molecular Features Profile Comparison", fontsize=self.FONTS['panel_title'])
              ax.axis('off')
-             output_path = os.path.join(self.output_dir, 'publication_molecular_features_profiles.png')
+             output_path = os.path.join(self.output_dir, 'fig_S11.png')
              plt.savefig(output_path, dpi=300, bbox_inches='tight')
-             pdf_path = os.path.join(self.output_dir, 'publication_molecular_features_profiles.pdf')
+             pdf_path = os.path.join(self.output_dir, 'fig_S11.pdf')
              plt.savefig(pdf_path, format='pdf', bbox_inches='tight')
              plt.close(fig)
              return None
@@ -2117,9 +2218,9 @@ class VisualizationSuite:
 
         plt.tight_layout(rect=[0, 0.02, 1, 0.96])
 
-        output_path = os.path.join(self.output_dir, 'publication_molecular_features_profiles.png')
+        output_path = os.path.join(self.output_dir, 'fig_S11.png')
         plt.savefig(output_path, dpi=600, bbox_inches='tight', facecolor=fig.get_facecolor())
-        pdf_path = os.path.join(self.output_dir, 'publication_molecular_features_profiles.pdf')
+        pdf_path = os.path.join(self.output_dir, 'fig_S11.pdf')
         plt.savefig(pdf_path, format='pdf', bbox_inches='tight', facecolor=fig.get_facecolor())
         plt.close(fig)
 
@@ -2182,7 +2283,7 @@ def main():
     spectral_augmented_path = "C:\\Users\\ms\\Desktop\\hyper\\output\\augment\\hyper\\augmented_spectral_data.csv"
     molecular_features_original_path = "C:\\Users\\ms\\Desktop\\hyper\\data\\n_p_r2.csv"
     molecular_features_augmented_path = "C:\\Users\\ms\\Desktop\\hyper\\output\\augment\\molecular_feature\\root\\augmented_molecular_feature_data.csv"
-    output_dir = r"C:\Users\ms\Desktop\hyper\output\augment\visualisation\test"
+    output_dir = r"C:\Users\ms\Desktop\hyper\output\figure"
 
     # Create visualization suite instance
     vis_suite = VisualizationSuite(
