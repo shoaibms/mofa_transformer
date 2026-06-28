@@ -131,10 +131,10 @@ VERSION = "1.2.2_AvgWeightsFix" # Version update
 # --- Paths ---
 BASE_DIR = r"C:/Users/ms/Desktop/hyper"
 # Input files are from the mofa50 run
-MOFA_OUTPUT_DIR = os.path.join(BASE_DIR, "output", "mofa")  # mofa50 subdirectory
+MOFA_OUTPUT_DIR = os.path.join(BASE_DIR, "output", "mofa") # <<< POINT TO mofa50 SUBDIR
 # Specific output directory for this version
 TRANSFORMER_BASE_OUTPUT_DIR = os.path.join(BASE_DIR, "output", "transformer")
-OUTPUT_DIR = os.path.join(TRANSFORMER_BASE_OUTPUT_DIR, "v3_feature_attention")
+OUTPUT_DIR = os.path.join(TRANSFORMER_BASE_OUTPUT_DIR, "v3_feature_attention") # <<< NEW OUTPUT DIR
 CHECKPOINT_SUBDIR = os.path.join(OUTPUT_DIR, "checkpoints")
 LOG_SUBDIR = os.path.join(OUTPUT_DIR, "logs")
 RESULTS_SUBDIR = os.path.join(OUTPUT_DIR, "results") # For CSVs, attention data
@@ -179,7 +179,7 @@ NUM_CLASSES = {'Genotype': 2, 'Treatment': 2, 'Day': 3}
 
 # --- Training Hyperparameters ---
 LEARNING_RATE = 5e-5 # Can try slightly higher for smaller model/data
-BATCH_SIZE = 16 # Small batch to accommodate attention complexity and limited VRAM
+BATCH_SIZE = 16 # <<< Start VERY SMALL due to attention complexity & 6GB VRAM
 EPOCHS = 150 # Train potentially longer, but rely on early stopping
 EARLY_STOPPING_PATIENCE = 15 # Increase patience slightly
 WEIGHT_DECAY = 1e-5
@@ -188,7 +188,7 @@ WEIGHT_DECAY = 1e-5
 VAL_SIZE = 0.15
 TEST_SIZE = 0.15
 EXPORT_ALL_ORIGINALS_ATTENTION = True  # For Fig.4 biology/interpretability
-NUM_WORKERS = 0 # Set to 0 for Windows; increase if resources allow
+NUM_WORKERS = 0 # <<< Set to 0 for Windows, especially with complex models/limited RAM, can increase later if needed
 RANDOM_SEED = 42
 ENCODING_MAPS = {'Genotype': {'G1': 0, 'G2': 1}, 'Treatment': {0: 0, 1: 1}, 'Day': {1: 0, 2: 1, 3: 2}}
 
@@ -1271,6 +1271,111 @@ def run_baseline_models(X_train_spec, X_train_metab, y_train, X_test_spec, X_tes
     return baseline_df
 
 
+def generate_supplementary_table_s2(results_dir):
+    """
+    Generate Supplementary Table S2 from the final v3 Transformer and baseline CSV outputs.
+
+    Requires both Leaf and Root runs to have completed.
+    Output:
+        Supplementary_Table_S2_model_performance.csv
+    """
+    logger.info("--- Generating Supplementary Table S2 from final v3 CSV outputs ---")
+
+    required_files = {
+        ("Leaf", "Transformer"): os.path.join(results_dir, "transformer_class_performance_Leaf.csv"),
+        ("Root", "Transformer"): os.path.join(results_dir, "transformer_class_performance_Root.csv"),
+        ("Leaf", "Baseline"): os.path.join(results_dir, "transformer_baseline_comparison_Leaf.csv"),
+        ("Root", "Baseline"): os.path.join(results_dir, "transformer_baseline_comparison_Root.csv"),
+    }
+
+    missing_files = [path for path in required_files.values() if not os.path.exists(path)]
+    if missing_files:
+        logger.info(
+            "Supplementary Table S2 not generated yet because not all final v3 CSV files exist. "
+            "Run both Leaf and Root analyses first. Missing files: "
+            + "; ".join(missing_files)
+        )
+        return None
+
+    def load_metric_file(path, tissue, fixed_model=None):
+        df = pd.read_csv(path)
+
+        required_cols = ["Task", "Metric", "Score"]
+        if fixed_model is None:
+            required_cols = ["Model", "Task", "Metric", "Score"]
+
+        missing_cols = [c for c in required_cols if c not in df.columns]
+        if missing_cols:
+            raise ValueError(f"Missing required columns in {path}: {missing_cols}")
+
+        if fixed_model is not None:
+            df["Model"] = fixed_model
+
+        df["Tissue"] = tissue
+
+        return df[["Tissue", "Model", "Task", "Metric", "Score"]]
+
+    combined = pd.concat(
+        [
+            load_metric_file(required_files[("Leaf", "Transformer")], "Leaf", fixed_model="Transformer"),
+            load_metric_file(required_files[("Root", "Transformer")], "Root", fixed_model="Transformer"),
+            load_metric_file(required_files[("Leaf", "Baseline")], "Leaf"),
+            load_metric_file(required_files[("Root", "Baseline")], "Root"),
+        ],
+        ignore_index=True
+    )
+
+    # Harmonise labels for manuscript/table consistency
+    combined["Model"] = combined["Model"].replace({"KNN (k=5)": "KNN"})
+    combined["Task"] = combined["Task"].replace({"Day": "Time Point"})
+
+    # Convert long metric table to wide supplementary table
+    table_s2 = (
+        combined
+        .pivot_table(
+            index=["Tissue", "Model", "Task"],
+            columns="Metric",
+            values="Score",
+            aggfunc="first"
+        )
+        .reset_index()
+    )
+
+    # Ensure consistent column order
+    metric_cols = ["Accuracy", "F1_Macro", "Precision_Macro", "Recall_Macro"]
+    for col in metric_cols:
+        if col not in table_s2.columns:
+            table_s2[col] = np.nan
+
+    table_s2 = table_s2[["Tissue", "Model", "Task"] + metric_cols]
+
+    # Sort for readability
+    tissue_order = {"Leaf": 0, "Root": 1}
+    model_order = {"Transformer": 0, "RandomForest": 1, "KNN": 2}
+    task_order = {"Genotype": 0, "Treatment": 1, "Time Point": 2}
+
+    table_s2["_tissue_order"] = table_s2["Tissue"].map(tissue_order)
+    table_s2["_model_order"] = table_s2["Model"].map(model_order)
+    table_s2["_task_order"] = table_s2["Task"].map(task_order)
+
+    table_s2 = (
+        table_s2
+        .sort_values(["_tissue_order", "_model_order", "_task_order"])
+        .drop(columns=["_tissue_order", "_model_order", "_task_order"])
+        .reset_index(drop=True)
+    )
+
+    # Round numeric values for manuscript-ready table
+    for col in metric_cols:
+        table_s2[col] = table_s2[col].round(4)
+
+    output_file = os.path.join(results_dir, "Supplementary_Table_S2_model_performance.csv")
+    table_s2.to_csv(output_file, index=False)
+
+    logger.info(f"Supplementary Table S2 saved to: {output_file}")
+    return output_file
+
+
 # ===== MAIN EXECUTION =====
 def main():
     """Main execution function."""
@@ -1677,6 +1782,9 @@ def main():
         X_test_spec_scaled_df, X_test_metab_scaled_df, y_test_df,
         TARGET_COLS, RESULTS_SUBDIR, ANALYSIS_PAIRING, RANDOM_SEED
     )
+
+    # Generate Supplementary Table S2 once both Leaf and Root final v3 CSV outputs exist
+    generate_supplementary_table_s2(RESULTS_SUBDIR)
 
     logger.info("--- Visualization Phase Skipped ---")
 
