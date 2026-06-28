@@ -123,7 +123,7 @@ except ImportError:
         'family': 'sans-serif',
         'sans_serif': ['Arial', 'Helvetica', 'DejaVu Sans', 'Liberation Sans', 'sans-serif'], # Fallback list
         'main_title': 22,         # Figure Title (e.g., "Figure 1: ...")
-        'panel_label': 19,        # Panel Labels (e.g., "A)", "B)")
+        'panel_label': 19,        # Panel Labels (e.g., "A", "B")
         'panel_title': 17,        # Title for each subplot/panel
         'axis_label': 17,         # X and Y axis labels
         'tick_label': 16,         # Axis tick numbers/text
@@ -139,7 +139,7 @@ except ImportError:
 # ===================== CONFIGURATION PARAMETERS =====================
 # Default input file paths (can be overridden via command line arguments)
 DEFAULT_INPUT_DIR = r"C:\Users\ms\Desktop\hyper\output\transformer"
-DEFAULT_OUTPUT_DIR = r"C:\Users\ms\Desktop\hyper\output\transformer\novility_plot\test"
+DEFAULT_OUTPUT_DIR = r"C:\Users\ms\Desktop\hyper\output\figure"
 
 # Plot styling
 plt.rcParams['svg.fonttype'] = 'none'
@@ -196,91 +196,82 @@ def create_output_directory(dir_path):
         return False
 
 def load_performance_data(input_dir):
-    """Load and process performance data for Panel A."""
-    # Input file paths
-    transformer_leaf_path = os.path.join(input_dir, "phase1.1/leaf/transformer_class_performance_Leaf.csv")
-    transformer_root_path = os.path.join(input_dir, "phase1.1/root/transformer_class_performance_Root.csv")
-    baseline_leaf_path = os.path.join(input_dir, "phase1.1/leaf/transformer_baseline_comparison_Leaf.csv")
-    baseline_root_path = os.path.join(input_dir, "phase1.1/root/transformer_baseline_comparison_Root.csv")
+    """Load and process final v3 performance data for Panel A.
 
-    files_to_check = [transformer_leaf_path, transformer_root_path, baseline_leaf_path, baseline_root_path]
+    Figure 2 must be generated only from final analysis outputs.
+    Missing files or malformed files should stop figure generation.
+    """
+    transformer_leaf_path = os.path.join(
+        input_dir, "v3_feature_attention/results/transformer_class_performance_Leaf.csv"
+    )
+    transformer_root_path = os.path.join(
+        input_dir, "v3_feature_attention/results/transformer_class_performance_Root.csv"
+    )
+    baseline_leaf_path = os.path.join(
+        input_dir, "v3_feature_attention/results/transformer_baseline_comparison_Leaf.csv"
+    )
+    baseline_root_path = os.path.join(
+        input_dir, "v3_feature_attention/results/transformer_baseline_comparison_Root.csv"
+    )
+
+    files_to_check = [
+        transformer_leaf_path,
+        transformer_root_path,
+        baseline_leaf_path,
+        baseline_root_path
+    ]
     missing_files = [f for f in files_to_check if not os.path.exists(f)]
 
     if missing_files:
-        print(f"WARNING: Some performance data files are missing: {missing_files}")
+        raise FileNotFoundError(
+            "Required final Figure 2 performance files are missing:\n" +
+            "\n".join(missing_files)
+        )
 
-    # Create a new dataframe for plotting
-    plot_data = []
-
-    # Helper function to process performance data
     def process_performance_data(df_path, model=None, tissue=None):
-        if not os.path.exists(df_path):
-            print(f"WARNING: File not found: {df_path}")
-            return []
+        df = pd.read_csv(df_path)
 
-        try:
-            df = pd.read_csv(df_path)
-            data = []
+        required_cols = ['Task', 'Metric', 'Score']
+        if model is None:
+            required_cols = ['Model', 'Task', 'Metric', 'Score']
 
-            # If 'Task' and 'Metric' and 'Score' columns exist
-            if all(col in df.columns for col in ['Task', 'Metric', 'Score']):
-                for _, row in df.iterrows():
-                    if 'F1' in str(row['Metric']) or 'f1' in str(row['Metric']).lower():
-                        model_val = model if model else row['Model'] if 'Model' in df.columns else 'Unknown'
-                        data.append({
-                            'Task': rename_task(row['Task']),
-                            'Score': float(row['Score']),
-                            'Model': model_val,
-                            'Tissue': tissue
-                        })
-            # If 'Model', 'Task', 'Metric', 'Score' columns exist (likely baseline comparison)
-            elif all(col in df.columns for col in ['Model', 'Task', 'Metric', 'Score']):
-                for _, row in df.iterrows():
-                    if 'F1' in str(row['Metric']) or 'f1' in str(row['Metric']).lower():
-                        data.append({
-                            'Task': rename_task(row['Task']),
-                            'Score': float(row['Score']),
-                            'Model': row['Model'],
-                            'Tissue': tissue
-                        })
+        missing_cols = [c for c in required_cols if c not in df.columns]
+        if missing_cols:
+            raise ValueError(
+                f"Missing required columns in {df_path}: {missing_cols}"
+            )
 
-            return data
-        except Exception as e:
-            print(f"ERROR processing {df_path}: {e}")
-            return []
+        data = []
+        f1_rows = df[df['Metric'].astype(str).str.lower().str.contains('f1')]
 
-    # Process each dataframe
-    try:
-        plot_data.extend(process_performance_data(transformer_leaf_path, model='Transformer', tissue='Leaf'))
-        plot_data.extend(process_performance_data(transformer_root_path, model='Transformer', tissue='Root'))
-        plot_data.extend(process_performance_data(baseline_leaf_path, tissue='Leaf'))
-        plot_data.extend(process_performance_data(baseline_root_path, tissue='Root'))
-    except Exception as e:
-        print(f"ERROR processing performance data: {e}")
+        if f1_rows.empty:
+            raise ValueError(f"No F1 metric rows found in {df_path}")
+
+        for _, row in f1_rows.iterrows():
+            model_val = model if model is not None else row['Model']
+            data.append({
+                'Task': rename_task(row['Task']),
+                'Score': float(row['Score']),
+                'Model': model_val,
+                'Tissue': tissue
+            })
+
+        return data
+
+    plot_data = []
+    plot_data.extend(process_performance_data(transformer_leaf_path, model='Transformer', tissue='Leaf'))
+    plot_data.extend(process_performance_data(transformer_root_path, model='Transformer', tissue='Root'))
+    plot_data.extend(process_performance_data(baseline_leaf_path, tissue='Leaf'))
+    plot_data.extend(process_performance_data(baseline_root_path, tissue='Root'))
 
     if not plot_data:
-        print("WARNING: No valid performance data found. Generating synthetic data for demonstration.")
-        # Create synthetic data for visualization
-        models = ['Transformer', 'RandomForest', 'KNN']
-        tasks = ['Genotype', 'Treatment', 'Time point']
-        tissues = ['Leaf', 'Root']
-
-        for model in models:
-            for task in tasks:
-                for tissue in tissues:
-                    # Random F1 score between 0.7 and 0.95
-                    score = np.random.uniform(0.7, 0.95)
-                    plot_data.append({
-                        'Task': task,
-                        'Score': score,
-                        'Model': model,
-                        'Tissue': tissue
-                    })
-        print("Created placeholder performance data.")
+        raise ValueError(
+            "No valid performance data found. Figure 2 must not be generated from synthetic data."
+        )
 
     plot_df = pd.DataFrame(plot_data)
-    # Correct KNN model name if it's 'KNN (k=5)'
     plot_df['Model'] = plot_df['Model'].replace('KNN (k=5)', 'KNN')
+
     return plot_df
 
 
@@ -353,7 +344,10 @@ def load_shap_data(input_dir):
 
     missing_files = [f['path'] for f in shap_files_info if not os.path.exists(f['path'])]
     if missing_files:
-        print(f"WARNING: Some SHAP data files are missing: {missing_files}")
+        raise FileNotFoundError(
+            "Required SHAP files for Figure 2B–C are missing:\n" +
+            "\n".join(missing_files)
+        )
 
     def load_and_process_shap_file(file_info):
         """Load and preprocess a single SHAP importance file."""
@@ -378,9 +372,9 @@ def load_shap_data(input_dir):
 
                 missing_cols = [col for col in required_cols if col not in df.columns]
                 if missing_cols:
-                     print(f"WARNING: Missing essential columns in {file_path}: {missing_cols}")
-                     # Create placeholder if essential columns are missing
-                     return create_placeholder_shap_data(original_task_name, tissue_name)
+                    raise ValueError(
+                        f"Missing essential columns in {file_path}: {missing_cols}"
+                    )
 
                 # Add/Update metadata with RENAMED task
                 df['Tissue'] = tissue_name
@@ -389,56 +383,14 @@ def load_shap_data(input_dir):
                 print(f"Successfully loaded data for {tissue_name} {renamed_task} with {len(df)} features")
                 return df
             else:
-                print(f"WARNING: SHAP file not found: {file_path}")
-                # Create placeholder data using the RENAMED task name
-                return create_placeholder_shap_data(original_task_name, tissue_name)
+                raise FileNotFoundError(f"Required SHAP file not found: {file_path}")
         except Exception as e:
-            print(f"ERROR loading {file_path}: {e}")
-            # Create placeholder data using the RENAMED task name
-            return create_placeholder_shap_data(original_task_name, tissue_name)
-
-    def create_placeholder_shap_data(original_task_name, tissue_name):
-        """Create placeholder SHAP data for visualization with RENAMED task/types."""
-        renamed_task = rename_task(original_task_name)
-        renamed_metabolite = rename_feature_type('Metabolite')
-        feature_types = ['Spectral', renamed_metabolite]
-
-        # Generate features based on tissue and task
-        features = []
-        for i in range(15):
-            if i % 2 == 0:  # Even indices for Spectral features
-                if tissue_name == 'Leaf':
-                    features.append(f"W_{550+i}_leaf_spectral")
-                else:
-                    features.append(f"W_{1050+i}_root_spectral")
-            else:  # Odd indices for Metabolite features
-                prefix = 'P' if i % 4 == 1 else 'N'
-                # Use new naming convention P_XXXX or N_XXXX
-                if tissue_name == 'Leaf':
-                    features.append(f"{prefix}_{1000+i}_leaf_{renamed_metabolite.lower().replace(' ', '_')}")
-                else:
-                    features.append(f"{prefix}_{2000+i}_root_{renamed_metabolite.lower().replace(' ', '_')}")
-
-        # Create random importance values
-        base_values = np.linspace(0.5, 0.05, len(features))
-        randomness = np.random.normal(0, 0.03, len(features))
-        importance_values = np.clip(base_values + randomness, 0.01, 0.6)
-
-        # Create DataFrame
-        df = pd.DataFrame({
-            'Feature': features,
-            'MeanAbsoluteShap': importance_values,
-            'FeatureType': [feature_types[i % 2] for i in range(len(features))],
-            'Task': renamed_task,
-            'Tissue': tissue_name
-        })
-        print(f"Created placeholder data for {tissue_name} {renamed_task}")
-        return df
+            raise RuntimeError(f"Error loading SHAP file {file_path}: {e}")
 
     # Load data for all files
     all_shap_data = [load_and_process_shap_file(info) for info in shap_files_info]
 
-    # Combine all loaded/placeholder dataframes
+    # Combine all loaded dataframes
     combined_df = pd.concat(all_shap_data, ignore_index=True)
 
     # Separate into leaf and root data
@@ -501,17 +453,18 @@ def create_model_performance_plot(performance_df, ax):
     ]
     all_handles = model_handles + tissue_handles
 
-    # Place the legend outside the plot area to avoid overlap
+    # Place the legend above the plot in a single horizontal row
     ax.legend(handles=all_handles, title='',
-              loc='upper left', bbox_to_anchor=(.8, .85),
+              loc='lower center', bbox_to_anchor=(0.5, 1.10),
+              ncol=len(all_handles),
               fontsize=FONTS_SANS.get('legend_text', 16),
               title_fontsize=FONTS_SANS.get('legend_title', 19),
-              frameon=False)
+              frameon=False, columnspacing=1.5, handletextpad=0.5)
 
     # Add title and labels
-    ax.set_title('Model Performance Comparison', fontsize=FONTS_SANS.get('panel_title', 18), fontweight='bold', loc='center', pad=20)
-    ax.text(-0.03, 1.05, 'a', transform=ax.transAxes,
-            fontsize=FONTS_SANS.get('panel_label', 19), fontweight='bold', fontvariant='small-caps', va='bottom', ha='left')
+    ax.set_title('Model Performance Comparison', fontsize=FONTS_SANS.get('panel_title', 18), fontweight='bold', loc='center', pad=55)
+    ax.text(-0.1, 1.1, 'A', transform=ax.transAxes,
+            fontsize=FONTS_SANS.get('panel_label', 19), fontweight='bold', va='top', ha='left')
     ax.set_xlabel('Task', fontsize=FONTS_SANS.get('axis_label', 17))
     ax.set_ylabel('F1 Macro Score', fontsize=FONTS_SANS.get('axis_label', 17))
     ax.set_ylim(0, 1.2)
@@ -650,15 +603,15 @@ def create_integrated_figure2(performance_df, leaf_data, root_data, output_dir):
     ax_leaf_header = fig.add_subplot(gs[3, :])
     ax_leaf_header.text(0.5, 0.5, "Leaf Tissue Features", ha='center', va='center',
                       fontsize=FONTS_SANS.get('panel_label', 19), fontweight='bold')
-    ax_leaf_header.text(0.01, 0.5, "b", ha='left', va='center',
-                      fontsize=FONTS_SANS.get('panel_label', 19), fontweight='bold', fontvariant='small-caps')
+    ax_leaf_header.text(0.01, 0.5, "B", ha='left', va='center',
+                      fontsize=FONTS_SANS.get('panel_label', 19), fontweight='bold')
     ax_leaf_header.axis('off')
 
     ax_root_header = fig.add_subplot(gs[6, :])
     ax_root_header.text(0.5, 0.5, "Root Tissue Features", ha='center', va='center',
                       fontsize=FONTS_SANS.get('panel_label', 19), fontweight='bold')
-    ax_root_header.text(0.01, 0.5, "c", ha='left', va='center',
-                      fontsize=FONTS_SANS.get('panel_label', 19), fontweight='bold', fontvariant='small-caps')
+    ax_root_header.text(0.01, 0.5, "C", ha='left', va='center',
+                      fontsize=FONTS_SANS.get('panel_label', 19), fontweight='bold')
     ax_root_header.axis('off')
 
     leaf_axes = [fig.add_subplot(gs[4, i]) for i in range(3)]
@@ -677,9 +630,8 @@ def create_integrated_figure2(performance_df, leaf_data, root_data, output_dir):
     # Adjust layout to make room for the legend on the right
     plt.tight_layout(rect=[0.01, 0.02, 0.90, 0.96])
 
-    timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-    output_file = os.path.join(output_dir, f"Figure2_Integrated_{timestamp}.png")
-    svg_file = os.path.join(output_dir, f"Figure2_Integrated_{timestamp}.svg")
+    output_file = os.path.join(output_dir, "fig_2.png")
+    svg_file = os.path.join(output_dir, "fig_2.svg")
 
     try:
         plt.savefig(output_file, dpi=DPI, bbox_inches='tight')
@@ -691,6 +643,142 @@ def create_integrated_figure2(performance_df, leaf_data, root_data, output_dir):
         print(f"ERROR saving figure: {e}")
         plt.close()
         return None
+
+def generate_table_s2(input_dir, output_dir):
+    """Generate Supplementary Table S2 from final v3 Transformer output CSVs.
+
+    This does NOT retrain the model. It only reads the final performance CSV
+    files and writes a clean Table S2 (wide + long-format audit table) into
+    the same output folder as Figure 2.
+
+    Required files (under input_dir/v3_feature_attention/results/):
+    - transformer_class_performance_Leaf.csv
+    - transformer_class_performance_Root.csv
+    - transformer_baseline_comparison_Leaf.csv
+    - transformer_baseline_comparison_Root.csv
+    """
+    print("\n--- Generating Supplementary Table S2 ---")
+
+    results_dir = os.path.join(input_dir, "v3_feature_attention", "results")
+
+    output_wide = os.path.join(output_dir, "Supplementary_Table_S2_model_performance.csv")
+    output_long = os.path.join(output_dir, "Supplementary_Table_S2_model_performance_long.csv")
+
+    def read_transformer_file(path, tissue):
+        """Read Transformer performance CSV and add model/tissue labels."""
+        if not os.path.exists(path):
+            raise FileNotFoundError(f"Missing required file: {path}")
+
+        df = pd.read_csv(path)
+
+        required = {"Task", "Metric", "Score"}
+        missing = required - set(df.columns)
+        if missing:
+            raise ValueError(f"{path} is missing required columns: {missing}")
+
+        df = df.copy()
+        df["Tissue"] = tissue
+        df["Model"] = "Transformer"
+
+        return df[["Tissue", "Model", "Task", "Metric", "Score"]]
+
+    def read_baseline_file(path, tissue):
+        """Read baseline performance CSV and add tissue label."""
+        if not os.path.exists(path):
+            raise FileNotFoundError(f"Missing required file: {path}")
+
+        df = pd.read_csv(path)
+
+        required = {"Model", "Task", "Metric", "Score"}
+        missing = required - set(df.columns)
+        if missing:
+            raise ValueError(f"{path} is missing required columns: {missing}")
+
+        df = df.copy()
+        df["Tissue"] = tissue
+
+        return df[["Tissue", "Model", "Task", "Metric", "Score"]]
+
+    files = {
+        "transformer_leaf": os.path.join(results_dir, "transformer_class_performance_Leaf.csv"),
+        "transformer_root": os.path.join(results_dir, "transformer_class_performance_Root.csv"),
+        "baseline_leaf": os.path.join(results_dir, "transformer_baseline_comparison_Leaf.csv"),
+        "baseline_root": os.path.join(results_dir, "transformer_baseline_comparison_Root.csv"),
+    }
+
+    combined = pd.concat(
+        [
+            read_transformer_file(files["transformer_leaf"], "Leaf"),
+            read_transformer_file(files["transformer_root"], "Root"),
+            read_baseline_file(files["baseline_leaf"], "Leaf"),
+            read_baseline_file(files["baseline_root"], "Root"),
+        ],
+        ignore_index=True
+    )
+
+    # Harmonise labels for manuscript consistency
+    combined["Model"] = combined["Model"].replace({
+        "KNN (k=5)": "KNN"
+    })
+
+    combined["Task"] = combined["Task"].replace({
+        "Day": "Time Point"
+    })
+
+    # Save full long-format audit table
+    combined["Score"] = combined["Score"].astype(float).round(4)
+    combined.to_csv(output_long, index=False)
+
+    # Keep common metrics available for all models
+    common_metrics = ["Accuracy", "F1_Macro"]
+    common = combined[combined["Metric"].isin(common_metrics)].copy()
+
+    # Generate manuscript-friendly wide table
+    table_s2 = (
+        common
+        .pivot_table(
+            index=["Tissue", "Task", "Model"],
+            columns="Metric",
+            values="Score",
+            aggfunc="first"
+        )
+        .reset_index()
+    )
+
+    # Ensure expected columns exist
+    for col in common_metrics:
+        if col not in table_s2.columns:
+            table_s2[col] = pd.NA
+
+    table_s2 = table_s2[["Tissue", "Task", "Model", "Accuracy", "F1_Macro"]]
+
+    # Sort cleanly
+    tissue_order = {"Leaf": 0, "Root": 1}
+    task_order = {"Genotype": 0, "Treatment": 1, "Time Point": 2}
+    model_order = {"Transformer": 0, "RandomForest": 1, "KNN": 2}
+
+    table_s2["_tissue_order"] = table_s2["Tissue"].map(tissue_order)
+    table_s2["_task_order"] = table_s2["Task"].map(task_order)
+    table_s2["_model_order"] = table_s2["Model"].map(model_order)
+
+    table_s2 = (
+        table_s2
+        .sort_values(["_tissue_order", "_task_order", "_model_order"])
+        .drop(columns=["_tissue_order", "_task_order", "_model_order"])
+        .reset_index(drop=True)
+    )
+
+    table_s2["Accuracy"] = table_s2["Accuracy"].astype(float).round(4)
+    table_s2["F1_Macro"] = table_s2["F1_Macro"].astype(float).round(4)
+
+    table_s2.to_csv(output_wide, index=False)
+
+    print("Supplementary Table S2 generated successfully.")
+    print(f"Wide table: {output_wide}")
+    print(f"Long audit table: {output_long}")
+
+    return output_wide
+
 
 def main():
     """Main function to run the visualization."""
@@ -725,9 +813,19 @@ def main():
         # Create integrated figure
         figure_path = create_integrated_figure2(performance_df, leaf_data, root_data, args.output)
 
+        # Generate Supplementary Table S2 into the same output folder
+        table_s2_path = None
+        try:
+            table_s2_path = generate_table_s2(args.input, args.output)
+        except Exception as e:
+            print(f"ERROR generating Supplementary Table S2: {e}")
+            traceback.print_exc()
+
         print("\n" + "=" * 80)
         if figure_path:
             print(f"Successfully generated Figure 2: {figure_path}")
+            if table_s2_path:
+                print(f"Successfully generated Supplementary Table S2: {table_s2_path}")
             return 0
         else:
             print("Failed to generate Figure 2. Please check the logs.")
