@@ -23,7 +23,7 @@ print("="*80)
 BASE_DIR = r"C:/Users/ms/Desktop/hyper/output/mofa_trasformer_val/val"
 MOFA_RESULTS_DIR = os.path.join(BASE_DIR, "mofa_results")
 TRANSFORMER_RESULTS_DIR = os.path.join(BASE_DIR, "transformer_results", "processed_attention")
-FIGURE_OUTPUT_DIR = os.path.join(BASE_DIR, "final_figures")
+FIGURE_OUTPUT_DIR = r"C:\Users\ms\Desktop\hyper\output\figure"
 os.makedirs(FIGURE_OUTPUT_DIR, exist_ok=True)
 
 # --- FONT & STYLE CONFIGURATION ---
@@ -91,7 +91,8 @@ def load_all_data():
             with open(PERMUTATION_RESULTS_PATH, 'r') as f:
                 data['permutation_results'] = json.load(f)
         else:
-            print("     * WARNING: Permutation results not found")
+            print("     * WARNING: Permutation results not found "
+                  f"at {PERMUTATION_RESULTS_PATH} — Figure 8E generation will fail (this is required input).")
             data['permutation_results'] = None
         
         # Transformer Attention Results
@@ -168,7 +169,7 @@ def create_figure(data, output_dir, font_sizes):
     ve_df.T.plot(kind='bar', stacked=True, ax=ax, color=["#9DDF5F", "#0fbbaa"], 
                  edgecolor='black', width=0.7)
     ax.set_title("MOFA+ Variance Explained", fontsize=font_sizes['panel_title'], fontweight='bold')
-    ax.text(-0.1, 1.1, 'a', transform=ax.transAxes, fontsize=font_sizes['panel_title'], fontweight='bold', va='top')
+    ax.text(-0.1, 1.1, 'A', transform=ax.transAxes, fontsize=font_sizes['panel_title'], fontweight='bold', va='top')
     ax.set_xlabel("Factor", fontsize=font_sizes['axis_label'])
     ax.set_ylabel("Variance Explained (%)", fontsize=font_sizes['axis_label'])
     ax.tick_params(axis='x', rotation=0, labelsize=font_sizes['tick_label'])
@@ -201,7 +202,7 @@ def create_figure(data, output_dir, font_sizes):
     ax.barh(display_names_spec, top_spec.values, color="#8DD946", edgecolor='black')
     ax.set_title(f"Top Spectral Loadings (Factor {integration_factor_idx+1})", 
                 fontsize=font_sizes['panel_title'], fontweight='bold')
-    ax.text(-0.1, 1.1, 'b', transform=ax.transAxes, fontsize=font_sizes['panel_title'], fontweight='bold', va='top')
+    ax.text(-0.1, 1.1, 'B', transform=ax.transAxes, fontsize=font_sizes['panel_title'], fontweight='bold', va='top')
     ax.set_xlabel("Weight", fontsize=font_sizes['axis_label'])
     ax.tick_params(axis='both', labelsize=font_sizes['tick_label'])
     sns.despine(ax=ax)
@@ -217,7 +218,7 @@ def create_figure(data, output_dir, font_sizes):
     ax.barh(display_names_tx, top_tx.values, color='#0fbbaa', edgecolor='black')
     ax.set_title(f"Top Gene Loadings (Factor {integration_factor_idx+1})", 
                 fontsize=font_sizes['panel_title'], fontweight='bold')
-    ax.text(-0.1, 1.1, 'c', transform=ax.transAxes, fontsize=font_sizes['panel_title'], fontweight='bold', va='top')
+    ax.text(-0.1, 1.1, 'C', transform=ax.transAxes, fontsize=font_sizes['panel_title'], fontweight='bold', va='top')
     ax.set_xlabel("Weight", fontsize=font_sizes['axis_label'])
     ax.tick_params(axis='both', labelsize=font_sizes['tick_label'])
     sns.despine(ax=ax)
@@ -274,7 +275,7 @@ def create_figure(data, output_dir, font_sizes):
                                          comparison_df['Mean_Attention_S2M'])[0, 1]
                 
                 ax.set_title("Attention vs. Correlation", fontsize=font_sizes['panel_title'], fontweight='bold')
-                ax.text(-0.1, 1.1, 'd', transform=ax.transAxes, fontsize=font_sizes['panel_title'], fontweight='bold', va='top')
+                ax.text(-0.1, 1.1, 'D', transform=ax.transAxes, fontsize=font_sizes['panel_title'], fontweight='bold', va='top')
                 ax.set_xlabel("Absolute Pearson Correlation", fontsize=font_sizes['axis_label'])
                 ax.set_ylabel("Mean Attention Score", fontsize=font_sizes['axis_label'])
                 ax.tick_params(axis='both', labelsize=font_sizes['tick_label'])
@@ -285,68 +286,68 @@ def create_figure(data, output_dir, font_sizes):
 
     # --- Panel E: Permutation Test Results ---
     ax = axes[1, 1]
-    
-    if data['permutation_results'] is not None:
-        # Handle both old ('corrected_permutation') and new ('permutation_test') JSON structures
-        perm_data = None
-        if 'corrected_permutation' in data['permutation_results']:
-            perm_data = data['permutation_results']['corrected_permutation']
-            observed = perm_data['observed_attention_mean']
-        elif 'permutation_test' in data['permutation_results']:
-            perm_data = data['permutation_results']['permutation_test']
-            observed = perm_data['observed_attention_mean']  # Same key as corrected_permutation
-        
-        if perm_data is not None:
-            null_dist = perm_data['null_distribution']
-            p_value = perm_data['p_value']
-            cohens_d = perm_data['cohens_d']
-            
-            # Get the actual number of permutations from the data
-            n_permutations = perm_data.get('total_permutations', len(null_dist))
-            
-            # Plot null distribution
-            ax.hist(null_dist, bins=20, alpha=0.7, color="#A5AB78", 
-                   label=f'Null Distribution (n={n_permutations})', density=True)
-            
-            # Plot observed value
-            ax.axvline(observed, color='red', linewidth=3, 
-                      label=f'Observed NEAT1\n(p = {p_value:.4f})')
-            
-            ax.set_title("Permutation Test Results", fontsize=font_sizes['panel_title'], fontweight='bold')
-            ax.set_xlabel("Mean Attention Score", fontsize=font_sizes['axis_label'])
-            ax.set_ylabel("Density", fontsize=font_sizes['axis_label'])
-            ax.legend(fontsize=font_sizes['legend_text'])
-            ax.tick_params(axis='both', labelsize=font_sizes['tick_label'])
-            
-            # Add effect size annotation
-            ax.text(0.98, 0.95, f"Cohen's d = {cohens_d:.2f}", transform=ax.transAxes,
-                   bbox=dict(boxstyle="round,pad=0.3", facecolor="beige", alpha=0.8),
-                   ha='right', va='top', fontsize=font_sizes['annotation_main'])
-        else:
-            # perm_data keys not found - show warning
-            ax.text(0.5, 0.5, 'Permutation data\nstructure not recognized', 
-                   transform=ax.transAxes, ha='center', va='center', fontsize=font_sizes['annotation_main'])
-            ax.set_title("Permutation Test Results", fontsize=font_sizes['panel_title'], fontweight='bold')
-    else:
-        # Fallback to gene comparison
-        attn_df = data['attention']
-        neat1_attn = attn_df[attn_df['Metabolite_Feature'] == 'NEAT1']['Mean_Attention_S2M']
-        bottom_genes = attn_df.nsmallest(10, 'Mean_Attention_S2M')['Metabolite_Feature'].values
-        control_gene = bottom_genes[0] if len(bottom_genes) > 0 else 'Control'
-        control_attn = attn_df[attn_df['Metabolite_Feature'] == control_gene]['Mean_Attention_S2M']
-        
-        if len(neat1_attn) > 0:
-            sns.kdeplot(neat1_attn, ax=ax, fill=True, color="#238b45", 
-                       label=f"NEAT1", cut=0)
-            if len(control_attn) > 0:
-                sns.kdeplot(control_attn, ax=ax, fill=True, color="grey", 
-                           label=f"Control ({control_gene})", cut=0)
-        
-        ax.set_title("Attention Score Significance", fontsize=font_sizes['panel_title'], fontweight='bold')
-        ax.legend(fontsize=font_sizes['legend_text'])
-        ax.tick_params(axis='both', labelsize=font_sizes['tick_label'])
-    
-    ax.text(-0.1, 1.1, 'e', transform=ax.transAxes, fontsize=font_sizes['panel_title'], fontweight='bold', va='top')
+
+    # Fig. 8E is specifically a permutation-null result. If the permutation
+    # results are missing, the figure must fail rather than substitute an
+    # alternative (non-permutation) panel.
+    if data['permutation_results'] is None:
+        raise FileNotFoundError(
+            "Permutation results JSON is required for Figure 8E; "
+            "refusing to generate fallback panel."
+        )
+
+    # Handle both old ('corrected_permutation') and new ('permutation_test') JSON structures
+    perm_data = None
+    if 'corrected_permutation' in data['permutation_results']:
+        perm_data = data['permutation_results']['corrected_permutation']
+        observed_mean_attention = float(perm_data['observed_attention_mean'])
+    elif 'permutation_test' in data['permutation_results']:
+        perm_data = data['permutation_results']['permutation_test']
+        observed_mean_attention = float(perm_data['observed_attention_mean'])  # Same key as corrected_permutation
+
+    if perm_data is None:
+        # JSON present but neither expected structure found: this is still a
+        # missing/invalid permutation result for Fig 8E purposes — fail rather
+        # than draw a placeholder panel.
+        raise ValueError(
+            "Permutation results JSON did not contain a recognized "
+            "'corrected_permutation' or 'permutation_test' structure; "
+            "cannot generate Figure 8E permutation panel."
+        )
+
+    null_dist = perm_data['null_distribution']
+    p_value = float(perm_data['p_value'])
+    null_std = float(perm_data['null_distribution_std'])
+    null_mean = float(perm_data['null_distribution_mean'])
+
+    monte_carlo_z = perm_data.get(
+        'monte_carlo_z',
+        (observed_mean_attention - null_mean) / null_std if null_std > 0 else np.nan
+    )
+
+    # Get the actual number of permutations from the data
+    n_permutations = perm_data.get('total_permutations', len(null_dist))
+
+    # Plot null distribution
+    ax.hist(null_dist, bins=20, alpha=0.7, color="#A5AB78",
+           label=f'Null Distribution (n={n_permutations})', density=True)
+
+    # Plot observed value
+    ax.axvline(observed_mean_attention, color='red', linewidth=3,
+              label=f'Observed NEAT1\n(p = {p_value:.4f})')
+
+    ax.set_title("Permutation Test Results", fontsize=font_sizes['panel_title'], fontweight='bold')
+    ax.set_xlabel("Mean Attention Score", fontsize=font_sizes['axis_label'])
+    ax.set_ylabel("Density", fontsize=font_sizes['axis_label'])
+    ax.legend(fontsize=font_sizes['legend_text'], loc='lower right')
+    ax.tick_params(axis='both', labelsize=font_sizes['tick_label'])
+
+    # Monte Carlo z-score annotation (observed mean vs SD of permutation means)
+    ax.text(0.98, 0.95, f"Monte Carlo z = {monte_carlo_z:.2f}", transform=ax.transAxes,
+           bbox=dict(boxstyle="round,pad=0.3", facecolor="beige", alpha=0.8),
+           ha='right', va='top', fontsize=font_sizes['annotation_main'])
+
+    ax.text(-0.1, 1.1, 'E', transform=ax.transAxes, fontsize=font_sizes['panel_title'], fontweight='bold', va='top')
     sns.despine(ax=ax)
 
     # --- Panel F: Top Attention Pairs ---
@@ -373,7 +374,7 @@ def create_figure(data, output_dir, font_sizes):
                f'{value:.3f}', va='center', ha='left', fontsize=font_sizes['annotation_bold'], fontweight='bold')
     
     ax.set_title("Top Cross-Modal Attention Pairs", fontsize=font_sizes['panel_title'], fontweight='bold')
-    ax.text(-0.1, 1.1, 'f', transform=ax.transAxes, fontsize=font_sizes['panel_title'], fontweight='bold', va='top')
+    ax.text(-0.1, 1.1, 'F', transform=ax.transAxes, fontsize=font_sizes['panel_title'], fontweight='bold', va='top')
     ax.set_xlabel("Mean Attention Score", fontsize=font_sizes['axis_label'])
     ax.set_ylabel("")
     ax.tick_params(axis='y', labelsize=font_sizes['tick_label'])
@@ -384,8 +385,8 @@ def create_figure(data, output_dir, font_sizes):
     plt.tight_layout(rect=[0, 0, 1, 0.95])
     
     # Save the figure
-    output_path = os.path.join(output_dir, "hyperseq_validation_optimized.png")
-    svg_path = os.path.join(output_dir, "hyperseq_validation_optimized.svg")
+    output_path = os.path.join(output_dir, "fig_8.png")
+    svg_path = os.path.join(output_dir, "fig_8.svg")
     plt.savefig(output_path, dpi=300, bbox_inches='tight')
     plt.savefig(svg_path, format='svg', bbox_inches='tight')
     print(f"\nFigure saved to: {output_path}")
