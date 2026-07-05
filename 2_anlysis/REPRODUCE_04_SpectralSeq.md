@@ -1,4 +1,4 @@
-# REPRODUCE_04_hyperseq.md
+# REPRODUCE_04_SpectralSeq.md
 
 > **Purpose**: Validate framework generalizability on independent single-cell dataset (GEO: GSE254034).
 
@@ -6,7 +6,7 @@
 
 ## 📋 Overview
 
-Applies identical pipeline to HyperSeq dataset (paired single-cell hyperspectral imaging + transcriptomics) to demonstrate framework generalizability across biological systems.
+Applies identical pipeline to SpectralSeq dataset (paired single-cell hyperspectral imaging + transcriptomics) to demonstrate framework generalizability across biological systems.
 
 ---
 
@@ -19,15 +19,15 @@ python 1_mofa_decomposition.py
 ```
 
 **Inputs**:
-- `transformer_input_hyperseq_spectral.csv`
-- `transformer_input_hyperseq_gene.csv`
+- `transformer_input_SpectralSeq_spectral.csv`
+- `transformer_input_SpectralSeq_gene.csv`
 
 **Parameters**: 15 factors, 2 views (spectral + transcriptomics)
 
 **Outputs**:
-- `mofa_model_hyperseq.hdf5`
-- `transformer_input_spectral_hyperseq.csv` (15 features)
-- `transformer_input_transcriptomics_hyperseq.csv` (100 genes)
+- `mofa_model_SpectralSeq.hdf5`
+- `transformer_input_spectral_SpectralSeq.csv` (15 features)
+- `transformer_input_transcriptomics_SpectralSeq.csv` (100 genes)
 
 **Key finding**: Factor 3 emerges as "Stress & Metabolism" integration factor (*HSPA6*, *COX6C* genes).
 
@@ -52,8 +52,8 @@ python 2_train_transformer.py
 
 **Outputs**:
 - Model checkpoints
-- `raw_attention_data_HyperSeq.h5`: 4D tensors
-- `corrected_permutation_test_results_HyperSeq.json`
+- `raw_attention_data_SpectralSeq.h5`: 4D tensors
+- `corrected_permutation_test_results_SpectralSeq.json`
 
 **What next**: Raw attention to processing
 
@@ -65,13 +65,13 @@ python 2_train_transformer.py
 python 3_process_attention.py
 ```
 
-**Inputs**: `raw_attention_data_HyperSeq.h5`, metadata
+**Inputs**: `raw_attention_data_SpectralSeq.h5`, metadata
 
 **Process**: Average heads, calculate overall/conditional attention, rank top pairs
 
 **Outputs**:
-- `processed_mean_attention_overall_HyperSeq.csv`
-- `processed_mean_attention_conditional_HyperSeq.csv`
+- `processed_mean_attention_overall_SpectralSeq.csv`
+- `processed_mean_attention_conditional_SpectralSeq.csv`
 
 **What next**: Processed data for visualization
 
