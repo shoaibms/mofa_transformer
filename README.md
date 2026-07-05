@@ -20,7 +20,7 @@ Multi-omics studies can identify broad patterns of co-variation, but they often 
 3. **Transformer cross-modal attention** to quantify feature-pair coordination, including spectral-to-metabolite and metabolite-to-spectral asymmetry;
 4. **SHAP attribution** to contrast variance-dominant features with prediction-dominant features.
 
-The framework was developed using paired wheat hyperspectral reflectance and LC-MS metabolomics profiles under osmotic stress, and then tested as an external demonstration on an independent HyperSeq single-cell multi-modal dataset.
+The framework was developed using paired wheat hyperspectral reflectance and LC-MS metabolomics profiles under osmotic stress, and then tested as an external demonstration on an independent SpectralSeq single-cell multi-modal dataset.
 
 > **Important interpretation note:** attention and SHAP identify asymmetric, predictive associations. They do not establish causality by themselves. Causal interpretation requires targeted experimental validation.
 
@@ -33,7 +33,7 @@ This repository provides the analysis code and documentation used to reproduce t
 - data preprocessing, quality control and augmentation scripts;
 - MOFA+ decomposition, feature selection, bootstrap and permutation analyses;
 - Transformer training, model comparison, cross-modal attention extraction and SHAP analysis;
-- HyperSeq external validation scripts;
+- SpectralSeq external validation scripts;
 - figure-generation scripts and manuscript-value validation utilities;
 - step-by-step `REPRODUCE_*.md` guides aligned with the manuscript workflow.
 
@@ -49,7 +49,7 @@ First, variance-dominant MOFA+ features and SHAP-ranked predictive features were
 
 Second, tolerance-associated differences were better captured by dynamic spectral–metabolite coordination than by static molecular abundance alone. In leaf tissue, the tolerant genotype showed progressively stronger spectral–metabolite coordination across stress progression, reaching a 4.74-fold difference at peak stress relative to the susceptible genotype (Cohen's d = 2.52; genotype × time interaction p = 0.007). Root coordination remained comparatively static.
 
-Third, in the independent HyperSeq single-cell dataset, the model identified an attention-enriched association between autofluorescence features and the stress-related lncRNA NEAT1 (permutation p = 0.0002; Monte Carlo z = 19.86) that was not captured by linear correlation (r = -0.023).
+Third, in the independent SpectralSeq single-cell dataset, the model identified an attention-enriched association between autofluorescence features and the stress-related lncRNA NEAT1 (permutation p = 0.0002; Monte Carlo z = 19.86) that was not captured by linear correlation (r = -0.023).
 
 Together, these results support coordination dynamics as a mechanistically informative and testable signature associated with stress-tolerance contrasts in this dataset.
 
@@ -64,7 +64,7 @@ Together, these results support coordination dynamics as a mechanistically infor
 | **Leaf coordination is progressive** | Tolerant genotype showed increasing spectral–metabolite coordination across stress progression, with the strongest difference at peak stress. |
 | **Root coordination is comparatively static** | Root genotype differences were modest and did not show the same progressive pattern as leaf. |
 | **MOFA+ and SHAP prioritise different features** | Overlap was sparse, but convergent features localised to a green-band spectral interface. |
-| **HyperSeq supports transferability as an external demonstration** | NEAT1 showed attention enrichment despite negligible linear correlation with autofluorescence. |
+| **SpectralSeq supports transferability as an external demonstration** | NEAT1 showed attention enrichment despite negligible linear correlation with autofluorescence. |
 
 ---
 
@@ -79,9 +79,9 @@ Together, these results support coordination dynamics as a mechanistically infor
 - Held-out model testing used original, non-augmented samples only.
 - MOFA-guided feature selection yielded the final feature subset used for Transformer modelling and downstream interpretability analyses.
 
-### External HyperSeq demonstration
+### External SpectralSeq demonstration
 
-- Dataset: HyperSeq single-cell multi-modal data (`GSE254034`).
+- Dataset: SpectralSeq single-cell multi-modal data (`GSE254034`).
 - Modalities: cellular autofluorescence and transcriptome features.
 - Purpose: test whether the framework could recover interpretable cross-modal associations outside the wheat hyperspectral–metabolomics setting.
 
@@ -211,7 +211,7 @@ flowchart TD
  ├── 📂 2_analysis/
  │   ├── 📄 REPRODUCE_02_mofa.md               # Reproducibility guide for MOFA+ analysis
  │   ├── 📄 REPRODUCE_03_transformer.md        # Reproducibility guide for Transformer analysis
- │   ├── 📄 REPRODUCE_04_hyperseq.md           # Reproducibility guide for HyperSeq validation
+ │   ├── 📄 REPRODUCE_04_SpectralSeq.md           # Reproducibility guide for SpectralSeq validation
  │   │
  │   ├── 📂 01_mofa_plus/
  │   │   ├── 📜 viz_mofa_results.py            # Enhanced MOFA+ results visualisation.
@@ -242,8 +242,8 @@ flowchart TD
  │   │   ├── 📜 protocol_sensitivity.py        # Stress protocol sensitivity check
  │   │   └── 📜 validate_manuscript_values_v2.py  # Validates manuscript statistics against source data.
  │   │
- │   └── 📂 04_hyperseq_validation/
- │       ├── 📜 1_mofa_decomposition.py        # MOFA+ factor analysis on HyperSeq dataset.
+ │   └── 📂 04_SpectralSeq_validation/
+ │       ├── 📜 1_mofa_decomposition.py        # MOFA+ factor analysis on SpectralSeq dataset.
  │       ├── 📜 2_train_transformer.py         # Train cross-attention model with permutation test.
  │       ├── 📜 3_process_attention.py         # Process raw attention tensors from HDF5.
  │       ├── 📜 4_prepare_visualization_data.py # Extract and compute statistics for Figure 8 plots.
@@ -265,7 +265,7 @@ flowchart TD
  │   │   ├── 📜 Figure_6_v2.py                    # Temporal dynamics and MOFA+/SHAP complementarity (reads robustness contract).
  │   │   ├── 📜 Figure_7_a-b.py                # Predictive feature clustering (Panels A-B).
  │   │   ├── 📜 Figure_7_c-g_v2.py                # Tissue-task predictive importance (Panels C-G).
- │   │   └── 📜 Figure_8_v2.py                    # HyperSeq validation: generalisability demonstration.
+ │   │   └── 📜 Figure_8_v2.py                    # SpectralSeq validation: generalisability demonstration.
  │   │
  │   └── 📂 02_supplementary_figures/
  │       ├── 📜 Fig_S1.py                      # Cross-View Feature Integration Network.
@@ -326,7 +326,7 @@ Follow the reproducibility guides sequentially:
 1. `REPRODUCE_01_preprocessing.md` — preprocessing, spectral QC, LC-MS processing and augmentation;
 2. `REPRODUCE_02_mofa.md` — MOFA+ factor analysis and feature selection;
 3. `REPRODUCE_03_transformer.md` — Transformer training, attention extraction and SHAP analysis;
-4. `REPRODUCE_04_hyperseq.md` — HyperSeq external validation;
+4. `REPRODUCE_04_SpectralSeq.md` — SpectralSeq external validation;
 5. `REPRODUCE_05_visualization.md` — figure generation and manuscript-value checks.
 
 ---
@@ -409,10 +409,10 @@ This project is released under the MIT License.
 
 ## Acknowledgments
 
-This work was supported by Agriculture Victoria Research. We thank the HyperSeq dataset authors for making their data publicly available.
+This work was supported by Agriculture Victoria Research. We thank the SpectralSeq dataset authors for making their data publicly available.
 
 
 ## 🙏 Acknowledgments
 
 - This work was supported by Agriculture Victoria Research
-- We thank the HyperSeq dataset authors for making their data publicly available
+- We thank the SpectralSeq dataset authors for making their data publicly available
