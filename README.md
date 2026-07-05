@@ -218,7 +218,7 @@ flowchart TD
  │   │   ├── 📜 viz_mofa_results.txt           # Launcher script for viz_mofa_results.py.
  │   │   ├── 📜 mofa_bootstrap.py              # MOFA+ bootstrap stability analysis.
  │   │   ├── 📜 mofa_permutation.py            # MOFA+ permutation test for factor-metadata association.
- │   │   ├── 📜 run_mofa_analysis_v2.py           # Main script for MOFA+ analysis and validation.
+ │   │   ├── 📜 run_mofa_analysis_v2.py        # Main script for MOFA+ analysis and validation.
  │   │   └── 📜 select_mofa_features.py        # MOFA+ feature selection script.
  │   │
  │   ├── 📂 02_transformer_model/
@@ -262,10 +262,10 @@ flowchart TD
  │   │   ├── 📜 Figure_4_c_f.py                # Network coordination landscapes (Panels C-F).
  │   │   ├── 📜 figure4_analysis.py            # Analysis utilities for Figure 4.
  │   │   ├── 📜 Figure_5_a-d.py                # Model performance and biomarker identification (Panels A-D).
- │   │   ├── 📜 Figure_6_v2.py                    # Temporal dynamics and MOFA+/SHAP complementarity (reads robustness contract).
+ │   │   ├── 📜 Figure_6_v2.py                 # Temporal dynamics and MOFA+/SHAP complementarity (reads robustness contract).
  │   │   ├── 📜 Figure_7_a-b.py                # Predictive feature clustering (Panels A-B).
- │   │   ├── 📜 Figure_7_c-g_v2.py                # Tissue-task predictive importance (Panels C-G).
- │   │   └── 📜 Figure_8_v2.py                    # SpectralSeq validation: generalisability demonstration.
+ │   │   ├── 📜 Figure_7_c-g_v2.py             # Tissue-task predictive importance (Panels C-G).
+ │   │   └── 📜 Figure_8_v2.py                 # SpectralSeq validation: generalisability demonstration.
  │   │
  │   └── 📂 02_supplementary_figures/
  │       ├── 📜 Fig_S1.py                      # Cross-View Feature Integration Network.
@@ -273,15 +273,15 @@ flowchart TD
  │       ├── 📜 Fig_S4.py                      # Transformer performance metrics.
  │       ├── 📜 Fig_S6.mmd                     # LC-MS Data Preprocessing Workflow.
  │       ├── 📜 Fig_S7.txt                     # Launcher script for Fig S7.
- │       ├── 📜 Fig_S8_v2.py                      # Hyperspectral data quality assessment.
+ │       ├── 📜 Fig_S8_v2.py                   # Hyperspectral data quality assessment.
  │       ├── 📜 Fig_S9.mmd                     # Data augmentation pipeline (Mermaid diagram).
- │       └── 📜 Fig_S10-13_v2.py                  # Augmentation validation and quality assessment.
+ │       └── 📜 Fig_S10-13_v2.py               # Augmentation validation and quality assessment.
  │
  ├── 📂 data/
  │    ├── 📄 hyper_full_w.csv                   # Hyperspectral reflectance data (336 samples × 2,151 wavelengths, 350-2500 nm)
  │    ├── 📄 n_p_l2.csv                         # Leaf molecular features (N + P ionization modes)
  │    ├── 📄 n_p_r2.csv                         # Root molecular features (N + P ionization modes)
- │    └── 📜 README.md                         # Data files description, format, and origin
+ │    └── 📜 README.md                          # Data files description, format, and origin
  │
  │
  ├── 📂 html/                                 # HTML reports.
